@@ -1,8 +1,6 @@
 
 (function($, W, D) {
 
-    emojione
-
     var default_options = {
         template          : "<editor/><panel><button/></panel>",
 
@@ -15,39 +13,18 @@
         spellcheck        : true,
         autocomplete      : "off",
         autocorrect       : "off",
-        autocapitalize    : "off",
+        autocapitalize    : "off"
     };
 
-    function textToHtml(content) {
-        content = content
-            .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/(?:\r\n|\r|\n)/g, '\n')
-            .replace(/(\n+)/g, '<div>$1</div>')
-            .replace(/\n/g, '<br/>')
-            .replace(/<br\/><\/div>/g, '</div>');
 
-        var emojioneImageType = emojione.imageType;
-        emojione.imageType = 'png';
-        content = emojione.unicodeToImage(content);
-        emojione.imageType = emojioneImageType;
 
-        return content;
-    }
 
-    function htmlToText(html) {
-        return html
-            .replace(/<img class="emojione" alt="([^"]+)"[^>]+>/g, '$1')
-            .replace(/\n/g, '')
-            .replace(/<br\/>/g, '\n')
-            .replace(/<div><\/div>/g, '\n')
-            .replace(/<div>\n/g, '\n\n')
-            .replace(/<.+>/g, '');
-    }
 
     var EmojioneArea = function(element, options) {
         this.element = element;
         this.options = $.extend({}, default_options, options);
         this.events = {};
+
         this.init();
     };
 
@@ -84,11 +61,57 @@
         }
     };
 
+    EmojioneArea.prototype.setText = function(content) {
+        content = content
+            .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/(?:\r\n|\r|\n)/g, '\n')
+            .replace(/(\n+)/g, '<div>$1</div>')
+            .replace(/\n/g, '<br/>')
+            .replace(/<br\/><\/div>/g, '</div>');
+
+        var emojioneImageType = emojione.imageType;
+        emojione.imageType = 'png';
+        content = emojione.unicodeToImage(content);
+        emojione.imageType = emojioneImageType;
+
+        this.editor.html('<div>' + content + '</div>');
+    }
+
+    EmojioneArea.prototype.htmlToText = function(html) {
+        return html
+            .replace(/<img class="emojione" alt="([^">]+)"[^>]+>/ig, '$1')
+            .replace(/<br(\s*)\/*>/ig, '\n') // replace single line-breaks
+            .replace(/<[p|div]\s/ig, '\n$0') // add a line break before all div and p tags
+            .replace(/(<([^>]+)>)/ig, "");
+
+        var e = $("<div></div>");
+        return e.html(html.replace(/<img class="emojione" alt="([^">]+)"[^>]+>/ig, '$1'))[0].innerText;
+        return html
+            .replace(/<img class="emojione" alt="([^">]+)"[^>]+>/ig, '$1')
+            .replace(/\n/g, '')
+            .replace(/<br(?:[^>]+)?>/ig, '\n')
+            .replace(/(?:<div(?:[^>]+)?>)+/ig, '<div>')
+            .replace(/(?:<\/div>)+/ig, '</div>')
+            .replace(/(?:<p(?:[^>]+)?>)+/ig, '<div>')
+            .replace(/(?:<\/p>)+/ig, '</div>')
+            .replace(/\n<div><\/div>/ig, '\n')
+            .replace(/<div><\/div>\n/ig, '\n')
+            .replace(/(?:<div>)+<\/div>/ig, '\n')
+            .replace(/([^\n])<\/div><div>/ig, '$1\n')
+            .replace(/(?:<\/div>)+/ig, '')
+            .replace(/([^\n])<div>/ig, '$1\n')
+            .replace(/\n<div>/ig, '\n')
+            .replace(/<div>\n/ig, '\n\n')
+            .replace(/<(?:[^>]+)?>/ig, '');
+    }
+
     EmojioneArea.prototype.trigger = function() {
         if (!!arguments.length) {
             if (!!this.events[arguments[0]] && !!this.events[arguments[0]].length) {
-                var args = arguments.slice(1);
+                var args = Array.prototype.slice.call(arguments);
+                args = args.slice(1);
                 $.each(this.events[arguments[0]], function(i, f) {
+                    console.log("1")
                     f.apply(f, args);
                 });
             }
@@ -96,7 +119,7 @@
     };
 
     EmojioneArea.prototype.init = function() {
-        this.type = this.element.is("TEXTAREA") || this.element.is("INPUT") ? 'val' : 'text';
+        this.type = this.element.is("INPUT") ? 'val' : 'text';
 
         var html = this.options.template
             .replace("<editor/>", '<div class="{{editorClassName}}" tabindex="0"></div>')
@@ -114,14 +137,14 @@
 
         this.editor.on("focus", function() {
             html.addClass("focused");
-        }).on("blur", function() {
+        }).on("blur", $.proxy(function() {
             html.removeClass("focused");
             var content = this.editor.html();
             if (this.content !== content) {
                 this.content = content;
                 this.trigger('change', this.content);
             }
-        });
+        }, this));
 
         html.find("." + this.options.panelClassName).on("mousedown", function(e) {
             e.preventDefault();
@@ -141,11 +164,11 @@
 
         this.element.hide();
 
-        this.content = textToHtml(this.element[this.type]());
-        this.editor.html(this.content);
+        this.setText(this.element[this.type]());
+        this.content = this.editor.html();
 
         this.on("change", $.proxy(function(content) {
-            this.element[this.type](htmlToText(content));
+            this.element[this.type](this.htmlToText(content));
         }, this));
 
         this.trigger('change', this.content);
