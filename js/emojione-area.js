@@ -16,10 +16,6 @@
         autocapitalize    : "off"
     };
 
-
-
-
-
     var EmojioneArea = function(element, options) {
         this.element = element;
         this.options = $.extend({}, default_options, options);
@@ -77,16 +73,8 @@
         this.editor.html('<div>' + content + '</div>');
     }
 
-    EmojioneArea.prototype.htmlToText = function(html) {
-        return html
-            .replace(/<img class="emojione" alt="([^">]+)"[^>]+>/ig, '$1')
-            .replace(/<br(\s*)\/*>/ig, '\n') // replace single line-breaks
-            .replace(/<[p|div]\s/ig, '\n$0') // add a line break before all div and p tags
-            .replace(/(<([^>]+)>)/ig, "");
-
-        var e = $("<div></div>");
-        return e.html(html.replace(/<img class="emojione" alt="([^">]+)"[^>]+>/ig, '$1'))[0].innerText;
-        return html
+    EmojioneArea.prototype.getText = function() {
+        return this.editor.html()
             .replace(/<img class="emojione" alt="([^">]+)"[^>]+>/ig, '$1')
             .replace(/\n/g, '')
             .replace(/<br(?:[^>]+)?>/ig, '\n')
@@ -167,8 +155,8 @@
         this.setText(this.element[this.type]());
         this.content = this.editor.html();
 
-        this.on("change", $.proxy(function(content) {
-            this.element[this.type](this.htmlToText(content));
+        this.on("change", $.proxy(function() {
+            this.element[this.type](this.getText());
         }, this));
 
         this.trigger('change', this.content);
