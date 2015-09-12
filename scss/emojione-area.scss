@@ -1,0 +1,61 @@
+@import "compass/css3";
+
+.emojionearea {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    @include border-radius(4px);
+    @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075));
+    @include transition(border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s);
+    @include box-sizing(border-box);
+
+    &.focused {
+        border-color: #66afe9;
+        outline: 0;
+        @include box-shadow(inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6));
+    }
+
+    .emojionearea-editor {
+        display: block;
+        width: 100%;
+        height: auto;
+        min-height: 34px;
+        padding: 0;
+        line-height: 1.42857143;
+        font-size: inherit;
+        color: #555;
+        background-color: inherit;
+        background-image: none;
+        border: 0;
+        @include border-radius(0);
+        @include box-shadow(none);
+        &:focus {
+            border: 0;
+            outline: 0;
+            @include box-shadow(none);
+        }
+
+        .emojione {
+            height: 1.2em;
+        }
+    }
+
+    .emojionearea-editor + .emojionearea-panel {}
+
+    .emojionearea-panel {
+        background-color: #fff;
+        background-image: none;
+        width: 100%;
+        height: 24px;
+    }
+}
+
+.emojionearea-button {
+    display: block;
+
+}
