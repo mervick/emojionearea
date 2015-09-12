@@ -18,13 +18,6 @@
         autocapitalize    : "off",
     };
 
-    var EmojioneArea = function(element, options) {
-        this.element = element;
-        this.options = $.extend({}, default_options, options);
-        this.events = {};
-        this.init();
-    };
-
     function textToHtml(content) {
         content = content
             .replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -51,6 +44,13 @@
             .replace(/<.+>/g, '');
     }
 
+    var EmojioneArea = function(element, options) {
+        this.element = element;
+        this.options = $.extend({}, default_options, options);
+        this.events = {};
+        this.init();
+    };
+
     EmojioneArea.prototype.on = function(events, handler) {
         if (!!events && !!handler && Array.prototype.toString.call(handler) == '[object Function]') {
             $.each(events.split(' '), $.proxy(function(i, event) {
@@ -63,7 +63,25 @@
     };
 
     EmojioneArea.prototype.off = function(events, handler) {
-
+        if (!!events) {
+            if (!!handler) {
+                if (Array.prototype.toString.call(handler) == '[object Function]') {
+                    $.each(events.split(' '), $.proxy(function(i, event) {
+                        if (!!this.events[event] && !!this.events[event].length) {
+                            $.each(this.events[event], $.proxy(function(j, attachedHandler) {
+                                if (attachedHandler === handler) {
+                                    this.events[event] = this.events[event].splice(j, 1);
+                                }
+                            }, this));
+                        }
+                    }, this));
+                }
+            } else {
+                $.each(events.split(' '), $.proxy(function(i, event) {
+                    this.events[event] = [];
+                }, this));
+            }
+        }
     };
 
     EmojioneArea.prototype.trigger = function() {
@@ -76,7 +94,6 @@
             }
         }
     };
-
 
     EmojioneArea.prototype.init = function() {
         this.type = this.element.is("TEXTAREA") || this.element.is("INPUT") ? 'val' : 'text';
@@ -99,6 +116,11 @@
             html.addClass("focused");
         }).on("blur", function() {
             html.removeClass("focused");
+            var content = this.editor.html();
+            if (this.content !== content) {
+                this.content = content;
+                this.trigger('change', this.content);
+            }
         });
 
         html.find("." + this.options.panelClassName).on("mousedown", function(e) {
@@ -119,7 +141,14 @@
 
         this.element.hide();
 
-        this.editor.html(textToHtml(this.element[this.type]()));
+        this.content = textToHtml(this.element[this.type]());
+        this.editor.html(this.content);
+
+        this.on("change", $.proxy(function(content) {
+            this.element[this.type](htmlToText(content));
+        }, this));
+
+        this.trigger('change', this.content);
     };
 
 
