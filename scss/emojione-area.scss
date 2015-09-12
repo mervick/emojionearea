@@ -32,6 +32,7 @@
         background-color: inherit;
         background-image: none;
         border: 0;
+        cursor: text;
         @include border-radius(0);
         @include box-shadow(none);
         &:focus {
