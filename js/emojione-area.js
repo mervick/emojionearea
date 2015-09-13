@@ -59,15 +59,16 @@
         return this;
     };
 
-    EmojioneArea.prototype.trigger = function() {
+    EmojioneArea.prototype.trigger = function(events, args) {
         var result = true;
-        if (!!arguments.length) {
-            var args = Array.prototype.slice.call(arguments);
-            args = args.slice(1);
-            $.each(arguments[0].split(' '), $.proxy(function(i, event) {
+        if (!!events) {
+            if (!args) {
+                args = [];
+            }
+            $.each(events.split(' '), $.proxy(function(i, event) {
                 if (!!this.events[event] && !!this.events[event].length) {
                     $.each(this.events[event], function (i, f) {
-                        return result = f.apply(f, args) !== false;
+                        return result = f.apply(null, args) !== false;
                     });
                 }
                 return result;
@@ -77,8 +78,10 @@
     };
 
     EmojioneArea.prototype.attach = function(element, elementEvents, events) {
-        element.on(elementEvents, $.proxy(function() {
-            return this.trigger((!!events ? events : elementEvents), arguments)
+        $.each(element, $.proxy(function(i, e) {
+            $(e).on(elementEvents, $.proxy(function() {
+                return this.trigger((!!events ? events : elementEvents), arguments)
+            }, this));
         }, this));
 
         return this;
@@ -99,7 +102,7 @@
 
         this.editor.html('<div>' + content + '</div>');
         this.content = this.editor.html();
-        this.trigger('emojioneArea.change change', this.content);
+        this.trigger('emojioneArea.change change', [this.content]);
     }
 
     EmojioneArea.prototype.getText = function() {
@@ -144,23 +147,25 @@
             this.editor.attr(name, this.options[name]);
         }, this));
 
-        this.panel.on("mousedown", function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        this.button.on("mousedown", function(e) {
-            e.preventDefault();
-            return false;
-        });
-
         this.attach(this.editor, "mousedown")
-            .attach(this.editor, "mouseup")
+            .attach([this.editor, this.panel], "mouseup")
             .attach(this.editor, "focus", "emojioneArea.focus focus")
             .attach(this.editor, "blur", "emojioneArea.blur blur")
-            .attach(this.editor, "click")
-            .attach(this.editor, "keyup")
-            .attach(this.editor, "keydown");
+            .attach([this.editor, this.panel], "click")
+            .attach([this.editor, this.panel], "keyup")
+            .attach([this.editor, this.panel], "keydown")
+            .attach(this.panel, "mousedown", "emojioneArea.panel.mousedown panel.mousedown mousedown")
+            .attach(this.button, "emojioneArea.button.mousedown button.mousedown");
+
+        this.on("emojioneArea.panel.mousedown", function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        this.on("emojioneArea.button.mousedown", function(e) {
+            e.preventDefault();
+            return false;
+        });
 
         this.on("emojioneArea.change", $.proxy(function() {
             this.element[this.type](this.getText());
@@ -171,7 +176,7 @@
             var content = this.editor.html();
             if (this.content !== content) {
                 this.content = content;
-                this.trigger('emojioneArea.change change', this.content);
+                this.trigger('emojioneArea.change change', [this.content]);
             }
         }, this));
 
