@@ -60,7 +60,6 @@
     };
 
     EmojioneArea.prototype.trigger = function() {
-        console.log(arguments);
         var result = true;
         if (!!arguments.length) {
             var args = Array.prototype.slice.call(arguments);
@@ -80,7 +79,6 @@
 
     EmojioneArea.prototype.attach = function(element, elementEvents, events) {
         element.on(elementEvents, $.proxy(function() {
-            console.log([elementEvents, events]);
             return this.trigger((!!events ? events : elementEvents), arguments)
         }, this));
 
