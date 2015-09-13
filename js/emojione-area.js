@@ -1,5 +1,5 @@
 
-(function($, W, D) {
+(function($) {
 
     var default_options = {
         template          : "<editor/><panel><button/></panel>",
@@ -33,6 +33,7 @@
                 this.events[event].push(handler);
             }, this));
         }
+        return this;
     };
 
     EmojioneArea.prototype.off = function(events, handler) {
@@ -55,6 +56,35 @@
                 }, this));
             }
         }
+        return this;
+    };
+
+    EmojioneArea.prototype.trigger = function() {
+        console.log(arguments);
+        var result = true;
+        if (!!arguments.length) {
+            var args = Array.prototype.slice.call(arguments);
+            args = args.slice(1);
+            $.each(arguments[0].split(' '), $.proxy(function(i, event) {
+                if (!!this.events[event] && !!this.events[event].length) {
+                    $.each(this.events[event], function (i, f) {
+                        result = f.apply(f, args);
+                        return result !== false;
+                    });
+                }
+                return result !== false;
+            }, this));
+        }
+        return result !== false;
+    };
+
+    EmojioneArea.prototype.attach = function(element, elementEvents, events) {
+        element.on(elementEvents, $.proxy(function() {
+            console.log([elementEvents, events]);
+            return this.trigger((!!events ? events : elementEvents), arguments)
+        }, this));
+
+        return this;
     };
 
     EmojioneArea.prototype.setText = function(content) {
@@ -71,6 +101,8 @@
         emojione.imageType = emojioneImageType;
 
         this.editor.html('<div>' + content + '</div>');
+        this.content = this.editor.html();
+        this.trigger('emojioneArea.change change', this.content);
     }
 
     EmojioneArea.prototype.getText = function() {
@@ -93,19 +125,6 @@
             .replace(/<(?:[^>]+)?>/ig, '');
     }
 
-    EmojioneArea.prototype.trigger = function() {
-        if (!!arguments.length) {
-            if (!!this.events[arguments[0]] && !!this.events[arguments[0]].length) {
-                var args = Array.prototype.slice.call(arguments);
-                args = args.slice(1);
-                $.each(this.events[arguments[0]], function(i, f) {
-                    console.log("1")
-                    f.apply(f, args);
-                });
-            }
-        }
-    };
-
     EmojioneArea.prototype.init = function() {
         this.type = this.element.is("INPUT") ? 'val' : 'text';
 
@@ -122,19 +141,13 @@
 
         this.editor = html.find("." + this.options.editorClassName).attr("contenteditable", "true");
         this.button = html.find("." + this.options.buttonClassName);
+        this.panel  = html.find("." + this.options.panelClassName);
 
-        this.editor.on("focus", function() {
-            html.addClass("focused");
-        }).on("blur", $.proxy(function() {
-            html.removeClass("focused");
-            var content = this.editor.html();
-            if (this.content !== content) {
-                this.content = content;
-                this.trigger('change', this.content);
-            }
+        $.each(["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], $.proxy(function(i, name) {
+            this.editor.attr(name, this.options[name]);
         }, this));
 
-        html.find("." + this.options.panelClassName).on("mousedown", function(e) {
+        this.panel.on("mousedown", function(e) {
             e.preventDefault();
             return false;
         });
@@ -144,22 +157,30 @@
             return false;
         });
 
-        $.each(["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], $.proxy(function(i, name) {
-            this.editor.attr(name, this.options[name]);
+        this.attach(this.editor, "mousedown")
+            .attach(this.editor, "mouseup")
+            .attach(this.editor, "focus", "emojioneArea.focus focus")
+            .attach(this.editor, "blur", "emojioneArea.blur blur")
+            .attach(this.editor, "click")
+            .attach(this.editor, "keyup")
+            .attach(this.editor, "keydown");
+
+        this.on("emojioneArea.change", $.proxy(function() {
+            this.element[this.type](this.getText());
+        }, this)).on("emojioneArea.focus", function() {
+            html.addClass("focused");
+        }).on("emojioneArea.blur", $.proxy(function() {
+            html.removeClass("focused");
+            var content = this.editor.html();
+            if (this.content !== content) {
+                this.content = content;
+                this.trigger('emojioneArea.change change', this.content);
+            }
         }, this));
 
         html.insertAfter(this.element);
-
         this.element.hide();
-
         this.setText(this.element[this.type]());
-        this.content = this.editor.html();
-
-        this.on("change", $.proxy(function() {
-            this.element[this.type](this.getText());
-        }, this));
-
-        this.trigger('change', this.content);
     };
 
 
@@ -170,7 +191,7 @@
         });
     };
 
-}) (jQuery, window, document);
+}) (jQuery);
 
 
 // smiles
