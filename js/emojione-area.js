@@ -67,14 +67,13 @@
             $.each(arguments[0].split(' '), $.proxy(function(i, event) {
                 if (!!this.events[event] && !!this.events[event].length) {
                     $.each(this.events[event], function (i, f) {
-                        result = f.apply(f, args);
-                        return result !== false;
+                        return result = f.apply(f, args) !== false;
                     });
                 }
-                return result !== false;
+                return result;
             }, this));
         }
-        return result !== false;
+        return result;
     };
 
     EmojioneArea.prototype.attach = function(element, elementEvents, events) {
