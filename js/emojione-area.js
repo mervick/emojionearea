@@ -2,12 +2,14 @@
 (function($) {
 
     var default_options = {
-        template          : "<editor/><panel><button/></panel>",
+        template          : "<editor/><filters/><tabs/>",
 
         className         : "emojionearea",
         editorClassName   : "emojionearea-editor",
-        panelClassName    : "emojionearea-panel",
-        buttonClassName   : "emojionearea-button",
+        filtersClassName  : "emojionearea-filters",
+        filterButtonClassName  : "emojionearea-filter-button",
+        tabsClassName     : "emojionearea-tabs",
+        tabClassName      : "emojionearea-tab",
 
         dir               : "ltr",
         spellcheck        : true,
@@ -295,19 +297,19 @@
         this.type = this.element.is("INPUT") ? 'val' : 'text';
 
         var html = this.options.template
-            .replace("<editor/>", '<div class="{{editorClassName}}" tabindex="0"></div>')
-            .replace("<button/>", '<div class="{{buttonClassName}}" role="button" tabindex="-1"></div>')
-            .replace("<panel>", '<div class="{{panelClassName}}">').replace("</panel>", '</div>');
+            .replace(/<editor\/?>/i, '<div class="{{editorClassName}}" tabindex="0"></div>')
+            .replace(/<filters\/?>/i, '<div class="{{filtersClassName}}"></div>')
+            .replace(/<tabs\/?>/i, '<div class="{{tabsClassName}}"></div>');
 
-        $.each(["editorClassName", "buttonClassName", "panelClassName"], $.proxy(function(i, name) {
+        $.each(["editorClassName", "filtersClassName", "tabsClassName"], $.proxy(function(i, name) {
             html = html.replace("{{" + name + "}}", this.options[name]);
         }, this));
 
         html = $('<div>' + html + '</div>').addClass(this.options.className).attr("role", "application");
 
         this.editor = html.find("." + this.options.editorClassName).attr("contenteditable", "true");
-        this.button = html.find("." + this.options.buttonClassName);
-        this.panel  = html.find("." + this.options.panelClassName);
+        this.filters = html.find("." + this.options.filtersClassName);
+        this.tabs = html.find("." + this.options.tabsClassName);
 
         $.each(["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], $.proxy(function(i, name) {
             this.editor.attr(name, this.options[name]);
