@@ -17,7 +17,7 @@
         autocorrect       : "off",
         autocapitalize    : "off",
 
-        filters: {
+        filtersSettings: {
             people: {
                 icon: ":yum:",
                 emoji: ":grinning::grin::joy::smiley::smile::sweat_smile::laughing::innocent::smiling_imp::imp::wink::blush:" +
@@ -184,17 +184,20 @@
         }
     };
 
+    var slice = [].slice;
+
+
     var EmojioneArea = function(element, options) {
         this.element = $(element);
         this.options = $.extend({}, default_options, options);
-        this.elGSTextFunc = this.element.is("INPUT") ? 'val' : 'text';
+        this.elementValFunc = this.element.is("INPUT") ? 'val' : 'text';
         this.events = {};
 
         this.init();
     };
 
     EmojioneArea.prototype.on = function(events, handler) {
-        if (!!events && !!handler && Array.prototype.toString.call(handler) == '[object Function]') {
+        if (!!events && $.isFunction(handler)) {
             $.each(events.split(' '), $.proxy(function(i, event) {
                 if (!this.events[event]) {
                     this.events[event] = [];
@@ -207,18 +210,16 @@
 
     EmojioneArea.prototype.off = function(events, handler) {
         if (!!events) {
-            if (!!handler) {
-                if (Array.prototype.toString.call(handler) == '[object Function]') {
-                    $.each(events.split(' '), $.proxy(function(i, event) {
-                        if (!!this.events[event] && !!this.events[event].length) {
-                            $.each(this.events[event], $.proxy(function(j, attachedHandler) {
-                                if (attachedHandler === handler) {
-                                    this.events[event] = this.events[event].splice(j, 1);
-                                }
-                            }, this));
-                        }
-                    }, this));
-                }
+            if ($.isFunction(handler)) {
+                $.each(events.split(' '), $.proxy(function(i, event) {
+                    if (!!this.events[event] && !!this.events[event].length) {
+                        $.each(this.events[event], $.proxy(function(j, attachedHandler) {
+                            if (attachedHandler === handler) {
+                                this.events[event] = this.events[event].splice(j, 1);
+                            }
+                        }, this));
+                    }
+                }, this));
             } else {
                 $.each(events.split(' '), $.proxy(function(i, event) {
                     this.events[event] = [];
@@ -228,16 +229,14 @@
         return this;
     };
 
-    EmojioneArea.prototype.trigger = function(events, args) {
-        var result = true;
+    EmojioneArea.prototype.trigger = function(events) {
+        var result = true, args;
         if (!!events) {
-            if (!args) {
-                args = [];
-            }
+            args = slice.call(arguments, 1);
             $.each(events.split(' '), $.proxy(function(i, event) {
                 if (!!this.events[event] && !!this.events[event].length) {
                     $.each(this.events[event], function (i, f) {
-                        return result = f.apply(null, args) !== false;
+                        return result = f.apply(this, args) !== false;
                     });
                 }
                 return result;
@@ -247,9 +246,10 @@
     };
 
     EmojioneArea.prototype.attach = function(element, elementEvents, events) {
+        events = events || elementEvents;
         $.each(element, $.proxy(function(i, e) {
             $(e).on(elementEvents, $.proxy(function() {
-                return this.trigger((!!events ? events : elementEvents), arguments)
+                return this.trigger.apply(this, [events].concat(slice.call(arguments)));
             }, this));
         }, this));
 
@@ -271,13 +271,13 @@
 
         this.editor.html('<div>' + content + '</div>');
         this.content = this.editor.html();
-        this.trigger('emojioneArea.change change', [this.content]);
+        this.trigger('emojioneArea.change change', this.content);
     }
 
     EmojioneArea.prototype.getText = function() {
         return this.editor.html()
-            .replace(/<img class="emojione" alt="([^">]+)"[^>]+>/ig, '$1')
-            .replace(/\n/g, '')
+            .replace(/<img class="emojione" alt="([^"]+)"[^>]*>/ig, '$1')
+            .replace(/\n|\r/g, '')
             .replace(/<br(?:[^>]+)?>/ig, '\n')
             .replace(/(?:<div(?:[^>]+)?>)+/ig, '<div>')
             .replace(/(?:<\/div>)+/ig, '</div>')
@@ -291,10 +291,12 @@
             .replace(/([^\n])<div>/ig, '$1\n')
             .replace(/\n<div>/ig, '\n')
             .replace(/<div>\n/ig, '\n\n')
-            .replace(/<(?:[^>]+)?>/ig, '');
+            .replace(/<(?:[^>]+)?>/g, '');
     }
 
     EmojioneArea.prototype.init = function() {
+
+        // parse template
         this.app = this.options.template;
 
         $.each(["editor", "filters", "tabs"], $.proxy(function(i, name) {
@@ -302,23 +304,34 @@
                 '<div class="' + this.options[name + 'ClassName'] + '"></div>');
         }, this));
 
+        // wrap application
         this.app = $('<div>' + this.app + '</div>')
             .addClass(this.options.className)
             .attr("role", "application");
 
+        // set editor attributes
         this.editor = this.app.find("." + this.options.editorClassName)
             .attr("contenteditable", "true")
             .attr('tabindex', 0);
-
-        this.filters = this.app.find("." + this.options.filtersClassName);
-
-        this.tabs = this.app.find("." + this.options.tabsClassName);
-
 
         $.each(["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], $.proxy(function(i, name) {
             this.editor.attr(name, this.options[name]);
         }, this));
 
+        // filters
+        this.filters = this.app.find("." + this.options.filtersClassName);
+
+        // tabs
+        this.tabs = this.app.find("." + this.options.tabsClassName);
+
+        //$.each(this.filtersSettings, $.proxy(function(filter, params) {
+        //
+        //}, this));
+
+
+
+
+        // attach events
         this
             .attach(this.filters, "mousedown", "emojioneArea.filters.mousedown filters.mousedown")
             .attach(this.tabs, "mousedown", "emojioneArea.tabs.mousedown tabs.mousedown")
@@ -337,7 +350,7 @@
             }, this))
 
             .on("emojioneArea.change", $.proxy(function() {
-                this.element[this.elGSTextFunc](this.getText());
+                this.element[this.elementValFunc](this.getText());
             }, this))
 
             .on("emojioneArea.focus", $.proxy(function() {
@@ -349,15 +362,15 @@
                 var content = this.editor.html();
                 if (this.content !== content) {
                     this.content = content;
-                    this.trigger('emojioneArea.change change', [this.content]);
+                    this.trigger('emojioneArea.change change', this.content);
                 }
             }, this));
 
-
+        // show application
         this.app.insertAfter(this.element);
         this.element.hide();
 
-        this.setText(this.element[this.elGSTextFunc]());
+        this.setText(this.element[this.elementValFunc]());
     };
 
 
