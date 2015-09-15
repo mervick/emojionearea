@@ -1,5 +1,5 @@
 
-(function($) {
+(function($, emojione) {
 
     var default_options = {
         template          : "<editor/><filters/><tabs/>",
@@ -214,8 +214,8 @@
             if ($.isFunction(handler)) {
                 $.each(events.split(' '), $.proxy(function(i, event) {
                     if (!system.test(event) && !!this.events[event] && !!this.events[event].length) {
-                        $.each(this.events[event], $.proxy(function(j, attachedHandler) {
-                            if (attachedHandler === handler) {
+                        $.each(this.events[event], $.proxy(function(j, fn) {
+                            if (fn === handler) {
                                 this.events[event] = this.events[event].splice(j, 1);
                             }
                         }, this));
@@ -238,8 +238,8 @@
             args = slice.call(arguments, 1);
             $.each(events.split(' '), $.proxy(function(i, event) {
                 if (!!this.events[event] && !!this.events[event].length) {
-                    $.each(this.events[event], function (i, f) {
-                        return result = f.apply(this, args) !== false;
+                    $.each(this.events[event], function (i, fn) {
+                        return result = fn.apply(this, args) !== false;
                     });
                 }
                 return result;
@@ -267,10 +267,29 @@
             .replace(/\n/g, '<br/>')
             .replace(/<br\/><\/div>/g, '</div>');
 
-        var emojioneImageType = emojione.imageType;
+        var emojioneImageType = emojione.imageType,
+            emojioneUnicodeAlt = emojione.unicodeAlt,
+            emojioneSprites = emojione.sprites;
         emojione.imageType = 'png';
+        emojione.unicodeAlt = true;
+        emojione.sprites = false;
         content = emojione.unicodeToImage(content);
         emojione.imageType = emojioneImageType;
+        emojione.unicodeAlt = emojioneUnicodeAlt;
+        emojione.sprites = emojioneSprites;
+
+        content = content.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
+            emojione.unicodeRegexp+")", "gi"),function(unicodeChar)
+        {
+            if((typeof unicodeChar === 'undefined') || (unicodeChar === '') || (!(unicodeChar in emojione.jsecapeMap))) {
+                return unicodeChar;
+            }
+            else {
+                var unicode = emojione.jsecapeMap[unicodeChar],
+                alt = emojione.convert(unicode);
+                return '<img class="emojione" alt="'+alt+'" src="'+emojione.imagePathPNG+unicode+'.png'+emojione.cacheBustParam+'"/>';
+            }
+        });
 
         this.editor.html('<div>' + content + '</div>');
         this.content = this.editor.html();
@@ -296,6 +315,22 @@
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '');
     }
+
+    var shortnameReplaceTo = function(str, fn) {
+        str = str.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+ns.shortnameRegexp+")", "gi"),function(shortname) {
+            if( (typeof shortname === 'undefined') || (shortname === '') || (!(shortname in emojione.emojioneList)) ) {
+                return shortname;
+            }
+            else {
+                var unicode = emojione.emojioneList[shortname][emojione.emojioneList[shortname].length-1].toUpperCase(),
+                    alt = emojione.convert(unicode);
+
+                return fn.apply(fn, [shortname, unicode, alt]);
+
+                return '<span class="emojione-'+unicode+'" title="'+shortname+'">'+alt+'</span>';
+            }
+        });
+    };
 
     var init = function() {
         // parse template
@@ -326,9 +361,20 @@
         // tabs
         this.tabs = this.app.find("." + this.options.tabsClassName);
 
-        //$.each(this.filtersSettings, $.proxy(function(filter, params) {
-        //
-        //}, this));
+        $.each(this.options.filtersSettings, $.proxy(function(filter, params) {
+            this.filters.append(params.icon);
+            var tab = params.emoji.replace(/[^:>]*(:[^:]+:)[^:]*/g, function(shortname) {
+                console.log(shortname);
+               // if (!!emojione.emojioneList[emoji]) {
+                    var unicode = emojione.emojioneList[shortname].toUpperCase(),
+                        alt = emojione.convert(unicode);
+                    return '<span class="emojione-' + unicode + '" data-emoji="' + emoji + '">' + alt + '</span>';
+                //} else {
+                //    return '';
+                //}
+            })
+            this.tabs.append(tab);
+        }, this));
 
 
 
@@ -383,7 +429,7 @@
         });
     };
 
-}) (jQuery);
+}) (jQuery, emojione);
 
 
 // smiles
