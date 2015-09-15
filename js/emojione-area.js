@@ -185,8 +185,9 @@
     };
 
     var EmojioneArea = function(element, options) {
-        this.element = element;
+        this.element = $(element);
         this.options = $.extend({}, default_options, options);
+        this.elGSTextFunc = this.element.is("INPUT") ? 'val' : 'text';
         this.events = {};
 
         this.init();
@@ -294,65 +295,69 @@
     }
 
     EmojioneArea.prototype.init = function() {
-        this.type = this.element.is("INPUT") ? 'val' : 'text';
+        this.app = this.options.template;
 
-        var html = this.options.template
-            .replace(/<editor\/?>/i, '<div class="{{editorClassName}}" tabindex="0"></div>')
-            .replace(/<filters\/?>/i, '<div class="{{filtersClassName}}"></div>')
-            .replace(/<tabs\/?>/i, '<div class="{{tabsClassName}}"></div>');
-
-        $.each(["editorClassName", "filtersClassName", "tabsClassName"], $.proxy(function(i, name) {
-            html = html.replace("{{" + name + "}}", this.options[name]);
+        $.each(["editor", "filters", "tabs"], $.proxy(function(i, name) {
+            this.app = this.app.replace(new RegExp('<' + name + '/?>' ,'i'),
+                '<div class="' + this.options[name + 'ClassName'] + '"></div>');
         }, this));
 
-        html = $('<div>' + html + '</div>').addClass(this.options.className).attr("role", "application");
+        this.app = $('<div>' + this.app + '</div>')
+            .addClass(this.options.className)
+            .attr("role", "application");
 
-        this.editor = html.find("." + this.options.editorClassName).attr("contenteditable", "true");
-        this.filters = html.find("." + this.options.filtersClassName);
-        this.tabs = html.find("." + this.options.tabsClassName);
+        this.editor = this.app.find("." + this.options.editorClassName)
+            .attr("contenteditable", "true")
+            .attr('tabindex', 0);
+
+        this.filters = this.app.find("." + this.options.filtersClassName);
+
+        this.tabs = this.app.find("." + this.options.tabsClassName);
+
 
         $.each(["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], $.proxy(function(i, name) {
             this.editor.attr(name, this.options[name]);
         }, this));
 
-        this.attach(this.editor, "mousedown")
-            .attach([this.editor, this.panel], "mouseup")
+        this
+            .attach(this.filters, "mousedown", "emojioneArea.filters.mousedown filters.mousedown")
+            .attach(this.tabs, "mousedown", "emojioneArea.tabs.mousedown tabs.mousedown")
             .attach(this.editor, "focus", "emojioneArea.focus focus")
             .attach(this.editor, "blur", "emojioneArea.blur blur")
-            .attach([this.editor, this.panel], "click")
-            .attach([this.editor, this.panel], "keyup")
-            .attach([this.editor, this.panel], "keydown")
-            .attach(this.panel, "mousedown", "emojioneArea.panel.mousedown panel.mousedown mousedown")
-            .attach(this.button, "emojioneArea.button.mousedown button.mousedown");
+            .attach([this.editor, this.filters, this.tabs], "mousedown")
+            .attach([this.editor, this.filters, this.tabs], "mouseup")
+            .attach([this.editor, this.filters, this.tabs], "click")
+            .attach([this.editor, this.filters, this.tabs], "keyup")
+            .attach([this.editor, this.filters, this.tabs], "keydown")
 
-        this.on("emojioneArea.panel.mousedown", $.proxy(function(e) {
-            this.editor.focus();
-            e.preventDefault();
-            return false;
-        }, this));
+            .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", $.proxy(function(e) {
+                this.editor.focus();
+                e.preventDefault();
+                return false;
+            }, this))
 
-        this.on("emojioneArea.button.mousedown", function(e) {
-            e.preventDefault();
-            return false;
-        });
+            .on("emojioneArea.change", $.proxy(function() {
+                this.element[this.elGSTextFunc](this.getText());
+            }, this))
 
-        this.on("emojioneArea.change", $.proxy(function() {
-            this.element[this.type](this.getText());
-        }, this)).on("emojioneArea.focus", function() {
-            html.addClass("focused");
-        }).on("emojioneArea.blur", $.proxy(function() {
-            html.removeClass("focused");
-            var content = this.editor.html();
-            if (this.content !== content) {
-                this.content = content;
-                this.trigger('emojioneArea.change change', [this.content]);
-            }
-        }, this));
+            .on("emojioneArea.focus", $.proxy(function() {
+                this.app.addClass("focused");
+            }, this))
+
+            .on("emojioneArea.blur", $.proxy(function() {
+                this.app.removeClass("focused");
+                var content = this.editor.html();
+                if (this.content !== content) {
+                    this.content = content;
+                    this.trigger('emojioneArea.change change', [this.content]);
+                }
+            }, this));
 
 
-        html.insertAfter(this.element);
+        this.app.insertAfter(this.element);
         this.element.hide();
-        this.setText(this.element[this.type]());
+
+        this.setText(this.element[this.elGSTextFunc]());
     };
 
 
