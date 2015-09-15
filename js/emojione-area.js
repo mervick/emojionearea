@@ -193,7 +193,7 @@
         this.elementValFunc = this.element.is("INPUT") ? 'val' : 'text';
         this.events = {};
 
-        this.init();
+        init.apply(this);
     };
 
     EmojioneArea.prototype.on = function(events, handler) {
@@ -210,9 +210,10 @@
 
     EmojioneArea.prototype.off = function(events, handler) {
         if (!!events) {
+            var system = /^emojioneArea\./;
             if ($.isFunction(handler)) {
                 $.each(events.split(' '), $.proxy(function(i, event) {
-                    if (!!this.events[event] && !!this.events[event].length) {
+                    if (!system.test(event) && !!this.events[event] && !!this.events[event].length) {
                         $.each(this.events[event], $.proxy(function(j, attachedHandler) {
                             if (attachedHandler === handler) {
                                 this.events[event] = this.events[event].splice(j, 1);
@@ -222,7 +223,9 @@
                 }, this));
             } else {
                 $.each(events.split(' '), $.proxy(function(i, event) {
-                    this.events[event] = [];
+                    if (!system.test(event)) {
+                        this.events[event] = [];
+                    }
                 }, this));
             }
         }
@@ -294,8 +297,7 @@
             .replace(/<(?:[^>]+)?>/g, '');
     }
 
-    EmojioneArea.prototype.init = function() {
-
+    var init = function() {
         // parse template
         this.app = this.options.template;
 
