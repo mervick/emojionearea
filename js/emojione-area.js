@@ -7,7 +7,7 @@
         className         : "emojionearea",
         editorClassName   : "emojionearea-editor",
         filtersClassName  : "emojionearea-filters",
-        filterButtonClassName  : "emojionearea-filter-button",
+        filterClassName   : "emojionearea-filter",
         tabsClassName     : "emojionearea-tabs",
         tabClassName      : "emojionearea-tab",
 
@@ -250,11 +250,32 @@
 
     EmojioneArea.prototype.attach = function(element, elementEvents, events) {
         events = events || elementEvents;
-        $.each(element, $.proxy(function(i, e) {
-            $(e).on(elementEvents, $.proxy(function() {
-                return this.trigger.apply(this, [events].concat(slice.call(arguments)));
+
+        var attachEvents = function(element, event, trigger) {
+                var args = arguments
+                element.on(event, $.proxy(function() {
+                    console.log(args)
+                    return this.trigger.apply(this, [trigger].concat(slice.call(arguments)));
+                }, this));
+            },
+
+        attachElement = function(element) {
+            if ((typeof elementEvents).toLowerCase() == "string") {
+                attachEvents.apply(this, [element, elementEvents, events]);
+            } else {
+                $.each(elementEvents, $.proxy(function(i, v) {
+                    attachEvents.apply(this, [element, $.isArray(elementEvents) ? v : i, v]);
+                }, this));
+            }
+        }
+
+        if ($.isArray(element)) {
+            $.each(element, $.proxy(function(i, e) {
+                attachElement.apply(this, [$(e)]);
             }, this));
-        }, this));
+        } else {
+            attachElement.apply(this, [element]);
+        }
 
         return this;
     };
@@ -267,31 +288,7 @@
             .replace(/\n/g, '<br/>')
             .replace(/<br\/><\/div>/g, '</div>');
 
-        var emojioneImageType = emojione.imageType,
-            emojioneUnicodeAlt = emojione.unicodeAlt,
-            emojioneSprites = emojione.sprites;
-        emojione.imageType = 'png';
-        emojione.unicodeAlt = true;
-        emojione.sprites = false;
-        content = emojione.unicodeToImage(content);
-        emojione.imageType = emojioneImageType;
-        emojione.unicodeAlt = emojioneUnicodeAlt;
-        emojione.sprites = emojioneSprites;
-
-        content = content.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
-            emojione.unicodeRegexp+")", "gi"),function(unicodeChar)
-        {
-            if((typeof unicodeChar === 'undefined') || (unicodeChar === '') || (!(unicodeChar in emojione.jsecapeMap))) {
-                return unicodeChar;
-            }
-            else {
-                var unicode = emojione.jsecapeMap[unicodeChar],
-                alt = emojione.convert(unicode);
-                return '<img class="emojione" alt="'+alt+'" src="'+emojione.imagePathPNG+unicode+'.png'+emojione.cacheBustParam+'"/>';
-            }
-        });
-
-        this.editor.html('<div>' + content + '</div>');
+        this.editor.html('<div>' + unicodeToImage(content) + '</div>');
         this.content = this.editor.html();
         this.trigger('emojioneArea.change change', this.content);
     }
@@ -309,15 +306,33 @@
             .replace(/<div><\/div>\n/ig, '\n')
             .replace(/(?:<div>)+<\/div>/ig, '\n')
             .replace(/([^\n])<\/div><div>/ig, '$1\n')
-            .replace(/(?:<\/div>)+/ig, '')
+            .replace(/(?:<\/div>)+/ig, '</div>')
+            .replace(/([^\n])<\/div>([^\n])/ig, '$1\n$2')
+            .replace(/<\/div>/ig, '')
             .replace(/([^\n])<div>/ig, '$1\n')
             .replace(/\n<div>/ig, '\n')
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '');
     }
 
+    var unicodeToImage = function(str) {
+        return str.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
+            emojione.unicodeRegexp+")", "gi"),function(unicodeChar) {
+            if((typeof unicodeChar === 'undefined') || (unicodeChar === '') || (!(unicodeChar in emojione.jsecapeMap))) {
+                return unicodeChar;
+            }
+            else {
+                var unicode = emojione.jsecapeMap[unicodeChar],
+                    alt = emojione.convert(unicode);
+
+                return '<img class="emojione" alt="'+alt+'" src="'+emojione.imagePathPNG+unicode+'.png'+emojione.cacheBustParam+'"/>';
+            }
+        });
+    }
+
     var shortnameReplaceTo = function(str, fn) {
-        str = str.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+ns.shortnameRegexp+")", "gi"),function(shortname) {
+        return str.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
+            emojione.shortnameRegexp+")", "gi"),function(shortname) {
             if( (typeof shortname === 'undefined') || (shortname === '') || (!(shortname in emojione.emojioneList)) ) {
                 return shortname;
             }
@@ -326,8 +341,6 @@
                     alt = emojione.convert(unicode);
 
                 return fn.apply(fn, [shortname, unicode, alt]);
-
-                return '<span class="emojione-'+unicode+'" title="'+shortname+'">'+alt+'</span>';
             }
         });
     };
@@ -361,35 +374,32 @@
         // tabs
         this.tabs = this.app.find("." + this.options.tabsClassName);
 
+        // parse icons
         $.each(this.options.filtersSettings, $.proxy(function(filter, params) {
-            this.filters.append(params.icon);
-            var tab = params.emoji.replace(/[^:>]*(:[^:]+:)[^:]*/g, function(shortname) {
-                console.log(shortname);
-               // if (!!emojione.emojioneList[emoji]) {
-                    var unicode = emojione.emojioneList[shortname].toUpperCase(),
-                        alt = emojione.convert(unicode);
-                    return '<span class="emojione-' + unicode + '" data-emoji="' + emoji + '">' + alt + '</span>';
-                //} else {
-                //    return '';
-                //}
-            })
-            this.tabs.append(tab);
+            // filters
+            var icon = shortnameReplaceTo(params.icon, $.proxy(function(shortname, unicode, alt) {
+                return '<span class="emojione-' + unicode + ' ' + this.options.filterClassName + '" data-filter="' + filter + '">' + alt + '</span>';
+            }, this));
+            this.filters.append(icon);
+
+            // tabs
+            var tab = shortnameReplaceTo(params.emoji, function(shortname, unicode, alt) {
+                return '<span class="emojione-' + unicode + '" data-shortname="' + shortname + '">' + alt + '</span>';
+            });
+            $("<div></div>").addClass(this.options.tabClassName).hide().html(tab).attr("data-filter", filter).appendTo(this.tabs);
         }, this));
 
-
-
+        // show first tab
+        this.filters.children("span:first").addClass("active");
+        this.tabs.children("div:first").show();
 
         // attach events
         this
             .attach(this.filters, "mousedown", "emojioneArea.filters.mousedown filters.mousedown")
             .attach(this.tabs, "mousedown", "emojioneArea.tabs.mousedown tabs.mousedown")
-            .attach(this.editor, "focus", "emojioneArea.focus focus")
-            .attach(this.editor, "blur", "emojioneArea.blur blur")
-            .attach([this.editor, this.filters, this.tabs], "mousedown")
-            .attach([this.editor, this.filters, this.tabs], "mouseup")
-            .attach([this.editor, this.filters, this.tabs], "click")
-            .attach([this.editor, this.filters, this.tabs], "keyup")
-            .attach([this.editor, this.filters, this.tabs], "keydown")
+            .attach(this.editor, {"focus": "emojioneArea.focus focus", "blur": "emojioneArea.blur blur"})
+            .attach([this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"])
+            .attach(this.filters.find("span"), {"click" :"filter.click"})
 
             .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", $.proxy(function(e) {
                 this.editor.focus();
