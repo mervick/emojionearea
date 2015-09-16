@@ -254,7 +254,6 @@
         var attachEvents = function(element, event, trigger) {
                 var args = arguments
                 element.on(event, $.proxy(function() {
-                    console.log(args)
                     return this.trigger.apply(this, [trigger].concat(slice.call(arguments)));
                 }, this));
             },
@@ -377,20 +376,28 @@
         // parse icons
         $.each(this.options.filtersSettings, $.proxy(function(filter, params) {
             // filters
-            $(shortnameReplaceTo(params.icon, $.proxy(function(shortname, unicode, alt) {
-                return '<span class="emojione-' + unicode + ' ' + this.options.filterClassName + '" data-filter="' + filter + '">' + alt + '</span>';
-            }, this))).attr("role", "button").appendTo(this.filters);
+            $(shortnameReplaceTo(params.icon, function(shortname, unicode, alt) {
+                return '<span class="emojione-' + unicode + '">' + alt + '</span>';
+            }))
+                .addClass(this.options.filterClassName)
+                .attr("data-filter", filter)
+                .attr("role", "button")
+                .appendTo(this.filters);
 
             // tabs
-            var tab = shortnameReplaceTo(params.emoji, function(shortname, unicode, alt) {
-                return '<span class="emojione-' + unicode + '" data-shortname="' + shortname + '">' + alt + '</span>';
-            });
-            $("<div></div>").addClass(this.options.tabClassName).hide().html(tab).attr("data-filter", filter).appendTo(this.tabs);
+            $("<div></div>")
+                .wrapInner(shortnameReplaceTo(params.emoji, function(shortname, unicode, alt) {
+                    return '<span class="emojione-' + unicode + '" data-shortname="' + shortname + '">' + alt + '</span>';
+                }))
+                .addClass(this.options.tabClassName)
+                .addClass(this.options.tabClassName + '-' + filter)
+                .hide()
+                .appendTo(this.tabs);
         }, this));
 
         // show first tab
-        this.filters.children(".emojionearea-filter:first").addClass("active");
-        this.tabs.children("div:first").show();
+        this.filters.children("." + this.options.filterClassName + ":first").addClass("active");
+        this.tabs.children("." + this.options.tabClassName + ":first").show();
 
         // attach events
         this
@@ -398,10 +405,14 @@
             .attach(this.tabs, "mousedown", "emojioneArea.tabs.mousedown tabs.mousedown")
             .attach(this.editor, {"focus": "emojioneArea.focus focus", "blur": "emojioneArea.blur blur"})
             .attach([this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"])
-            .attach(this.filters.find(".emojionearea-filter"), {"click" :"filter.click"})
+            .attach(this.filters.find("." + this.options.filterClassName), {"click" :"filter.click"})
 
             .on("filter.click", $.proxy(function(e) {
-                console.log(arguments)
+                e = $(e.target);
+                e.parent().find("." + this.options.filterClassName + ".active").removeClass("active");
+                e.addClass("active");
+                this.tabs.children("." + this.options.tabClassName).hide()
+                    .filter("." + this.options.tabClassName + "-" + e.data("filter")).show();
             }, this))
 
             .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", $.proxy(function(e) {
