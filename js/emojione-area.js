@@ -377,10 +377,9 @@
         // parse icons
         $.each(this.options.filtersSettings, $.proxy(function(filter, params) {
             // filters
-            var icon = shortnameReplaceTo(params.icon, $.proxy(function(shortname, unicode, alt) {
+            $(shortnameReplaceTo(params.icon, $.proxy(function(shortname, unicode, alt) {
                 return '<span class="emojione-' + unicode + ' ' + this.options.filterClassName + '" data-filter="' + filter + '">' + alt + '</span>';
-            }, this));
-            this.filters.append(icon);
+            }, this))).attr("role", "button").appendTo(this.filters);
 
             // tabs
             var tab = shortnameReplaceTo(params.emoji, function(shortname, unicode, alt) {
@@ -390,7 +389,7 @@
         }, this));
 
         // show first tab
-        this.filters.children("span:first").addClass("active");
+        this.filters.children(".emojionearea-filter:first").addClass("active");
         this.tabs.children("div:first").show();
 
         // attach events
@@ -399,7 +398,11 @@
             .attach(this.tabs, "mousedown", "emojioneArea.tabs.mousedown tabs.mousedown")
             .attach(this.editor, {"focus": "emojioneArea.focus focus", "blur": "emojioneArea.blur blur"})
             .attach([this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"])
-            .attach(this.filters.find("span"), {"click" :"filter.click"})
+            .attach(this.filters.find(".emojionearea-filter"), {"click" :"filter.click"})
+
+            .on("filter.click", $.proxy(function(e) {
+                console.log(arguments)
+            }, this))
 
             .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", $.proxy(function(e) {
                 this.editor.focus();
@@ -433,14 +436,10 @@
 
 
     $.fn.emojioneArea = function(options) {
-        return this.each(function(){
+        return this.each(function() {
             if (!!this.emojioneArea) return this.emojioneArea;
             return this.emojioneArea = new EmojioneArea($(this), options);
         });
     };
 
 }) (jQuery, emojione);
-
-
-// smiles
-// fa-smile-o, fa-clock-o, (fa-flag fa-flag-checkered fa-flag-o), fa-leaf, fa-track, fa-cutlery,  fa-trophy,  fa-gift, fa-heart,  fa-ellipsis-h
