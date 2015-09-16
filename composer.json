@@ -12,8 +12,7 @@
     "minimum-stability": "dev",
     "require" : {
         "bower-asset/jquery": "^2.1.4",
-        "emojione/emojione": "^1.5.0",
-        "bower-asset/fontawesome": "4.4.*"
+        "emojione/emojione": "^1.5.0"
     },
     "config": {
         "vendor-dir": "vendor",
