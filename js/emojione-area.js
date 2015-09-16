@@ -416,7 +416,6 @@
             }, this))
 
             .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", $.proxy(function(e) {
-                this.editor.focus();
                 e.preventDefault();
                 return false;
             }, this))
