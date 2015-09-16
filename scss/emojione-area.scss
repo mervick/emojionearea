@@ -4,7 +4,7 @@
     display: block;
     width: 100%;
     height: auto;
-    padding: 6px 12px;
+    padding: 0;
     font-size: 14px;
     background-color: #fff;
     background-image: none;
@@ -22,10 +22,10 @@
 
     .emojionearea-editor {
         display: block;
-        width: 100%;
+        //width: 100%;
         height: auto;
         min-height: 34px;
-        padding: 0;
+        padding: 6px 12px;
         line-height: 1.42857143;
         font-size: inherit;
         color: #555;
@@ -46,17 +46,42 @@
         }
     }
 
-    .emojionearea-editor + .emojionearea-panel {}
-
-    .emojionearea-panel {
-        background-color: #fff;
-        background-image: none;
+    .emojionearea-filters {
+        background: #e5e5e5;
         width: 100%;
-        height: 24px;
+        height: auto;
+        border-top: 1px solid rgba(0,0,0,0.1);
+        .emojionearea-filter {
+            top: 0 !important;
+            margin: 0;
+            width: 32px;
+            height: 32px;
+            display: inline-block;
+            background-color: #e5e5e5;
+            border: 9px solid #e5e5e5;
+            border-left-width: 14px;
+            border-right-width: 14px;
+            @include opacity(0.7);
+            &:hover {
+                background-color: #f2f2f2;
+                border-color: #f2f2f2;
+                @include opacity(0.8);
+            }
+            &.active {
+                background-color: #f9f9f9;
+                border-color: #f9f9f9;
+                @include opacity(1);
+            }
+        }
     }
-}
 
-.emojionearea-button {
-    display: block;
-
+    .emojionearea-tabs {
+        padding: 16px 10px 10px;
+        background: #f9f9f9;
+        [class*=emojione-] {
+            margin: 4px;
+            width: 24px;
+            height: 24px;
+        }
+    }
 }
