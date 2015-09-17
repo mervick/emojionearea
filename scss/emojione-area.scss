@@ -26,7 +26,7 @@
         @include box-sizing(border-box);
         height: auto;
         min-height: 8em;
-        max-height: 20em;
+        max-height: 15em;
         overflow: auto;
         padding: 6px 12px;
         line-height: 1.42857143;
@@ -78,6 +78,13 @@
             border-left-width: 14px;
             border-right-width: 14px;
             @include opacity(0.7);
+            span {
+                display: block;
+                width: 28px;
+                height: 28px;
+                top: 0;
+                margin: 0;
+            }
             &:hover {
                 background-color: #f2f2f2;
                 border-color: #f2f2f2;

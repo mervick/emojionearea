@@ -39,7 +39,7 @@
   box-sizing: border-box;
   height: auto;
   min-height: 8em;
-  max-height: 20em;
+  max-height: 15em;
   overflow: auto;
   padding: 6px 12px;
   line-height: 1.42857143;
@@ -107,20 +107,28 @@
   opacity: 0.7;
 }
 /* line 81, ../scss/emojione-area.scss */
+.emojionearea .emojionearea-filters .emojionearea-filter span {
+  display: block;
+  width: 28px;
+  height: 28px;
+  top: 0;
+  margin: 0;
+}
+/* line 88, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-filters .emojionearea-filter:hover {
   background-color: #f2f2f2;
   border-color: #f2f2f2;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=90);
   opacity: 0.9;
 }
-/* line 86, ../scss/emojione-area.scss */
+/* line 93, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-filters .emojionearea-filter.active {
   background-color: #f9f9f9;
   border-color: #f9f9f9;
   filter: progid:DXImageTransform.Microsoft.Alpha(enabled=false);
   opacity: 1;
 }
-/* line 94, ../scss/emojione-area.scss */
+/* line 101, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-tabs {
   padding: 0;
   background: #f9f9f9;
@@ -128,7 +136,7 @@
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
-/* line 98, ../scss/emojione-area.scss */
+/* line 105, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-tabs [class*=emojione-] {
   -moz-box-sizing: content-box;
   -webkit-box-sizing: content-box;
@@ -138,7 +146,7 @@
   height: 24px;
   top: 0;
 }
-/* line 105, ../scss/emojione-area.scss */
+/* line 112, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-tabs .emojionearea-tab {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
