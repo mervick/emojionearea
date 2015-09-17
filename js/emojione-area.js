@@ -450,10 +450,15 @@
 
             .on("emojioneArea.filter.click", function(e) {
                 e = $(e.target);
-                e.parent().find("." + this.options.filterClassName + ".active").removeClass("active");
-                e.addClass("active");
-                this.tabs.children("." + this.options.tabClassName).hide()
-                    .filter("." + this.options.tabClassName + "-" + e.data("filter")).show();
+                if (e.is(".active")) {
+                    e.removeClass("active");
+                    this.tabs.children("." + this.options.tabClassName).hide();
+                } else {
+                    e.parent().find("." + this.options.filterClassName + ".active").removeClass("active");
+                    e.addClass("active");
+                    this.tabs.children("." + this.options.tabClassName).hide()
+                        .filter("." + this.options.tabClassName + "-" + e.data("filter")).show();
+                }
             })
 
             .on("emojioneArea.emojibtn.click", function(e) {
@@ -481,6 +486,8 @@
                 this.app.removeClass("focused");
                 this.filters.slideUp(400);
                 var content = this.editor.html();
+                this.filters.find("." + this.options.filterClassName + ".active").removeClass("active");
+                this.tabs.children("." + this.options.tabClassName).hide();
                 if (this.content !== content) {
                     this.content = content;
                     this.trigger('emojioneArea.change change', this.content);
