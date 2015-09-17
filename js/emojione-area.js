@@ -252,10 +252,10 @@
     EmojioneArea.prototype.attach = function(element, events, fn) {
 
         var attachEvents = function(element, event, trigger) {
-                var args = [trigger];
                 element.on(event, $.proxy(function() {
-                    if ($.isFunction(fn)) {
-                        var result = fn.apply(this, slice.call(arguments));
+                    var args = [trigger];
+                    if ($.isFunction(fn) || $.isArray(fn)) {
+                        var result = $.isFunction(fn) ? fn.apply(this, slice.call(arguments)) : fn;
                         if (!result) {
                             return;
                         }
@@ -323,7 +323,7 @@
             .replace(/<(?:[^>]+)?>/g, '');
     }
 
-    var unicodeToImage = function(str) {
+    function unicodeToImage(str) {
         return str.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
             emojione.unicodeRegexp+")", "gi"),function(unicodeChar) {
             if((typeof unicodeChar === 'undefined') || (unicodeChar === '') || (!(unicodeChar in emojione.jsecapeMap))) {
@@ -338,7 +338,7 @@
         });
     }
 
-    var shortnameTo = function(str, template) {
+    function shortnameTo(str, template) {
         return str.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
             emojione.shortnameRegexp+")", "gi"),function(shortname) {
             if( (typeof shortname === 'undefined') || (shortname === '') || (!(shortname in emojione.emojioneList)) ) {
@@ -391,11 +391,7 @@
         }
     }
 
-    var hideEmojiPanel = function() {
-        //if (this.
-    };
-
-    var init = function() {
+    function init() {
         // parse template
         this.app = this.options.template;
 
@@ -448,45 +444,39 @@
         //this.filters.children("." + this.options.filterClassName + ":first").addClass("active");
         //this.tabs.children("." + this.options.tabClassName + ":first").show();
 
+        var returnTarget = function(e) {
+            return [$(e.currentTarget)];
+        };
+
         // attach events
         this
-            .attach(this.filters, {"mousedown" : "emojioneArea.filters.mousedown filters.mousedown"})
-            .attach(this.tabs, {"mousedown" : "emojioneArea.tabs.mousedown tabs.mousedown"})
-            .attach(this.editor, {"focus": "emojioneArea.focus focus", "blur": "emojioneArea.blur blur"})
-            .attach([this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"])
-            .attach(this.filters.find("." + this.options.filterClassName), {"click" :"emojioneArea.filter.click filter.click"})
-            .attach(this.filters.find("[class*=emojione-]"), {"click" :"emojioneArea.icon.click"})
-            .attach(this.tabs.find(".emojibtn"), {"click" :"emojioneArea.emojibtn.click emojibtn.click"})
+            .attach(this.filters, {"mousedown" : "emojioneArea.filters.mousedown filters.mousedown"}, [this.editor])
+            .attach(this.tabs, {"mousedown" : "emojioneArea.tabs.mousedown tabs.mousedown"}, [this.editor])
+            .attach(this.editor, {"focus": "emojioneArea.focus focus", "blur": "emojioneArea.blur blur"}, [this.editor])
+            .attach([this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], [this.editor])
+            .attach(this.filters.find("." + this.options.filterClassName), {"click" :"emojioneArea.filter.click filter.click"}, returnTarget)
+            .attach(this.tabs.find(".emojibtn"), {"click" :"emojioneArea.emojibtn.click emojibtn.click"}, returnTarget)
 
 
-            .on("emojioneArea.icon.click", function(e) {
-                $(e.target).parent().trigger("click");
-            })
-
-            .on("emojioneArea.filter.click", function(e) {
-                e = $(e.target);
-                if (e.is("." + this.options.filterClassName)) {
-                    if (e.is(".active")) {
-                        e.removeClass("active");
-                        this.tabs.children("." + this.options.tabClassName).hide();
-                    } else {
-                        e.parent().find("." + this.options.filterClassName + ".active").removeClass("active");
-                        e.addClass("active");
-                        this.tabs.children("." + this.options.tabClassName).hide()
-                            .filter("." + this.options.tabClassName + "-" + e.data("filter")).show();
-                    }
+            .on("emojioneArea.filter.click", function(element) {
+                if (element.is(".active")) {
+                    element.removeClass("active");
+                    this.tabs.children("." + this.options.tabClassName).hide();
+                } else {
+                    element.parent().find("." + this.options.filterClassName + ".active").removeClass("active");
+                    element.addClass("active");
+                    this.tabs.children("." + this.options.tabClassName).hide()
+                        .filter("." + this.options.tabClassName + "-" + element.data("filter")).show();
                 }
             })
 
-            .on("emojioneArea.emojibtn.click", function(e) {
-                e = $(e.target);
-                //document.execCommand("createLink", false, '#');
-                pasteHtmlAtCaret(shortnameTo(e.attr("data-shortname"),
+            .on("emojioneArea.emojibtn.click", function(element) {
+                pasteHtmlAtCaret(shortnameTo(element.children("span").data("shortname"),
                     '<img class="emojione" alt="{alt}" src="{imagePng}"/>'));
             })
 
-            .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", function(e) {
-                e.preventDefault();
+            .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", function(element, event) {
+                event.preventDefault();
                 return false;
             })
 
