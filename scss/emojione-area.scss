@@ -13,6 +13,7 @@
     @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075));
     @include transition(border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s);
     @include box-sizing(border-box);
+    overflow: hidden;
 
     &.focused {
         border-color: #66afe9;
@@ -22,9 +23,11 @@
 
     .emojionearea-editor {
         display: block;
-        //width: 100%;
+        @include box-sizing(border-box);
         height: auto;
-        min-height: 34px;
+        min-height: 8em;
+        max-height: 20em;
+        overflow: auto;
         padding: 6px 12px;
         line-height: 1.42857143;
         font-size: inherit;
@@ -42,20 +45,33 @@
         }
 
         .emojione {
-            height: 1.2em;
+            font-size: inherit;
+            height: 2ex;
+            width: 2.1ex;
+            min-height: 20px;
+            min-width: 20px;
+            display: inline-block;
+            margin: -.2ex .15em .2ex;
+            line-height: normal;
+            vertical-align: middle;
+            max-width: 100%;
         }
     }
 
     .emojionearea-filters {
+        @include box-sizing(border-box);
         background: #e5e5e5;
         width: 100%;
         height: auto;
         border-top: 1px solid rgba(0,0,0,0.1);
         .emojionearea-filter {
+            @include box-sizing(content-box);
             top: 0 !important;
             margin: 0;
             width: 32px;
             height: 32px;
+            width: 28px;
+            height: 28px;
             display: inline-block;
             background-color: #e5e5e5;
             border: 9px solid #e5e5e5;
@@ -76,12 +92,21 @@
     }
 
     .emojionearea-tabs {
-        padding: 16px 10px 10px;
+        padding: 0;
         background: #f9f9f9;
+        @include box-sizing(border-box);
         [class*=emojione-] {
+            @include box-sizing(content-box);
             margin: 4px;
             width: 24px;
             height: 24px;
+            top: 0;
+        }
+        .emojionearea-tab {
+            @include box-sizing(border-box);
+            padding: 4px 10px;
+            max-height: 136px;
+            overflow: auto;
         }
     }
 }

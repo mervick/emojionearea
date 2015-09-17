@@ -21,8 +21,9 @@
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  overflow: hidden;
 }
-/* line 17, ../scss/emojione-area.scss */
+/* line 18, ../scss/emojione-area.scss */
 .emojionearea.focused {
   border-color: #66afe9;
   outline: 0;
@@ -30,11 +31,16 @@
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
-/* line 23, ../scss/emojione-area.scss */
+/* line 24, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-editor {
   display: block;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   height: auto;
-  min-height: 34px;
+  min-height: 8em;
+  max-height: 20em;
+  overflow: auto;
   padding: 6px 12px;
   line-height: 1.42857143;
   font-size: inherit;
@@ -50,7 +56,7 @@
   -webkit-box-shadow: none;
   box-shadow: none;
 }
-/* line 38, ../scss/emojione-area.scss */
+/* line 41, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-editor:focus {
   border: 0;
   outline: 0;
@@ -58,23 +64,40 @@
   -webkit-box-shadow: none;
   box-shadow: none;
 }
-/* line 44, ../scss/emojione-area.scss */
+/* line 47, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-editor .emojione {
-  height: 1.2em;
+  font-size: inherit;
+  height: 2ex;
+  width: 2.1ex;
+  min-height: 20px;
+  min-width: 20px;
+  display: inline-block;
+  margin: -.2ex .15em .2ex;
+  line-height: normal;
+  vertical-align: middle;
+  max-width: 100%;
 }
-/* line 49, ../scss/emojione-area.scss */
+/* line 61, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-filters {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   background: #e5e5e5;
   width: 100%;
   height: auto;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
-/* line 54, ../scss/emojione-area.scss */
+/* line 67, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-filters .emojionearea-filter {
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
   top: 0 !important;
   margin: 0;
   width: 32px;
   height: 32px;
+  width: 28px;
+  height: 28px;
   display: inline-block;
   background-color: #e5e5e5;
   border: 9px solid #e5e5e5;
@@ -83,28 +106,44 @@
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
   opacity: 0.7;
 }
-/* line 65, ../scss/emojione-area.scss */
+/* line 81, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-filters .emojionearea-filter:hover {
   background-color: #f2f2f2;
   border-color: #f2f2f2;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=90);
   opacity: 0.9;
 }
-/* line 70, ../scss/emojione-area.scss */
+/* line 86, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-filters .emojionearea-filter.active {
   background-color: #f9f9f9;
   border-color: #f9f9f9;
   filter: progid:DXImageTransform.Microsoft.Alpha(enabled=false);
   opacity: 1;
 }
-/* line 78, ../scss/emojione-area.scss */
+/* line 94, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-tabs {
-  padding: 16px 10px 10px;
+  padding: 0;
   background: #f9f9f9;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
-/* line 81, ../scss/emojione-area.scss */
+/* line 98, ../scss/emojione-area.scss */
 .emojionearea .emojionearea-tabs [class*=emojione-] {
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
   margin: 4px;
   width: 24px;
   height: 24px;
+  top: 0;
+}
+/* line 105, ../scss/emojione-area.scss */
+.emojionearea .emojionearea-tabs .emojionearea-tab {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 4px 10px;
+  max-height: 136px;
+  overflow: auto;
 }
