@@ -249,21 +249,30 @@
         return result;
     };
 
-    EmojioneArea.prototype.attach = function(element, elementEvents, events) {
-        events = events || elementEvents;
+    EmojioneArea.prototype.attach = function(element, events, fn) {
 
         var attachEvents = function(element, event, trigger) {
+                var args = [trigger];
                 element.on(event, $.proxy(function() {
-                    return this.trigger.apply(this, [trigger].concat(slice.call(arguments)));
+                    if ($.isFunction(fn)) {
+                        var result = fn.apply(this, slice.call(arguments));
+                        if (!result) {
+                            return;
+                        }
+                        if ($.isArray(result)) {
+                            args = args.concat(result);
+                        }
+                    }
+                    this.trigger.apply(this, args.concat(slice.call(arguments)));
                 }, this));
             },
 
         attachElement = function(element) {
-            if ((typeof elementEvents).toLowerCase() == "string") {
-                attachEvents.apply(this, [element, elementEvents, events]);
+            if ((typeof events).toLowerCase() == "string") {
+                attachEvents.apply(this, [element, events, events]);
             } else {
-                $.each(elementEvents, $.proxy(function(i, v) {
-                    attachEvents.apply(this, [element, $.isArray(elementEvents) ? v : i, v]);
+                $.each(events, $.proxy(function(i, v) {
+                    attachEvents.apply(this, [element, $.isArray(events) ? v : i, v]);
                 }, this));
             }
         }
