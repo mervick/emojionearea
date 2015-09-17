@@ -16,6 +16,7 @@
         autocomplete      : "off",
         autocorrect       : "off",
         autocapitalize    : "off",
+        autoHideFilters   : true,
 
         filtersSettings: {
             people: {
@@ -238,9 +239,9 @@
             args = slice.call(arguments, 1);
             $.each(events.split(' '), $.proxy(function(i, event) {
                 if (!!this.events[event] && !!this.events[event].length) {
-                    $.each(this.events[event], function (i, fn) {
+                    $.each(this.events[event], $.proxy(function (i, fn) {
                         return result = fn.apply(this, args) !== false;
-                    });
+                    }, this));
                 }
                 return result;
             }, this));
@@ -329,7 +330,7 @@
         });
     }
 
-    var shortnameReplaceTo = function(str, fn) {
+    var shortnameTo = function(str, template) {
         return str.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
             emojione.shortnameRegexp+")", "gi"),function(shortname) {
             if( (typeof shortname === 'undefined') || (shortname === '') || (!(shortname in emojione.emojioneList)) ) {
@@ -338,10 +339,52 @@
             else {
                 var unicode = emojione.emojioneList[shortname][emojione.emojioneList[shortname].length-1].toUpperCase(),
                     alt = emojione.convert(unicode);
-
-                return fn.apply(fn, [shortname, unicode, alt]);
+                return template
+                    .replace('{shortname}', shortname)
+                    .replace('{imagePng}', emojione.imagePathPNG+unicode+'.png'+emojione.cacheBustParam)
+                    .replace('{unicode}', unicode)
+                    .replace('{alt}', alt);
             }
         });
+    };
+
+    function pasteHtmlAtCaret(html) {
+        var sel, range;
+        if (window.getSelection) {
+            // IE9 and non-IE
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+
+                // Range.createContextualFragment() would be useful here but is
+                // only relatively recently standardized and is not supported in
+                // some browsers (IE9, for one)
+                var el = document.createElement("div");
+                el.innerHTML = html;
+                var frag = document.createDocumentFragment(), node, lastNode;
+                while ( (node = el.firstChild) ) {
+                    lastNode = frag.appendChild(node);
+                }
+                range.insertNode(frag);
+
+                // Preserve the selection
+                if (lastNode) {
+                    range = range.cloneRange();
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+        } else if (document.selection && document.selection.type != "Control") {
+            // IE < 9
+            document.selection.createRange().pasteHTML(html);
+        }
+    }
+
+    var hideEmojiPanel = function() {
+        //if (this.
     };
 
     var init = function() {
@@ -368,7 +411,7 @@
         }, this));
 
         // filters
-        this.filters = this.app.find("." + this.options.filtersClassName);
+        this.filters = this.app.find("." + this.options.filtersClassName).hide();
 
         // tabs
         this.tabs = this.app.find("." + this.options.tabsClassName);
@@ -376,9 +419,7 @@
         // parse icons
         $.each(this.options.filtersSettings, $.proxy(function(filter, params) {
             // filters
-            $(shortnameReplaceTo(params.icon, function(shortname, unicode, alt) {
-                return '<span class="emojione-' + unicode + '">' + alt + '</span>';
-            }))
+            $(shortnameTo(params.icon, '<span class="emojione-{unicode}">{alt}</span>'))
                 .addClass(this.options.filterClassName)
                 .attr("data-filter", filter)
                 .attr("role", "button")
@@ -386,9 +427,7 @@
 
             // tabs
             $("<div></div>")
-                .wrapInner(shortnameReplaceTo(params.emoji, function(shortname, unicode, alt) {
-                    return '<span class="emojione-' + unicode + '" data-shortname="' + shortname + '">' + alt + '</span>';
-                }))
+                .wrapInner(shortnameTo(params.emoji, '<span class="emojibtn"><span class="emojione-{unicode}" data-shortname="{shortname}">{alt}</span></span>'))
                 .addClass(this.options.tabClassName)
                 .addClass(this.options.tabClassName + '-' + filter)
                 .hide()
@@ -396,8 +435,8 @@
         }, this));
 
         // show first tab
-        this.filters.children("." + this.options.filterClassName + ":first").addClass("active");
-        this.tabs.children("." + this.options.tabClassName + ":first").show();
+        //this.filters.children("." + this.options.filterClassName + ":first").addClass("active");
+        //this.tabs.children("." + this.options.tabClassName + ":first").show();
 
         // attach events
         this
@@ -405,37 +444,48 @@
             .attach(this.tabs, "mousedown", "emojioneArea.tabs.mousedown tabs.mousedown")
             .attach(this.editor, {"focus": "emojioneArea.focus focus", "blur": "emojioneArea.blur blur"})
             .attach([this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"])
-            .attach(this.filters.find("." + this.options.filterClassName), {"click" :"filter.click"})
+            .attach(this.filters.find("." + this.options.filterClassName), {"click" :"emojioneArea.filter.click filter.click"})
+            .attach(this.tabs.find(".emojibtn"), {"click" :"emojioneArea.emojibtn.click emojibtn.click"})
 
-            .on("filter.click", $.proxy(function(e) {
+
+            .on("emojioneArea.filter.click", function(e) {
                 e = $(e.target);
                 e.parent().find("." + this.options.filterClassName + ".active").removeClass("active");
                 e.addClass("active");
                 this.tabs.children("." + this.options.tabClassName).hide()
                     .filter("." + this.options.tabClassName + "-" + e.data("filter")).show();
-            }, this))
+            })
 
-            .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", $.proxy(function(e) {
+            .on("emojioneArea.emojibtn.click", function(e) {
+                e = $(e.target);
+                //document.execCommand("createLink", false, '#');
+                pasteHtmlAtCaret(shortnameTo(e.attr("data-shortname"),
+                    '<img class="emojione" alt="{alt}" src="{imagePng}"/>'));
+            })
+
+            .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", function(e) {
                 e.preventDefault();
                 return false;
-            }, this))
+            })
 
-            .on("emojioneArea.change", $.proxy(function() {
+            .on("emojioneArea.change", function() {
                 this.element[this.elementValFunc](this.getText());
-            }, this))
+            })
 
-            .on("emojioneArea.focus", $.proxy(function() {
+            .on("emojioneArea.focus", function() {
                 this.app.addClass("focused");
-            }, this))
+                this.filters.slideDown(400);
+            })
 
-            .on("emojioneArea.blur", $.proxy(function() {
+            .on("emojioneArea.blur", function() {
                 this.app.removeClass("focused");
+                this.filters.slideUp(400);
                 var content = this.editor.html();
                 if (this.content !== content) {
                     this.content = content;
                     this.trigger('emojioneArea.change change', this.content);
                 }
-            }, this));
+            });
 
         // show application
         this.app.insertAfter(this.element);
