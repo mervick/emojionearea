@@ -176,6 +176,113 @@
 
     var slice = [].slice;
 
+    var saveSelection, restoreSelection;
+
+    if (window.getSelection && document.createRange) {
+        saveSelection = function(containerEl) {
+            var range = window.getSelection().getRangeAt(0);
+            var preSelectionRange = range.cloneRange();
+            preSelectionRange.selectNodeContents(containerEl);
+            preSelectionRange.setEnd(range.startContainer, range.startOffset);
+            //var start = textFromHtml($("<div/>").append(preSelectionRange.toString()).html()).length;
+            var start = preSelectionRange.toString().length;
+            //var start = textFromHtml($("<div/>").append(preSelectionRange.extractContents()).html()).length;
+
+            return {
+                start: start,
+                end: start + textFromHtml($("<div/>").append(range.extractContents()).html()).length
+            }
+        };
+
+        restoreSelection = function(containerEl, savedSel) {
+            var charIndex = 0, range = document.createRange();
+            range.setStart(containerEl, 0);
+            range.collapse(true);
+            var nodeStack = [containerEl], node, foundStart = false, stop = false;
+
+            while (!stop && (node = nodeStack.pop())) {
+                if (node.nodeType == 3) {
+                    var nextCharIndex = charIndex + node.length;
+                    if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
+                        range.setStart(node, savedSel.start - charIndex);
+                        foundStart = true;
+                    }
+                    if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
+                        range.setEnd(node, savedSel.end - charIndex);
+                        stop = true;
+                    }
+                    charIndex = nextCharIndex;
+                } else {
+                    var i = node.childNodes.length;
+                    while (i--) {
+                        nodeStack.push(node.childNodes[i]);
+                    }
+                }
+            }
+
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    } else if (document.selection && document.body.createTextRange) {
+        saveSelection = function(containerEl) {
+            var selectedTextRange = document.selection.createRange();
+            var preSelectionTextRange = document.body.createTextRange();
+            preSelectionTextRange.moveToElementText(containerEl);
+            preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
+            var start = preSelectionTextRange.text.length;
+
+            return {
+                start: start,
+                end: start + selectedTextRange.text.length
+            }
+        };
+
+        restoreSelection = function(containerEl, savedSel) {
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(containerEl);
+            textRange.collapse(true);
+            textRange.moveEnd("character", savedSel.end);
+            textRange.moveStart("character", savedSel.start);
+            textRange.select();
+        };
+    }
+
+    function pasteHtmlAtCaret(html) {
+        var sel, range;
+        if (window.getSelection) {
+            // IE9 and non-IE
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+
+                // Range.createContextualFragment() would be useful here but is
+                // only relatively recently standardized and is not supported in
+                // some browsers (IE9, for one)
+                var el = document.createElement("div");
+                el.innerHTML = html;
+                var frag = document.createDocumentFragment(), node, lastNode;
+                while ( (node = el.firstChild) ) {
+                    lastNode = frag.appendChild(node);
+                }
+                range.insertNode(frag);
+
+                // Preserve the selection
+                if (lastNode) {
+                    range = range.cloneRange();
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+        } else if (document.selection && document.selection.type != "Control") {
+            // IE < 9
+            document.selection.createRange().pasteHTML(html);
+        }
+    }
+
 
     var EmojioneArea = function(element, options) {
         this.element = $(element);
@@ -344,41 +451,6 @@
         });
     };
 
-    function pasteHtmlAtCaret(html) {
-        var sel, range;
-        if (window.getSelection) {
-            // IE9 and non-IE
-            sel = window.getSelection();
-            if (sel.getRangeAt && sel.rangeCount) {
-                range = sel.getRangeAt(0);
-                range.deleteContents();
-
-                // Range.createContextualFragment() would be useful here but is
-                // only relatively recently standardized and is not supported in
-                // some browsers (IE9, for one)
-                var el = document.createElement("div");
-                el.innerHTML = html;
-                var frag = document.createDocumentFragment(), node, lastNode;
-                while ( (node = el.firstChild) ) {
-                    lastNode = frag.appendChild(node);
-                }
-                range.insertNode(frag);
-
-                // Preserve the selection
-                if (lastNode) {
-                    range = range.cloneRange();
-                    range.setStartAfter(lastNode);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-            }
-        } else if (document.selection && document.selection.type != "Control") {
-            // IE < 9
-            document.selection.createRange().pasteHTML(html);
-        }
-    }
-
     function createDOM(options) {
         // parse template
         this.app = options.template;
@@ -484,7 +556,8 @@
 
             .on("emojioneArea.paste", function(element, event) {
                 var pasterID = "emojionearea-paster-" + (new Date().getTime());
-                pasteHtmlAtCaret('<span id="'+pasterID+'" style="display: none!important">?</span>');
+                pasteHtmlAtCaret('<span id="'+pasterID+'" style="">&nbsp;</span>');
+                var sel = saveSelection(element[0]);
                 this.stayFocused = true;
 
                 var clipboard = $("<div />").appendTo($("BODY"));
@@ -498,14 +571,18 @@
 
                 setTimeout($.proxy(function() {
                     element.attr("contenteditable", "true").focus();
-                    $("#" + pasterID).replaceWith(htmlFromText(textFromHtml(clipboard.html())));
-                    setSelectionRange(element.eq(0), 20);
+                    //.caret(caretPos);
+                    console.log(sel)
+                    restoreSelection(element[0], sel);
+                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html())));
+                    //$("#" + pasterID).replaceWith(htmlFromText(textFromHtml(clipboard.html())));
                     this.stayFocused = false;
                     clipboard.remove();
                 }, this), 200);
             })
 
             .on("emojioneArea.emojibtn.click", function(element) {
+                saveSelection(this.editor[0]);
                 pasteHtmlAtCaret(shortnameTo(element.children("span").data("shortname"),
                     '<img class="emojione" alt="{alt}" src="{imagePng}"/>'));
             })
