@@ -407,7 +407,8 @@
             .replace(/([^\n])<div>/ig, '$1\n')
             .replace(/\n<div>/ig, '\n')
             .replace(/<div>\n/ig, '\n\n')
-            .replace(/<(?:[^>]+)?>/g, '');
+            .replace(/<(?:[^>]+)?>/g, '')
+            .replace('&nbsp;', ' ');
     }
 
     EmojioneArea.prototype.setText = function(str) {
