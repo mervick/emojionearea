@@ -16,7 +16,9 @@
         autocomplete      : "off",
         autocorrect       : "off",
         autocapitalize    : "off",
+
         autoHideFilters   : true,
+        autoHideTabs      : true,
 
         filters: {
             people: {
@@ -379,9 +381,7 @@
         }
     }
 
-    function init(options) {
-        options = $.extend({}, default_options, options);
-
+    function createDOM(options) {
         // parse template
         this.app = options.template;
 
@@ -405,7 +405,10 @@
         }, this));
 
         // filters
-        this.filters = this.app.find("." + options.filtersClassName).hide();
+        this.filters = this.app.find("." + options.filtersClassName);
+        if (options.autoHideFilters) {
+            this.filters.hide();
+        }
 
         // tabs
         this.tabs = this.app.find("." + options.tabsClassName);
@@ -430,9 +433,17 @@
                 .appendTo(this.tabs);
         }, this));
 
-        // show first tab
-        //this.filters.children("." + options.filterClassName + " :first").addClass("active");
-        //this.tabs.children("." + options.tabClassName + " :first").show();
+        // show application
+        this.app.insertAfter(this.element);
+        this.element.hide();
+
+        this.setText(this.element[this.elementValFunc]());
+    }
+
+    function init(options) {
+        options = $.extend({}, default_options, options);
+
+        createDOM.apply(this, [options]);
 
         // attach events
         attach.apply(this, [this.filters, {mousedown: "emojioneArea.filters.mousedown filters.mousedown"}, this.editor]);
@@ -510,12 +521,6 @@
                     trigger.apply(this, ['emojioneArea.change change', this.content]);
                 }
             });
-
-        // show application
-        this.app.insertAfter(this.element);
-        this.element.hide();
-
-        this.setText(this.element[this.elementValFunc]());
     };
 
 
