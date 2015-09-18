@@ -555,29 +555,44 @@
             })
 
             .on("emojioneArea.paste", function(element, event) {
-                var pasterID = "emojionearea-paster-" + (new Date().getTime());
-                pasteHtmlAtCaret('<span id="'+pasterID+'" style="">&nbsp;</span>');
-                var sel = saveSelection(element[0]);
+                var UID = "emojionearea-paster-" + (new Date().getTime()),
+                    doc = $(document);
+
+                pasteHtmlAtCaret('<span id="' + UID + '">&nbsp;</span>');
+
+                var sel = saveSelection(element[0]),
+                    docScrollTop = $(document).scrollTop(),
+                    editorScrollTop = element.scrollTop(),
+                    clipboard = $("<div />").appendTo($("BODY"));
+
                 this.stayFocused = true;
 
-                var clipboard = $("<div />").appendTo($("BODY"));
                 clipboard
                     .attr("contenteditable", "true")
                     .attr("tabindex", "0")
-                    .css({position: "absolute", left: "-9999px", width: "10px", height: "10px", top: "-9999px"})
+                    .css({position: "absolute", left: "-9999px", width: "1px", height: "1px", top: docScrollTop+4})
                     .focus();
+
+                doc.scrollTop(docScrollTop);
 
                 element.removeAttr("contenteditable");
 
                 setTimeout($.proxy(function() {
                     element.attr("contenteditable", "true").focus();
-                    //.caret(caretPos);
-                    console.log(sel)
                     restoreSelection(element[0], sel);
                     pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html())));
-                    //$("#" + pasterID).replaceWith(htmlFromText(textFromHtml(clipboard.html())));
-                    this.stayFocused = false;
+                    pasteHtmlAtCaret('<span id="' + UID +'-caret"></span>');
+                    doc.scrollTop(docScrollTop);
+                    element.scrollTop(editorScrollTop);
+                    var caret = $("#" + UID + '-caret'),
+                        top = caret.offset().top - element.offset().top,
+                        height = element.height();
+                    if (editorScrollTop + top >= height || editorScrollTop > top) {
+                        element.scrollTop(editorScrollTop + top - 2 * height/3);
+                    }
+                    caret.remove();
                     clipboard.remove();
+                    this.stayFocused = false;
                 }, this), 200);
             })
 
