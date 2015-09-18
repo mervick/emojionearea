@@ -18,8 +18,6 @@
         autocapitalize    : "off",
 
         autoHideFilters   : true,
-        autoHideTabs      : true,
-
         filters: {
             people: {
                 icon: "yum",
@@ -240,13 +238,13 @@
     }
 
     function attach(element, events, target) {
-        target = target || function(e) {
-            return $(e.currentTarget);
+        target = target || function(event, callerEvent) {
+            return $(callerEvent.currentTarget);
         };
 
         function attachEvents(element, event, handler) {
             element.on(event, $.proxy(function() {
-                var _target = $.isFunction(target) ? target.apply(this, slice.call(arguments)) : target;
+                var _target = $.isFunction(target) ? target.apply(this, [event].concat(slice.call(arguments))) : target;
                 if (!!_target) {
                     trigger.apply(this, [handler].concat([_target]).concat(slice.call(arguments)));
                 }
@@ -463,6 +461,7 @@
         attach.apply(this, [this.filters, {mousedown: "emojioneArea.filters.mousedown filters.mousedown"}, this.editor]);
         attach.apply(this, [this.tabs, {mousedown: "emojioneArea.tabs.mousedown tabs.mousedown"}, this.editor]);
         attach.apply(this, [this.editor, {paste: "emojioneArea.paste paste"}, this.editor]);
+        attach.apply(this, [this.editor, {focus: "emojioneArea.editor.focus", blur: "emojioneArea.editor.blur"}, this.editor]);
         attach.apply(this, [this.editor, {focus: "emojioneArea.focus focus", blur: "emojioneArea.blur blur"}, function() {
             return !!this.stayFocused ? false : this.editor;
         }]);
@@ -535,10 +534,8 @@
                 if (options.autoHideFilters) {
                     this.filters.slideUp(400);
                 }
-                if (options.autoHideTabs || options.autoHideFilters) {
-                    this.filters.find("." + options.filterClassName + ".active").removeClass("active");
-                    this.tabs.children("." + options.tabClassName).hide();
-                }
+                this.filters.find("." + options.filterClassName + ".active").removeClass("active");
+                this.tabs.children("." + options.tabClassName).hide();
                 var content = element.html();
                 if (this.content !== content) {
                     this.content = content;
