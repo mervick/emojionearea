@@ -1,5 +1,5 @@
 
-(function($, emojione) {
+(function(document, window, $, emojione) {
 
     var default_options = {
         template          : "<editor/><filters/><tabs/>",
@@ -487,7 +487,7 @@
         // parse icons
         $.each(options.filters, $.proxy(function(filter, params) {
             // filters
-            $("<span></span>")
+            $("<span/>")
                 .wrapInner(shortnameTo(params.icon, '<span class="emojione-{unicode}">{alt}</span>'))
                 .addClass(options.filterClassName)
                 .attr("data-filter", filter)
@@ -495,7 +495,7 @@
                 .appendTo(this.filters);
 
             // tabs
-            $("<div></div>")
+            $("<div/>")
                 .wrapInner(shortnameTo(params.emoji,
                     '<span class="emojibtn"><span class="emojione-{unicode}" data-shortname="{shortname}">{alt}</span></span>'))
                 .addClass(options.tabClassName)
@@ -571,7 +571,7 @@
                 clipboard
                     .attr("contenteditable", "true")
                     .attr("tabindex", "0")
-                    .css({position: "absolute", left: "-9999px", width: "1px", height: "1px", top: docScrollTop+4})
+                    .css({position: "fixed", left: "-9999px", width: "1px", height: "1px", top: 10})
                     .focus();
 
                 doc.scrollTop(docScrollTop);
@@ -645,4 +645,4 @@
         });
     };
 
-}) (jQuery, emojione);
+}) (document, window, jQuery, emojione);
