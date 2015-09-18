@@ -18,7 +18,7 @@
         autocapitalize    : "off",
         autoHideFilters   : true,
 
-        filtersSettings: {
+        filters: {
             people: {
                 icon: "yum",
                 emoji: "grinning,grin,joy,smiley,smile,sweat_smile,laughing,innocent,smiling_imp,imp,wink,blush," +
@@ -244,8 +244,10 @@
 
         function attachEvents(element, event, handler) {
             element.on(event, $.proxy(function() {
-                var args = [handler].concat([$.isFunction(target) ? target.apply(this, slice.call(arguments)) : target]);
-                trigger.apply(this, args.concat(slice.call(arguments)));
+                var _target = $.isFunction(target) ? target.apply(this, slice.call(arguments)) : target;
+                if (!!_target) {
+                    trigger.apply(this, [handler].concat([_target]).concat(slice.call(arguments)));
+                }
             }, this));
         }
 
@@ -268,27 +270,25 @@
         }
     }
 
-    EmojioneArea.prototype.setText = function(content) {
-        content = content
+    function htmlFromText(str) {
+        return unicodeToImage(str
             .replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/(?:\r\n|\r|\n)/g, '\n')
             .replace(/(\n+)/g, '<div>$1</div>')
             .replace(/\n/g, '<br/>')
-            .replace(/<br\/><\/div>/g, '</div>');
-
-        this.editor.html('<div>' + unicodeToImage(content) + '</div>');
-        this.content = this.editor.html();
-        trigger.apply(this, ['emojioneArea.change change', this.content]);
+            .replace(/<br\/><\/div>/g, '</div>'))
+            .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
+            .replace(/  /g, '&nbsp;&nbsp;');
     }
 
-    EmojioneArea.prototype.getText = function() {
-        return this.editor.html()
-            .replace(/<img class="emojione" alt="([^"]+)"[^>]*>/ig, '$1')
+    function textFromHtml(str) {
+        return str
+            .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
             .replace(/\n|\r/g, '')
-            .replace(/<br(?:[^>]+)?>/ig, '\n')
-            .replace(/(?:<div(?:[^>]+)?>)+/ig, '<div>')
+            .replace(/<br[^>]*>/ig, '\n')
+            .replace(/(?:<div[^>]*>)+/ig, '<div>')
             .replace(/(?:<\/div>)+/ig, '</div>')
-            .replace(/(?:<p(?:[^>]+)?>)+/ig, '<div>')
+            .replace(/(?:<p[^>]*>)+/ig, '<div>')
             .replace(/(?:<\/p>)+/ig, '</div>')
             .replace(/\n<div><\/div>/ig, '\n')
             .replace(/<div><\/div>\n/ig, '\n')
@@ -301,6 +301,16 @@
             .replace(/\n<div>/ig, '\n')
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '');
+    }
+
+    EmojioneArea.prototype.setText = function(str) {
+        this.editor.html('<div>' + htmlFromText(str) + '</div>');
+        this.content = this.editor.html();
+        trigger.apply(this, ['emojioneArea.change change', this.content]);
+    }
+
+    EmojioneArea.prototype.getText = function() {
+        return textFromHtml(this.editor.html());
     }
 
     function unicodeToImage(str) {
@@ -401,7 +411,7 @@
         this.tabs = this.app.find("." + options.tabsClassName);
 
         // parse icons
-        $.each(options.filtersSettings, $.proxy(function(filter, params) {
+        $.each(options.filters, $.proxy(function(filter, params) {
             // filters
             $("<span></span>")
                 .wrapInner(shortnameTo(params.icon, '<span class="emojione-{unicode}">{alt}</span>'))
@@ -425,12 +435,15 @@
         //this.tabs.children("." + options.tabClassName + " :first").show();
 
         // attach events
-        attach.apply(this, [this.filters, {"mousedown" : "emojioneArea.filters.mousedown filters.mousedown"}, this.editor]);
-        attach.apply(this, [this.tabs, {"mousedown" : "emojioneArea.tabs.mousedown tabs.mousedown"}, this.editor]);
-        attach.apply(this, [this.editor, {"focus" : "emojioneArea.focus focus", "blur" : "emojioneArea.blur blur"}, this.editor]);
+        attach.apply(this, [this.filters, {mousedown: "emojioneArea.filters.mousedown filters.mousedown"}, this.editor]);
+        attach.apply(this, [this.tabs, {mousedown: "emojioneArea.tabs.mousedown tabs.mousedown"}, this.editor]);
+        attach.apply(this, [this.editor, {paste: "emojioneArea.paste paste"}, this.editor]);
+        attach.apply(this, [this.editor, {focus: "emojioneArea.focus focus", blur: "emojioneArea.blur blur"}, function() {
+            return !!this.stayFocused ? false : this.editor;
+        }]);
         attach.apply(this, [[this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], this.editor]);
-        attach.apply(this, [this.filters.find("." + options.filterClassName), {"click" : "emojioneArea.filter.click filter.click"}]);
-        attach.apply(this, [this.tabs.find(".emojibtn"), {"click" : "emojioneArea.emojibtn.click emojibtn.click"}]);
+        attach.apply(this, [this.filters.find("." + options.filterClassName), {click: "emojioneArea.filter.click filter.click"}]);
+        attach.apply(this, [this.tabs.find(".emojibtn"), {click: "emojioneArea.emojibtn.click emojibtn.click"}]);
 
 
         this.on("emojioneArea.filter.click", function(element) {
@@ -443,6 +456,28 @@
                     this.tabs.children("." + options.tabClassName).hide()
                         .filter("." + options.tabClassName + "-" + element.data("filter")).show();
                 }
+            })
+
+            .on("emojioneArea.paste", function(element, event) {
+                var pasterID = "emojionearea-paster-" + (new Date().getTime());
+                pasteHtmlAtCaret('<span id="'+pasterID+'" style="display:none!important">?</span>');
+                this.stayFocused = true;
+
+                var clipboard = $("<div />").appendTo($("BODY"));
+                clipboard
+                    .attr("contenteditable", "true")
+                    .attr("tabindex", "0")
+                    .css({position: "absolute", left: "-9999px", width: "10px", height: "10px", top: "-9999px"})
+                    .focus();
+
+                element.removeAttr("contenteditable");
+
+                setTimeout($.proxy(function() {
+                    $("#" + pasterID).replaceWith(htmlFromText(textFromHtml(clipboard.html())));
+                    element.attr("contenteditable", "true").focus();
+                    this.stayFocused = false;
+                    clipboard.remove();
+                }, this), 200);
             })
 
             .on("emojioneArea.emojibtn.click", function(element) {
