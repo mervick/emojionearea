@@ -440,6 +440,20 @@
         this.setText(this.element[this.elementValFunc]());
     }
 
+    function setSelectionRange(input, selectionStart, selectionEnd) {
+        selectionEnd = selectionEnd || selectionStart;
+        if (input.setSelectionRange) {
+            input.setSelectionRange(selectionStart, selectionEnd);
+        }
+        else if (input.createTextRange) {
+            var range = input.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', selectionEnd);
+            range.moveStart('character', selectionStart);
+            range.select();
+        }
+    }
+
     function init(options) {
         options = $.extend({}, default_options, options);
 
@@ -471,7 +485,7 @@
 
             .on("emojioneArea.paste", function(element, event) {
                 var pasterID = "emojionearea-paster-" + (new Date().getTime());
-                pasteHtmlAtCaret('<span id="'+pasterID+'" style="display:none!important">?</span>');
+                pasteHtmlAtCaret('<span id="'+pasterID+'" style="display: none!important">?</span>');
                 this.stayFocused = true;
 
                 var clipboard = $("<div />").appendTo($("BODY"));
@@ -484,8 +498,9 @@
                 element.removeAttr("contenteditable");
 
                 setTimeout($.proxy(function() {
-                    $("#" + pasterID).replaceWith(htmlFromText(textFromHtml(clipboard.html())));
                     element.attr("contenteditable", "true").focus();
+                    $("#" + pasterID).replaceWith(htmlFromText(textFromHtml(clipboard.html())));
+                    setSelectionRange(element.eq(0), 20);
                     this.stayFocused = false;
                     clipboard.remove();
                 }, this), 200);
@@ -497,6 +512,9 @@
             })
 
             .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", function(element, event) {
+                if (!options.autoHideFilters && !this.app.is(".focused")) {
+                    element.focus();
+                }
                 event.preventDefault();
                 return false;
             })
@@ -507,15 +525,21 @@
 
             .on("emojioneArea.focus", function() {
                 this.app.addClass("focused");
-                this.filters.slideDown(400);
+                if (options.autoHideFilters) {
+                    this.filters.slideDown(400);
+                }
             })
 
-            .on("emojioneArea.blur", function() {
+            .on("emojioneArea.blur", function(element) {
                 this.app.removeClass("focused");
-                this.filters.slideUp(400);
-                this.filters.find("." + options.filterClassName + ".active").removeClass("active");
-                this.tabs.children("." + options.tabClassName).hide();
-                var content = this.editor.html();
+                if (options.autoHideFilters) {
+                    this.filters.slideUp(400);
+                }
+                if (options.autoHideTabs || options.autoHideFilters) {
+                    this.filters.find("." + options.filterClassName + ".active").removeClass("active");
+                    this.tabs.children("." + options.tabClassName).hide();
+                }
+                var content = element.html();
                 if (this.content !== content) {
                     this.content = content;
                     trigger.apply(this, ['emojioneArea.change change', this.content]);
