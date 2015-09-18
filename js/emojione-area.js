@@ -190,11 +190,10 @@
 
     var EmojioneArea = function(element, options) {
         this.element = $(element);
-        this.options = $.extend({}, default_options, options);
         this.elementValFunc = this.element.is("INPUT") ? 'val' : 'text';
         this.events = {};
 
-        init.apply(this);
+        init.apply(this, [options]);
     };
 
     EmojioneArea.prototype.on = function(events, handler) {
@@ -247,22 +246,16 @@
             }, this));
         }
         return result;
-    };
+    }
 
-    EmojioneArea.prototype.attach = function(element, events, fn) {
+    function attach(element, events, target) {
+        target = target || function(e) {
+            return $(e.currentTarget);
+        };
 
         function attachEvents(element, event, handler) {
             element.on(event, $.proxy(function() {
-                var args = [handler];
-                if ($.isFunction(fn) || $.isArray(fn)) {
-                    var result = $.isFunction(fn) ? fn.apply(this, slice.call(arguments)) : fn;
-                    if (!result) {
-                        return;
-                    }
-                    if ($.isArray(result)) {
-                        args = args.concat(result);
-                    }
-                }
+                var args = [handler].concat([$.isFunction(target) ? target.apply(this, slice.call(arguments)) : target]);
                 trigger.apply(this, args.concat(slice.call(arguments)));
             }, this));
         }
@@ -284,9 +277,7 @@
         } else {
             attachElement.apply(this, [element]);
         }
-
-        return this;
-    };
+    }
 
     EmojioneArea.prototype.setText = function(content) {
         content = content
@@ -391,41 +382,43 @@
         }
     }
 
-    function init() {
+    function init(options) {
+        options = $.extend({}, default_options, options);
+
         // parse template
-        this.app = this.options.template;
+        this.app = options.template;
 
         $.each(["editor", "filters", "tabs"], $.proxy(function(i, name) {
             this.app = this.app.replace(new RegExp('<' + name + '/?>' ,'i'),
-                '<div class="' + this.options[name + 'ClassName'] + '"></div>');
+                '<div class="' + options[name + 'ClassName'] + '"></div>');
         }, this));
 
         // wrap application
         this.app = $('<div>' + this.app + '</div>')
-            .addClass(this.options.className)
+            .addClass(options.className)
             .attr("role", "application");
 
         // set editor attributes
-        this.editor = this.app.find("." + this.options.editorClassName)
+        this.editor = this.app.find("." + options.editorClassName)
             .attr("contenteditable", "true")
             .attr('tabindex', 0);
 
         $.each(["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], $.proxy(function(i, name) {
-            this.editor.attr(name, this.options[name]);
+            this.editor.attr(name, options[name]);
         }, this));
 
         // filters
-        this.filters = this.app.find("." + this.options.filtersClassName).hide();
+        this.filters = this.app.find("." + options.filtersClassName).hide();
 
         // tabs
-        this.tabs = this.app.find("." + this.options.tabsClassName);
+        this.tabs = this.app.find("." + options.tabsClassName);
 
         // parse icons
-        $.each(this.options.filtersSettings, $.proxy(function(filter, params) {
+        $.each(options.filtersSettings, $.proxy(function(filter, params) {
             // filters
             $("<span></span>")
                 .wrapInner(shortnameTo(params.icon, '<span class="emojione-{unicode}">{alt}</span>'))
-                .addClass(this.options.filterClassName)
+                .addClass(options.filterClassName)
                 .attr("data-filter", filter)
                 .attr("role", "button")
                 .appendTo(this.filters);
@@ -434,39 +427,34 @@
             $("<div></div>")
                 .wrapInner(shortnameTo(params.emoji,
                     '<span class="emojibtn"><span class="emojione-{unicode}" data-shortname="{shortname}">{alt}</span></span>'))
-                .addClass(this.options.tabClassName)
-                .addClass(this.options.tabClassName + '-' + filter)
+                .addClass(options.tabClassName)
+                .addClass(options.tabClassName + '-' + filter)
                 .hide()
                 .appendTo(this.tabs);
         }, this));
 
         // show first tab
-        //this.filters.children("." + this.options.filterClassName + ":first").addClass("active");
-        //this.tabs.children("." + this.options.tabClassName + ":first").show();
-
-        var returnTarget = function(e) {
-            return [$(e.currentTarget)];
-        };
+        //this.filters.children("." + options.filterClassName + ":first").addClass("active");
+        //this.tabs.children("." + options.tabClassName + ":first").show();
 
         // attach events
-        this
-            .attach(this.filters, {"mousedown" : "emojioneArea.filters.mousedown filters.mousedown"}, [this.editor])
-            .attach(this.tabs, {"mousedown" : "emojioneArea.tabs.mousedown tabs.mousedown"}, [this.editor])
-            .attach(this.editor, {"focus": "emojioneArea.focus focus", "blur": "emojioneArea.blur blur"}, [this.editor])
-            .attach([this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], [this.editor])
-            .attach(this.filters.find("." + this.options.filterClassName), {"click" :"emojioneArea.filter.click filter.click"}, returnTarget)
-            .attach(this.tabs.find(".emojibtn"), {"click" :"emojioneArea.emojibtn.click emojibtn.click"}, returnTarget)
+        attach.apply(this, [this.filters, {"mousedown" : "emojioneArea.filters.mousedown filters.mousedown"}, this.editor]);
+        attach.apply(this, [this.tabs, {"mousedown" : "emojioneArea.tabs.mousedown tabs.mousedown"}, this.editor]);
+        attach.apply(this, [this.editor, {"focus": "emojioneArea.focus focus", "blur": "emojioneArea.blur blur"}, this.editor]);
+        attach.apply(this, [[this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], this.editor]);
+        attach.apply(this, [this.filters.find("." + options.filterClassName), {"click" :"emojioneArea.filter.click filter.click"}]);
+        attach.apply(this, [this.tabs.find(".emojibtn"), {"click" :"emojioneArea.emojibtn.click emojibtn.click"}]);
 
 
-            .on("emojioneArea.filter.click", function(element) {
+        this.on("emojioneArea.filter.click", function(element) {
                 if (element.is(".active")) {
                     element.removeClass("active");
-                    this.tabs.children("." + this.options.tabClassName).hide();
+                    this.tabs.children("." + options.tabClassName).hide();
                 } else {
-                    element.parent().find("." + this.options.filterClassName + ".active").removeClass("active");
+                    element.parent().find("." + options.filterClassName + ".active").removeClass("active");
                     element.addClass("active");
-                    this.tabs.children("." + this.options.tabClassName).hide()
-                        .filter("." + this.options.tabClassName + "-" + element.data("filter")).show();
+                    this.tabs.children("." + options.tabClassName).hide()
+                        .filter("." + options.tabClassName + "-" + element.data("filter")).show();
                 }
             })
 
@@ -493,8 +481,8 @@
                 this.app.removeClass("focused");
                 this.filters.slideUp(400);
                 var content = this.editor.html();
-                this.filters.find("." + this.options.filterClassName + ".active").removeClass("active");
-                this.tabs.children("." + this.options.tabClassName).hide();
+                this.filters.find("." + options.filterClassName + ".active").removeClass("active");
+                this.tabs.children("." + options.tabClassName).hide();
                 if (this.content !== content) {
                     this.content = content;
                     trigger.apply(this, ['emojioneArea.change change', this.content]);
