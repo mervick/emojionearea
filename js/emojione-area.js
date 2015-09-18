@@ -233,7 +233,7 @@
         return this;
     };
 
-    EmojioneArea.prototype.trigger = function(events) {
+    function trigger(events) {
         var result = true, args;
         if (!!events) {
             args = slice.call(arguments, 1);
@@ -251,35 +251,35 @@
 
     EmojioneArea.prototype.attach = function(element, events, fn) {
 
-        var attachEvents = function(element, event, trigger) {
-                element.on(event, $.proxy(function() {
-                    var args = [trigger];
-                    if ($.isFunction(fn) || $.isArray(fn)) {
-                        var result = $.isFunction(fn) ? fn.apply(this, slice.call(arguments)) : fn;
-                        if (!result) {
-                            return;
-                        }
-                        if ($.isArray(result)) {
-                            args = args.concat(result);
-                        }
+        function attachEvents(element, event, handler) {
+            element.on(event, $.proxy(function() {
+                var args = [handler];
+                if ($.isFunction(fn) || $.isArray(fn)) {
+                    var result = $.isFunction(fn) ? fn.apply(this, slice.call(arguments)) : fn;
+                    if (!result) {
+                        return;
                     }
-                    this.trigger.apply(this, args.concat(slice.call(arguments)));
-                }, this));
-            },
+                    if ($.isArray(result)) {
+                        args = args.concat(result);
+                    }
+                }
+                trigger.apply(this, args.concat(slice.call(arguments)));
+            }, this));
+        }
 
-        attachElement = function(element) {
+        function attachElement(element) {
             if ((typeof events).toLowerCase() == "string") {
                 attachEvents.apply(this, [element, events, events]);
             } else {
-                $.each(events, $.proxy(function(i, v) {
-                    attachEvents.apply(this, [element, $.isArray(events) ? v : i, v]);
+                $.each(events, $.proxy(function(event, handler) {
+                    attachEvents.apply(this, [element, $.isArray(events) ? handler : event, handler]);
                 }, this));
             }
         }
 
         if ($.isArray(element)) {
-            $.each(element, $.proxy(function(i, e) {
-                attachElement.apply(this, [$(e)]);
+            $.each(element, $.proxy(function(i, el) {
+                attachElement.apply(this, [$(el)]);
             }, this));
         } else {
             attachElement.apply(this, [element]);
@@ -298,7 +298,7 @@
 
         this.editor.html('<div>' + unicodeToImage(content) + '</div>');
         this.content = this.editor.html();
-        this.trigger('emojioneArea.change change', this.content);
+        trigger.apply(this, ['emojioneArea.change change', this.content]);
     }
 
     EmojioneArea.prototype.getText = function() {
@@ -497,7 +497,7 @@
                 this.tabs.children("." + this.options.tabClassName).hide();
                 if (this.content !== content) {
                     this.content = content;
-                    this.trigger('emojioneArea.change change', this.content);
+                    trigger.apply(this, ['emojioneArea.change change', this.content]);
                 }
             });
 
