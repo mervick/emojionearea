@@ -132,7 +132,7 @@
                 "speaker,sound,loud_sound,mute,zzz,bell,no_bell,cross_heavy,om_symbol,dove,thought_balloon," +
                 "speech_balloon,anger_right,children_crossing,shield,mag,mag_right,speaking_head," +
                 "sleeping_accommodation,no_entry_sign,no_entry,name_badge,no_pedestrians,do_not_litter," +
-                "no_bicycles,non-potable_water,no_mobile_phones,underage,sparkle,eight_spoked_asterisk," +
+                "no_bicycles,non_potable_water,no_mobile_phones,underage,sparkle,eight_spoked_asterisk," +
                 "negative_squared_cross_mark,white_check_mark,eight_pointed_black_star,vibration_mode," +
                 "mobile_phone_off,vs,a,b,ab,cl,o2,sos,id,parking,wc,cool,free,new,ng,ok,up,atm," +
                 "aries,taurus,gemini,cancer,leo,virgo,libra,scorpius,sagittarius,capricorn,aquarius," +
