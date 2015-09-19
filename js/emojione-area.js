@@ -435,13 +435,19 @@
         });
     }
 
+    var emojioneList = {};
+    $.each(emojione.emojioneList, function(shortname, keys) {
+        // fix shortnames
+        emojioneList[shortname.replace('-', '_')] = keys;
+    });
+
     function shortnameTo(str, template) {
         return str.replace(/:?[\w_]+:?,?/g, function(shortname) {
             shortname = ":" + shortname.replace(/,$/,'').replace(/:$/,'').replace(/^:/,'') + ":";
-            if (!(shortname in emojione.emojioneList)) {
+            if (!(shortname in emojioneList)) {
                 return shortname;
             } else {
-                var unicode = emojione.emojioneList[shortname][emojione.emojioneList[shortname].length-1].toUpperCase(),
+                var unicode = emojioneList[shortname][emojioneList[shortname].length-1].toUpperCase(),
                     alt = emojione.convert(unicode);
                 return template
                     .replace('{shortname}', shortname)
