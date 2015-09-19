@@ -63,7 +63,6 @@
         background: #e5e5e5;
         width: 100%;
         height: auto;
-        border-top: 1px solid rgba(0,0,0,0.1);
         .emojionearea-filter {
             @include box-sizing(content-box);
             top: 0 !important;
@@ -128,5 +127,12 @@
                 }
             }
         }
+    }
+
+    .emojionearea-editor + .emojionearea-filters,
+    .emojionearea-editor + .emojionearea-tabs,
+    .emojionearea-filters + .emojionearea-editor,
+    .emojionearea-tabs + .emojionearea-editor {
+        border-top: 1px solid #cfcfcf;
     }
 }
