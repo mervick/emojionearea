@@ -511,20 +511,6 @@
         this.setText(this.element[this.elementValFunc]());
     }
 
-    function setSelectionRange(input, selectionStart, selectionEnd) {
-        selectionEnd = selectionEnd || selectionStart;
-        if (input.setSelectionRange) {
-            input.setSelectionRange(selectionStart, selectionEnd);
-        }
-        else if (input.createTextRange) {
-            var range = input.createTextRange();
-            range.collapse(true);
-            range.moveEnd('character', selectionEnd);
-            range.moveStart('character', selectionStart);
-            range.select();
-        }
-    }
-
     function init(options) {
         options = $.extend({}, default_options, options);
 
