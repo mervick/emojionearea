@@ -104,7 +104,7 @@
         @include box-sizing(border-box);
         [class*=emojione-] {
             @include box-sizing(content-box);
-            margin: 4px;
+            margin: 0;
             width: 24px;
             height: 24px;
             top: 0;
@@ -114,6 +114,19 @@
             padding: 4px 10px;
             max-height: 136px;
             overflow: auto;
+            .emojibtn {
+                @include box-sizing(content-box);
+                width: 24px;
+                height: 24px;
+                display: inline-block;
+                margin: 1px;
+                padding: 3px;
+                &:hover {
+                    @include border-radius(4px);
+                    background-color: #e4e4e4;
+                    cursor: pointer;
+                }
+            }
         }
     }
 }

@@ -141,7 +141,7 @@
   -moz-box-sizing: content-box;
   -webkit-box-sizing: content-box;
   box-sizing: content-box;
-  margin: 4px;
+  margin: 0;
   width: 24px;
   height: 24px;
   top: 0;
@@ -154,4 +154,23 @@
   padding: 4px 10px;
   max-height: 136px;
   overflow: auto;
+}
+/* line 117, ../scss/emojione-area.scss */
+.emojionearea .emojionearea-tabs .emojionearea-tab .emojibtn {
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin: 1px;
+  padding: 3px;
+}
+/* line 124, ../scss/emojione-area.scss */
+.emojionearea .emojionearea-tabs .emojionearea-tab .emojibtn:hover {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  background-color: #e4e4e4;
+  cursor: pointer;
 }
