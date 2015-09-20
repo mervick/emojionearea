@@ -38,6 +38,14 @@
         cursor: text;
         @include border-radius(0);
         @include box-shadow(none);
+        &:empty:before{
+            content: attr(placeholder);
+            display: block;
+        }
+        .placeholder-fix:first-child:empty:before{
+            content: attr(placeholder);
+            display: block;
+        }
         &:focus {
             border: 0;
             outline: 0;
