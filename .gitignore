@@ -4,3 +4,4 @@ config.rb
 vendor
 composer.lock
 test
+compress.sh
