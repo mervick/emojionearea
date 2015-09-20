@@ -17,7 +17,9 @@
         autocorrect       : "off",
         autocapitalize    : "off",
 
+        placeholder       : null,
         autoHideFilters   : true,
+
         filters: {
             people: {
                 icon: "yum",
@@ -412,7 +414,10 @@
     }
 
     EmojioneArea.prototype.setText = function(str) {
-        this.editor.html('<div>' + htmlFromText(str) + '</div>');
+        this.editor.html('<div class="placeholder-fix">' + htmlFromText(str) + '</div>');
+        if (!!this.placeholder) {
+            this.editor.children(".placeholder-fix:first").attr("placeholder", this.placeholder);
+        }
         this.content = this.editor.html();
         trigger.apply(this, ['emojioneArea.change change', this.content]);
     }
@@ -476,6 +481,11 @@
         this.editor = this.app.find("." + options.editorClassName)
             .attr("contenteditable", "true")
             .attr('tabindex', 0);
+
+        this.placeholder = options.placeholder || this.element.data("placeholder") || this.element.attr("placeholder");
+        if (!!this.placeholder) {
+            this.editor.attr("placeholder", this.placeholder)
+        }
 
         $.each(["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], $.proxy(function(i, name) {
             this.editor.attr(name, options[name]);
@@ -604,6 +614,11 @@
             })
 
             .on("emojioneArea.change", function() {
+                var html = this.editor.html();
+                // clear input, fix: chrome add <br> on contenteditable is empty
+                if (/^<br[^>]*>$/.test(html.replace(/<\/?div[^>]*>/g, ''))) {
+                    this.setText('');
+                }
                 this.element[this.elementValFunc](this.getText());
             })
 
