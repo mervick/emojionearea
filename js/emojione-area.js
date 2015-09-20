@@ -583,7 +583,7 @@
                 setTimeout($.proxy(function() {
                     element.attr("contenteditable", "true").focus();
                     restoreSelection(element[0], sel);
-                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html())));
+                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'))));
                     pasteHtmlAtCaret('<span id="' + UID +'-caret"></span>');
                     doc.scrollTop(docScrollTop);
                     element.scrollTop(editorScrollTop);
