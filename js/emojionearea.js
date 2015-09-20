@@ -18,7 +18,7 @@
         autocapitalize    : "off",
 
         placeholder       : null,
-        autoHideFilters   : true,
+        autoHideFilters   : false,
 
         filters: {
             people: {
