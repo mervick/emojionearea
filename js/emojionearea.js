@@ -188,9 +188,7 @@
             var preSelectionRange = range.cloneRange();
             preSelectionRange.selectNodeContents(containerEl);
             preSelectionRange.setEnd(range.startContainer, range.startOffset);
-            //var start = textFromHtml($("<div/>").append(preSelectionRange.toString()).html()).length;
             var start = preSelectionRange.toString().length;
-            //var start = textFromHtml($("<div/>").append(preSelectionRange.extractContents()).html()).length;
 
             return {
                 start: start,
