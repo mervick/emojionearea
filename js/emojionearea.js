@@ -181,7 +181,7 @@
         emojioneList = {};
 
     $.each(emojione.emojioneList, function(shortname, keys) {
-        // fix shortnames
+        // fix shortnames for emojione v1.5.0
         emojioneList[shortname.replace('-', '_')] = keys;
     });
 
@@ -313,7 +313,8 @@
 
     EmojioneArea.prototype.off = function(events, handler) {
         if (!!events) {
-            var system = /^emojioneArea\./;
+            // disabling turn off system events
+            var system = /^@/;
             if ($.isFunction(handler)) {
                 $.each(events.toLowerCase().split(' '), $.proxy(function(i, event) {
                     if (!system.test(event) && !!this.events[event] && !!this.events[event].length) {
@@ -340,10 +341,16 @@
         if (!!events) {
             args = slice.call(arguments, 1);
             $.each(events.toLowerCase().split(' '), $.proxy(function(i, event) {
-                if (!!this.events[event] && !!this.events[event].length) {
-                    $.each(this.events[event], $.proxy(function (i, fn) {
-                        return result = fn.apply(this, args) !== false;
-                    }, this));
+                for (var j=0; j<=1; j++) {
+                    var _event = j==0 ? '@' + event : event;
+                    if (!!this.events[_event] && !!this.events[_event].length) {
+                        $.each(this.events[_event], $.proxy(function (i, fn) {
+                            return result = fn.apply(this, args) !== false;
+                        }, this));
+                    }
+                    if (!result) {
+                        break;
+                    }
                 }
                 return result;
             }, this));
@@ -422,7 +429,7 @@
             this.editor.children(".placeholder-fix:first").attr("placeholder", this.placeholder);
         }
         this.content = this.editor.html();
-        trigger.apply(this, ['emojioneArea.change change', this.content]);
+        trigger.apply(this, ['change', this.content]);
     }
 
     EmojioneArea.prototype.getText = function() {
@@ -531,28 +538,25 @@
 
         // attach events
         attach.apply(this, [this.filters, {
-            mousedown: "emojioneArea.filters.mousedown filters.mousedown"
+            mousedown: "filters.mousedown"
         }, this.editor]);
 
         attach.apply(this, [this.tabs, {
-            mousedown: "emojioneArea.tabs.mousedown tabs.mousedown"
+            mousedown: "tabs.mousedown"
         }, this.editor]);
 
-        attach.apply(this, [this.editor, {
-            paste: "emojioneArea.paste paste"
-        }, this.editor]);
+        attach.apply(this, [this.editor, "paste", this.editor]);
 
         attach.apply(this, [this.editor, {
-            focus: "emojioneArea.editor.focus",
-            blur: "emojioneArea.editor.blur"
+            focus: "editor.focus",
+            blur: "editor.blur"
         }, this.editor]);
 
-        attach.apply(this, [this.editor, {
-            focus: "emojioneArea.focus focus",
-            blur: "emojioneArea.blur blur"
-        }, function() {
-            return !!this.stayFocused ? false : this.editor;
-        }]);
+        attach.apply(this, [this.editor, ["focus", "blur"],
+            function() {
+                return !!this.stayFocused ? false : this.editor;
+            }
+        ]);
 
         attach.apply(this, [
             [this.editor, this.filters, this.tabs],
@@ -562,18 +566,18 @@
 
         attach.apply(this, [
             this.filters.find("." + options.filterClassName), {
-                click: "emojioneArea.filter.click filter.click"
+                click: "filter.click"
             }
         ]);
 
         attach.apply(this, [
             this.tabs.find(".emojibtn"), {
-                click: "emojioneArea.emojibtn.click emojibtn.click"
+                click: "emojibtn.click"
             }
         ]);
 
 
-        this.on("emojioneArea.filter.click", function(element) {
+        this.on("@filter.click", function(element) {
                 if (element.is(".active")) {
                     element.removeClass("active");
                     this.tabs.children("." + options.tabClassName).hide();
@@ -585,7 +589,7 @@
                 }
             })
 
-            .on("emojioneArea.paste", function(element, event) {
+            .on("@paste", function(element, event) {
                 var UID = "emojionearea-paster-" + (new Date().getTime()),
                     doc = $(document);
 
@@ -627,13 +631,13 @@
                 }, this), 200);
             })
 
-            .on("emojioneArea.emojibtn.click", function(element) {
+            .on("@emojibtn.click", function(element) {
                 saveSelection(this.editor[0]);
                 pasteHtmlAtCaret(shortnameTo(element.children("span").data("shortname"),
                     '<img class="emojione" alt="{alt}" src="{imagePng}"/>'));
             })
 
-            .on("emojioneArea.filters.mousedown emojioneArea.tabs.mousedown", function(element, event) {
+            .on("@filters.mousedown @tabs.mousedown", function(element, event) {
                 if (!options.autoHideFilters && !this.app.is(".focused")) {
                     element.focus();
                 }
@@ -641,7 +645,7 @@
                 return false;
             })
 
-            .on("emojioneArea.change", function() {
+            .on("@change", function() {
                 var html = this.editor.html();
                 // clear input, fix: chrome add <br> on contenteditable is empty
                 if (/^<br[^>]*>$/.test(html.replace(/<\/?div[^>]*>/g, ''))) {
@@ -650,14 +654,14 @@
                 this.element[this.elementValFunc](this.getText());
             })
 
-            .on("emojioneArea.focus", function() {
+            .on("@focus", function() {
                 this.app.addClass("focused");
                 if (options.autoHideFilters) {
                     this.filters.slideDown(400);
                 }
             })
 
-            .on("emojioneArea.blur", function(element) {
+            .on("@blur", function(element) {
                 this.app.removeClass("focused");
                 if (options.autoHideFilters) {
                     this.filters.slideUp(400);
@@ -667,7 +671,7 @@
                 var content = element.html();
                 if (this.content !== content) {
                     this.content = content;
-                    trigger.apply(this, ['emojioneArea.change change', this.content]);
+                    trigger.apply(this, ['change', this.content]);
                 }
             });
     };
