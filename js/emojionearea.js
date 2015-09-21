@@ -473,7 +473,7 @@
         options = $.extend({}, default_options, options);
 
         var self = this, editor, filters, tabs,
-            sourceValFunc = source.is("TEXTAREA") ? "val" : "text",
+            sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             app = options.template,
             stayFocused = false,
             container = !!options.container ? $(options.container) : false;
