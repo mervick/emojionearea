@@ -114,15 +114,11 @@
             height: 46px;
             overflow: hidden;
             width: 10000%;
-            float: left;
             display: block;
+            left: 0;
             margin: 0;
-            //&.active-left {
-            //    margin-left: 23px;
-            //}
-            //&.active-right {
-            //    margin-right: 23px;
-            //}
+            position: absolute;
+            @include transition(left ease-in-out .25s);
         }
 
         .emojionearea-filter-arrow-left,
@@ -157,7 +153,8 @@
         }
 
         .emojionearea-filter-arrow-left {
-            left: 0;
+            @include transition(left ease-in-out .15s);
+            left: -30px;
             border-right: 1px solid #c9c9c9;
             &:after {
                 left: 6px;
@@ -169,7 +166,8 @@
         }
 
         .emojionearea-filter-arrow-right {
-            right: 0;
+            @include transition(right ease-in-out .15s);
+            right: -30px;
             border-left: 1px solid #c9c9c9;
             &:after {
                 right: 6px;
@@ -178,6 +176,16 @@
             &.disabled:after {
                 border-left-color: #aaa;
             }
+        }
+    }
+
+    &.focused .emojionearea-filters {
+        .emojionearea-filter-arrow-left.active {
+            left: 0;
+        }
+
+        .emojionearea-filter-arrow-right.active {
+            right: 0;
         }
     }
 
