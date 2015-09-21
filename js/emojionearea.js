@@ -291,7 +291,7 @@
 
     var EmojioneArea = function(element, options) {
         this.id = time();
-        init.apply(this, [$(element), options]);
+        init.apply(this, [element, options]);
     };
 
     EmojioneArea.prototype.on = function(events, handler) {
@@ -424,14 +424,16 @@
             .replace(/\x20\x20/g, ' &nbsp;');
     }
 
-    EmojioneArea.prototype.setText = function(str) {
+    EmojioneArea.prototype.setText = function(str, noChangeEvent) {
         var self = this;
         self.editor.html('<div class="placeholder-fix">' + htmlFromText(str) + '</div>');
         if (!!self.placeholder) {
             self.editor.children(".placeholder-fix:first").attr("placeholder", self.placeholder);
         }
         self.content = self.editor.html();
-        trigger.apply(self, ['change', self.content]);
+        if (!!noChangeEvent) {
+            trigger.apply(self, ['change', self.content]);
+        }
     }
 
     EmojioneArea.prototype.getText = function() {
@@ -472,11 +474,19 @@
     function init(source, options) {
         options = $.extend({}, default_options, options);
 
-        var self = this, editor, filters, tabs,
+        var self = this, editor, filters, tabs, filtersArrowLeft, filtersArrowRight,
+            filterMassive, filtersWidth, scrollLeft = 0, scrollAreaWidth = 0, overflow, filterWidth,
             sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             app = options.template,
             stayFocused = false,
-            container = !!options.container ? $(options.container) : false;
+            container = !!options.container ? $(options.container) : false,
+            resizeHandler = function() {
+                var width = filters.width();
+                if (width !== filtersWidth) {
+                    filtersWidth = width;
+                    trigger.apply(self, ['@resize', width]);
+                }
+            }, resizeHandlerID;
 
         self.placeholder = options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "";
 
@@ -533,6 +543,13 @@
                 .appendTo(tabs);
         });
 
+        filters.wrapInner('<div class="emojionearea-filters-overflow"/>');
+        filtersArrowLeft = $('<i class="emojionearea-filter-arrow-left"/>').appendTo(filters);
+        filtersArrowRight = $('<i class="emojionearea-filter-arrow-right"/>').appendTo(filters);
+
+        filterMassive = filters.find(".emojionearea-filter");
+        overflow = filters.children(".emojionearea-filters-overflow");
+
         // show application
         if (!!container) {
             container.replaceWith(app);
@@ -549,11 +566,41 @@
         // attach events
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
         attach(self, editor, "paste", editor);
-        attach(self, editor, {focus: "editor.focus", blur: "editor.blur"}, editor);
         attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
         attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], editor);
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
         attach(self, tabs.find(".emojibtn"), {click: "emojibtn.click"});
+        attach(self, filtersArrowLeft, {click: "arrowLeft.click"});
+        attach(self, filtersArrowRight, {click: "arrowRight.click"});
+
+        function scrollFilters() {
+            if (!scrollAreaWidth) {
+                $.each(filterMassive, function (i, e) {
+                    scrollAreaWidth += $(e).outerWidth(true);
+                });
+                filterWidth = filterMassive.eq(0).outerWidth(true);
+            }
+            if (scrollAreaWidth > filtersWidth) {
+                filtersArrowRight.addClass("active");
+                filtersArrowLeft.addClass("active");
+
+                if (scrollLeft + scrollAreaWidth <= filtersWidth) {
+                    scrollLeft = filtersWidth - scrollAreaWidth;
+                    filtersArrowRight.removeClass("active");
+                } else if (scrollLeft >= 0) {
+                    scrollLeft = 0;
+                    filtersArrowLeft.removeClass("active");
+                }
+                overflow.css("left", scrollLeft);
+            } else {
+                if (scrollLeft !== 0) {
+                    scrollLeft = 0;
+                    overflow.css("left", scrollLeft);
+                }
+                filtersArrowRight.removeClass("active");
+                filtersArrowLeft.removeClass("active");
+            }
+        }
 
 
         self.on("@filter.click", function(element) {
@@ -561,11 +608,25 @@
                     element.removeClass("active");
                     tabs.children().hide();
                 } else {
-                    element.parent().find(".active").removeClass("active");
+                    filterMassive.filter(".active").removeClass("active");
                     element.addClass("active");
                     tabs.children().hide()
                         .filter(".emojionearea-tab-" + element.data("filter")).show();
                 }
+            })
+
+            .on("@resize", function() {
+                scrollFilters();
+            })
+
+            .on("@arrowLeft.click", function() {
+                scrollLeft += filterWidth;
+                scrollFilters();
+            })
+
+            .on("@arrowRight.click", function() {
+                scrollLeft -= filterWidth;
+                scrollFilters();
             })
 
             .on("@paste", function(element) {
@@ -620,15 +681,18 @@
             })
 
             .on("@change", function() {
-                var html = editor.html();
+                var html = editor.html(), self = this;
                 // clear input, fix: chrome add <br> on contenteditable is empty
                 if (/^<br[^>]*>$/.test(html.replace(/<\/?div[^>]*>/g, ''))) {
-                    this.setText('');
+                    self.setText('', true);
                 }
-                source[sourceValFunc](this.getText());
+                source[sourceValFunc](self.getText());
             })
 
             .on("@focus", function() {
+                resizeHandler();
+                scrollFilters();
+                resizeHandlerID = window.setInterval(resizeHandler, 500);
                 app.addClass("focused");
                 if (options.autoHideFilters) {
                     filters.slideDown(400);
@@ -637,10 +701,11 @@
 
             .on("@blur", function(element) {
                 app.removeClass("focused");
+                window.clearInterval(resizeHandlerID);
                 if (options.autoHideFilters) {
                     filters.slideUp(400);
                 }
-                filters.find(".active").removeClass("active");
+                filterMassive.filter(".active").removeClass("active");
                 tabs.children().hide();
                 var content = element.html();
                 if (self.content !== content) {
