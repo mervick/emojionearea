@@ -70,7 +70,10 @@
         @include box-sizing(border-box);
         background: #e5e5e5;
         width: 100%;
-        height: auto;
+        height: 46px;
+        position: relative;
+        overflow: hidden;
+
         .emojionearea-filter {
             @include box-sizing(content-box);
             top: 0 !important;
@@ -85,6 +88,7 @@
             border-left-width: 14px;
             border-right-width: 14px;
             @include opacity(0.7);
+
             span {
                 display: block;
                 width: 28px;
@@ -92,15 +96,87 @@
                 top: 0;
                 margin: 0;
             }
+
             &:hover {
                 background-color: #f2f2f2;
                 border-color: #f2f2f2;
                 @include opacity(0.9);
             }
+
             &.active {
                 background-color: #f9f9f9;
                 border-color: #f9f9f9;
                 @include opacity(1);
+            }
+        }
+
+        .emojionearea-filters-overflow {
+            height: 46px;
+            overflow: hidden;
+            width: 10000%;
+            float: left;
+            display: block;
+            margin: 0;
+            //&.active-left {
+            //    margin-left: 23px;
+            //}
+            //&.active-right {
+            //    margin-right: 23px;
+            //}
+        }
+
+        .emojionearea-filter-arrow-left,
+        .emojionearea-filter-arrow-right {
+            display: block;
+            width: 22px;
+            height: 46px;
+            position: absolute;
+            top: 0;
+            @include box-shadow(0px 0px 2px rgba(0,0,0,0.2));
+            background: #e5e5e5;
+            z-index: 1;
+
+            &:hover {
+                background: #f2f2f2;
+            }
+
+            &:after {
+                content: "";
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 5px 0;
+                border-color: transparent;
+                position: absolute;
+                top: 18px;
+            }
+
+            &.disabled {
+                @include box-shadow(none);
+            }
+        }
+
+        .emojionearea-filter-arrow-left {
+            left: 0;
+            border-right: 1px solid #c9c9c9;
+            &:after {
+                left: 6px;
+                border-right: 8px solid #333;
+            }
+            &.disabled:after {
+                border-right-color: #aaa;
+            }
+        }
+
+        .emojionearea-filter-arrow-right {
+            right: 0;
+            border-left: 1px solid #c9c9c9;
+            &:after {
+                right: 6px;
+                border-left: 8px solid #333;
+            }
+            &.disabled:after {
+                border-left-color: #aaa;
             }
         }
     }
