@@ -1,5 +1,5 @@
-
 (function(document, window, $, emojione) {
+    'use strict';
 
     var default_options = {
         template          : "<editor/><filters/><tabs/>",
@@ -176,9 +176,8 @@
         }
     };
 
-    var slice = [].slice;
-
-    var saveSelection, restoreSelection;
+    var slice = [].slice,
+        saveSelection, restoreSelection;
 
     if (window.getSelection && document.createRange) {
         saveSelection = function(containerEl) {
@@ -193,7 +192,7 @@
             return {
                 start: start,
                 end: start + textFromHtml($("<div/>").append(range.extractContents()).html()).length
-            }
+            };
         };
 
         restoreSelection = function(containerEl, savedSel) {
@@ -531,16 +530,47 @@
         createDOM.apply(this, [options]);
 
         // attach events
-        attach.apply(this, [this.filters, {mousedown: "emojioneArea.filters.mousedown filters.mousedown"}, this.editor]);
-        attach.apply(this, [this.tabs, {mousedown: "emojioneArea.tabs.mousedown tabs.mousedown"}, this.editor]);
-        attach.apply(this, [this.editor, {paste: "emojioneArea.paste paste"}, this.editor]);
-        attach.apply(this, [this.editor, {focus: "emojioneArea.editor.focus", blur: "emojioneArea.editor.blur"}, this.editor]);
-        attach.apply(this, [this.editor, {focus: "emojioneArea.focus focus", blur: "emojioneArea.blur blur"}, function() {
+        attach.apply(this, [this.filters, {
+            mousedown: "emojioneArea.filters.mousedown filters.mousedown"
+        }, this.editor]);
+
+        attach.apply(this, [this.tabs, {
+            mousedown: "emojioneArea.tabs.mousedown tabs.mousedown"
+        }, this.editor]);
+
+        attach.apply(this, [this.editor, {
+            paste: "emojioneArea.paste paste"
+        }, this.editor]);
+
+        attach.apply(this, [this.editor, {
+            focus: "emojioneArea.editor.focus",
+            blur: "emojioneArea.editor.blur"
+        }, this.editor]);
+
+        attach.apply(this, [this.editor, {
+            focus: "emojioneArea.focus focus",
+            blur: "emojioneArea.blur blur"
+        }, function() {
             return !!this.stayFocused ? false : this.editor;
         }]);
-        attach.apply(this, [[this.editor, this.filters, this.tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], this.editor]);
-        attach.apply(this, [this.filters.find("." + options.filterClassName), {click: "emojioneArea.filter.click filter.click"}]);
-        attach.apply(this, [this.tabs.find(".emojibtn"), {click: "emojioneArea.emojibtn.click emojibtn.click"}]);
+
+        attach.apply(this, [
+            [this.editor, this.filters, this.tabs],
+            ["mousedown", "mouseup", "click", "keyup", "keydown"],
+            this.editor
+        ]);
+
+        attach.apply(this, [
+            this.filters.find("." + options.filterClassName), {
+                click: "emojioneArea.filter.click filter.click"
+            }
+        ]);
+
+        attach.apply(this, [
+            this.tabs.find(".emojibtn"), {
+                click: "emojioneArea.emojibtn.click emojibtn.click"
+            }
+        ]);
 
 
         this.on("emojioneArea.filter.click", function(element) {
