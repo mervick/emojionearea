@@ -177,7 +177,13 @@
     };
 
     var slice = [].slice,
-        saveSelection, restoreSelection;
+        saveSelection, restoreSelection,
+        emojioneList = {};
+
+    $.each(emojione.emojioneList, function(shortname, keys) {
+        // fix shortnames
+        emojioneList[shortname.replace('-', '_')] = keys;
+    });
 
     if (window.getSelection && document.createRange) {
         saveSelection = function(containerEl) {
@@ -295,7 +301,7 @@
 
     EmojioneArea.prototype.on = function(events, handler) {
         if (!!events && $.isFunction(handler)) {
-            $.each(events.split(' '), $.proxy(function(i, event) {
+            $.each(events.toLowerCase().split(' '), $.proxy(function(i, event) {
                 if (!this.events[event]) {
                     this.events[event] = [];
                 }
@@ -309,7 +315,7 @@
         if (!!events) {
             var system = /^emojioneArea\./;
             if ($.isFunction(handler)) {
-                $.each(events.split(' '), $.proxy(function(i, event) {
+                $.each(events.toLowerCase().split(' '), $.proxy(function(i, event) {
                     if (!system.test(event) && !!this.events[event] && !!this.events[event].length) {
                         $.each(this.events[event], $.proxy(function(j, fn) {
                             if (fn === handler) {
@@ -333,7 +339,7 @@
         var result = true, args;
         if (!!events) {
             args = slice.call(arguments, 1);
-            $.each(events.split(' '), $.proxy(function(i, event) {
+            $.each(events.toLowerCase().split(' '), $.proxy(function(i, event) {
                 if (!!this.events[event] && !!this.events[event].length) {
                     $.each(this.events[event], $.proxy(function (i, fn) {
                         return result = fn.apply(this, args) !== false;
@@ -436,12 +442,6 @@
             }
         });
     }
-
-    var emojioneList = {};
-    $.each(emojione.emojioneList, function(shortname, keys) {
-        // fix shortnames
-        emojioneList[shortname.replace('-', '_')] = keys;
-    });
 
     function shortnameTo(str, template) {
         return str.replace(/:?[\w_]+:?,?/g, function(shortname) {
