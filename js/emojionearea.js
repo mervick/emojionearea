@@ -4,13 +4,6 @@
     var default_options = {
         template          : "<editor/><filters/><tabs/>",
 
-        className         : "emojionearea",
-        editorClassName   : "emojionearea-editor",
-        filtersClassName  : "emojionearea-filters",
-        filterClassName   : "emojionearea-filter",
-        tabsClassName     : "emojionearea-tabs",
-        tabClassName      : "emojionearea-tab",
-
         dir               : "ltr",
         spellcheck        : true,
         autocomplete      : "off",
