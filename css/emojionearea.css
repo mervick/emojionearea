@@ -140,7 +140,7 @@
   opacity: 1;
 }
 /* line 113, ../scss/emojionearea.scss */
-.emojionearea .emojionearea-filters .emojionearea-filters-overflow {
+.emojionearea .emojionearea-filters .emojionearea-filters-scroll {
   height: 46px;
   overflow: hidden;
   width: 10000%;
