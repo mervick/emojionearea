@@ -286,7 +286,7 @@
     }
 
     function time() {
-        return (new Date().getTime());
+        return (new Date()).getTime();
     }
 
     var EmojioneArea = function(element, options) {
@@ -295,62 +295,53 @@
     };
 
     EmojioneArea.prototype.on = function(events, handler) {
-        var self = this;
+        var id = this.id;
         if (!!events && $.isFunction(handler)) {
             $.each(events.toLowerCase().split(' '), function(i, event) {
-                if (!eventStorage[self.id][event]) {
-                    eventStorage[self.id][event] = [];
+                if (!eventStorage[id][event]) {
+                    eventStorage[id][event] = [];
                 }
-                eventStorage[self.id][event].push(handler);
+                eventStorage[id][event].push(handler);
             });
         }
-        return self;
+        return this;
     };
 
     EmojioneArea.prototype.off = function(events, handler) {
-        var self = this,
+        var id = this.id,
             // disabling turn off the system events
             system = /^@/;
         if (!!events) {
-            if ($.isFunction(handler)) {
-                $.each(events.toLowerCase().split(' '), function(i, event) {
-                    if (!!eventStorage[self.id][event] && !system.test(event)) {
-                        $.each(eventStorage[self.id][event], function(j, fn) {
+            $.each(events.toLowerCase().split(' '), function(i, event) {
+                if (!!eventStorage[id][event] && !system.test(event)) {
+                    if (!!handler) {
+                        $.each(eventStorage[id][event], function(j, fn) {
                             if (fn === handler) {
-                                eventStorage[self.id][event] = eventStorage[self.id][event].splice(j, 1);
+                                eventStorage[id][event] = eventStorage[id][event].splice(j, 1);
                             }
                         });
-                    }
-                });
-            } else {
-                $.each(events.split(' '), function(i, event) {
-                    if (!system.test(event)) {
-                        eventStorage[self.id][event] = [];
-                    }
-                });
-            }
-        }
-        return self;
-    };
-
-    function trigger(events) {
-        var self = this, result = true, args;
-        if (!!events) {
-            args = slice.call(arguments, 1);
-            $.each(events.toLowerCase().split(' '), function(i, event) {
-                for (var j=0; j<=1; j++) {
-                    var _event = j==0 ? '@' + event : event;
-                    if (!!eventStorage[self.id][_event] && !!eventStorage[self.id][_event].length) {
-                        $.each(eventStorage[self.id][_event], function (i, fn) {
-                            return result = fn.apply(self, args) !== false;
-                        });
-                    }
-                    if (!result) {
-                        break;
+                    } else {
+                        eventStorage[id][event] = [];
                     }
                 }
-                return result;
             });
+        }
+        return this;
+    };
+
+    function trigger(self, event, args) {
+        var result = true, j = 1;
+        if (!!event) {
+            event = event.toLowerCase();
+            args = args || [];
+            do {
+                var _event = j==1 ? '@' + event : event;
+                if (!!eventStorage[self.id][_event] && !!eventStorage[self.id][_event].length) {
+                    $.each(eventStorage[self.id][_event], function (i, fn) {
+                        return result = fn.apply(self, args) !== false;
+                    });
+                }
+            } while (result && !!j--);
         }
         return result;
     }
@@ -366,7 +357,7 @@
             element.on(event, function() {
                 var _target = $.isFunction(target) ? target.apply(self, [event].concat(slice.call(arguments))) : target;
                 if (!!_target) {
-                    trigger.apply(self, [handler].concat([_target]).concat(slice.call(arguments)));
+                    trigger(self, handler, [_target].concat(slice.call(arguments)));
                 }
             });
         }
@@ -424,15 +415,15 @@
             .replace(/\x20\x20/g, ' &nbsp;');
     }
 
-    EmojioneArea.prototype.setText = function(str, noChangeEvent) {
+    EmojioneArea.prototype.setText = function(str) {
         var self = this;
         self.editor.html('<div class="placeholder-fix">' + htmlFromText(str) + '</div>');
         if (!!self.placeholder) {
             self.editor.children(".placeholder-fix:first").attr("placeholder", self.placeholder);
         }
         self.content = self.editor.html();
-        if (!!noChangeEvent) {
-            trigger.apply(self, ['change', self.content]);
+        if (arguments.length === 1) {
+            trigger(self, 'change', [self.editor]);
         }
     }
 
@@ -474,17 +465,20 @@
     function init(source, options) {
         options = $.extend({}, default_options, options);
 
-        var self = this, editor, filters, tabs, filtersArrowLeft, filtersArrowRight,
-            filterMassive, filtersWidth, scrollLeft = 0, scrollAreaWidth = 0, overflow, filterWidth,
+        var self = this,
             sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             app = options.template,
             stayFocused = false,
+            // DOM
             container = !!options.container ? $(options.container) : false,
+            editor, filters, tabs, scrollArea, filtersBtns, filtersArrowLeft, filtersArrowRight,
+            // scroll vars
+            filtersWidth, scrollLeft = 0, scrollAreaWidth = 0, filterWidth,
             resizeHandler = function() {
                 var width = filters.width();
                 if (width !== filtersWidth) {
                     filtersWidth = width;
-                    trigger.apply(self, ['@resize', width]);
+                    trigger(self, 'resize', [editor]);
                 }
             }, resizeHandlerID;
 
@@ -543,16 +537,16 @@
                 .appendTo(tabs);
         });
 
-        filters.wrapInner('<div class="emojionearea-filters-overflow"/>');
+        filters.wrapInner('<div class="emojionearea-filters-scroll"/>');
         filtersArrowLeft = $('<i class="emojionearea-filter-arrow-left"/>').appendTo(filters);
         filtersArrowRight = $('<i class="emojionearea-filter-arrow-right"/>').appendTo(filters);
 
-        filterMassive = filters.find(".emojionearea-filter");
-        overflow = filters.children(".emojionearea-filters-overflow");
+        filtersBtns = filters.find(".emojionearea-filter");
+        scrollArea = filters.children(".emojionearea-filters-scroll");
 
         // show application
         if (!!container) {
-            container.replaceWith(app);
+            container.wrapInner(app);
         } else {
             app.insertAfter(source);
         }
@@ -575,10 +569,10 @@
 
         function scrollFilters() {
             if (!scrollAreaWidth) {
-                $.each(filterMassive, function (i, e) {
+                $.each(filtersBtns, function (i, e) {
                     scrollAreaWidth += $(e).outerWidth(true);
                 });
-                filterWidth = filterMassive.eq(0).outerWidth(true);
+                filterWidth = filtersBtns.eq(0).outerWidth(true);
             }
             if (scrollAreaWidth > filtersWidth) {
                 filtersArrowRight.addClass("active");
@@ -591,11 +585,11 @@
                     scrollLeft = 0;
                     filtersArrowLeft.removeClass("active");
                 }
-                overflow.css("left", scrollLeft);
+                scrollArea.css("left", scrollLeft);
             } else {
                 if (scrollLeft !== 0) {
                     scrollLeft = 0;
-                    overflow.css("left", scrollLeft);
+                    scrollArea.css("left", scrollLeft);
                 }
                 filtersArrowRight.removeClass("active");
                 filtersArrowLeft.removeClass("active");
@@ -608,7 +602,7 @@
                     element.removeClass("active");
                     tabs.children().hide();
                 } else {
-                    filterMassive.filter(".active").removeClass("active");
+                    filtersBtns.filter(".active").removeClass("active");
                     element.addClass("active");
                     tabs.children().hide()
                         .filter(".emojionearea-tab-" + element.data("filter")).show();
@@ -639,16 +633,14 @@
                     clipboard = $("<div/>")
                         .appendTo($("BODY"))
                         .attr("contenteditable", "true")
-                        .attr("tabindex", "0")
-                        .css({position: "fixed", left: "-9999px", width: "1px", height: "1px", top: 10})
+                        .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: 10})
                         .focus();
 
                 doc.scrollTop(docScrollTop);
-                element.removeAttr("contenteditable");
 
                 window.setTimeout(function() {
                     var UID = "caret-" + time();
-                    element.attr("contenteditable", "true").focus();
+                    element.focus();
                     restoreSelection(element[0], sel);
                     pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'))));
                     clipboard.remove();
@@ -680,18 +672,17 @@
                 return false;
             })
 
-            .on("@change", function() {
-                var html = editor.html(), self = this;
+            .on("@change", function(element) {
+                var html = element.html();
                 // clear input, fix: chrome add <br> on contenteditable is empty
-                if (/^<br[^>]*>$/.test(html.replace(/<\/?div[^>]*>/g, ''))) {
-                    self.setText('', true);
+                if (/^<br[^>]*>$/i.test(html.replace(/<\/?(?:div|span|p)[^>]*>/ig, ''))) {
+                    self.setText('', false);
                 }
                 source[sourceValFunc](self.getText());
             })
 
             .on("@focus", function() {
                 resizeHandler();
-                scrollFilters();
                 resizeHandlerID = window.setInterval(resizeHandler, 500);
                 app.addClass("focused");
                 if (options.autoHideFilters) {
@@ -700,17 +691,19 @@
             })
 
             .on("@blur", function(element) {
+                scrollLeft = 0;
+                scrollFilters();
                 app.removeClass("focused");
                 window.clearInterval(resizeHandlerID);
                 if (options.autoHideFilters) {
                     filters.slideUp(400);
                 }
-                filterMassive.filter(".active").removeClass("active");
+                filtersBtns.filter(".active").removeClass("active");
                 tabs.children().hide();
                 var content = element.html();
                 if (self.content !== content) {
                     self.content = content;
-                    trigger.apply(self, ['change', self.content]);
+                    trigger(self, 'change', [editor]);
                 }
             });
     };
