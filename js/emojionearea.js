@@ -417,10 +417,7 @@
 
     EmojioneArea.prototype.setText = function(str) {
         var self = this;
-        self.editor.html('<div class="placeholder-fix">' + htmlFromText(str) + '</div>');
-        if (!!self.placeholder) {
-            self.editor.children(".placeholder-fix:first").attr("placeholder", self.placeholder);
-        }
+        self.editor.html(htmlFromText(str));
         self.content = self.editor.html();
         if (arguments.length === 1) {
             trigger(self, 'change', [self.editor]);
@@ -520,8 +517,8 @@
         // parse icons
         $.each(options.filters, function(filter, params) {
             // filters
-            $("<span/>")
-                .wrapInner(shortnameTo(params.icon, '<span class="emojione-{unicode}">{alt}</span>'))
+            $("<i/>")
+                .wrapInner(shortnameTo(params.icon, '<i class="emojione-{unicode}">{alt}</i>'))
                 .addClass('emojionearea-filter')
                 .attr("data-filter", filter)
                 .attr("role", "button")
@@ -530,7 +527,7 @@
             // tabs
             $("<div/>")
                 .wrapInner(shortnameTo(params.emoji,
-                    '<span class="emojibtn"><span class="emojione-{unicode}" data-shortname="{shortname}">{alt}</span></span>'))
+                    '<i class="emojibtn" role="button"><i class="emojione-{unicode}" data-shortname="{shortname}">{alt}</i></i>'))
                 .addClass('emojionearea-tab')
                 .addClass('emojionearea-tab-' + filter)
                 .hide()
@@ -538,8 +535,8 @@
         });
 
         filters.wrapInner('<div class="emojionearea-filters-scroll"/>');
-        filtersArrowLeft = $('<i class="emojionearea-filter-arrow-left"/>').appendTo(filters);
-        filtersArrowRight = $('<i class="emojionearea-filter-arrow-right"/>').appendTo(filters);
+        filtersArrowLeft = $('<i class="emojionearea-filter-arrow-left"/>').attr("role", "button").appendTo(filters);
+        filtersArrowRight = $('<i class="emojionearea-filter-arrow-right"/>').attr("role", "button").appendTo(filters);
 
         filtersBtns = filters.find(".emojionearea-filter");
         scrollArea = filters.children(".emojionearea-filters-scroll");
@@ -625,18 +622,15 @@
 
             .on("@paste", function(element) {
                 stayFocused = true;
-                pasteHtmlAtCaret('<span>&nbsp;</span>');
+                pasteHtmlAtCaret('<span> </span>');
 
                 var sel = saveSelection(element[0]),
-                    docScrollTop = doc.scrollTop(),
                     editorScrollTop = element.scrollTop(),
                     clipboard = $("<div/>")
                         .appendTo($("BODY"))
                         .attr("contenteditable", "true")
-                        .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: 10})
+                        .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: "20px", overflow: "hidden"})
                         .focus();
-
-                doc.scrollTop(docScrollTop);
 
                 window.setTimeout(function() {
                     var UID = "caret-" + time();
@@ -644,8 +638,7 @@
                     restoreSelection(element[0], sel);
                     pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'))));
                     clipboard.remove();
-                    pasteHtmlAtCaret('<span id="' + UID +'"></span>');
-                    doc.scrollTop(docScrollTop);
+                    pasteHtmlAtCaret('<i id="' + UID +'"></i>');
                     element.scrollTop(editorScrollTop);
                     var caret = $("#" + UID),
                         top = caret.offset().top - element.offset().top,
@@ -660,7 +653,7 @@
 
             .on("@emojibtn.click", function(element) {
                 saveSelection(editor[0]);
-                pasteHtmlAtCaret(shortnameTo(element.children("span").data("shortname"),
+                pasteHtmlAtCaret(shortnameTo(element.children().data("shortname"),
                     '<img class="emojione" alt="{alt}" src="{imagePng}"/>'));
             })
 
@@ -673,9 +666,9 @@
             })
 
             .on("@change", function(element) {
-                var html = element.html();
+                var html = element.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
                 // clear input, fix: chrome add <br> on contenteditable is empty
-                if (/^<br[^>]*>$/i.test(html.replace(/<\/?(?:div|span|p)[^>]*>/ig, ''))) {
+                if (!html.length || /^<br[^>]*>$/i.test(html)) {
                     self.setText('', false);
                 }
                 source[sourceValFunc](self.getText());
