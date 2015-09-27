@@ -4,6 +4,8 @@ Emojione-area is a small jQuery plugin that allows you to transform any html ele
 ability to use Emojione icons. 
 The end result is a secure text/plain in which the image icons will be replaced with their Unicode analogues.
 
+[Demo](http://mervick.github.io/emojionearea/)
+
 ## Installation
 
 The preferred way to install is via `bower`, `npm` or `Composer`.
@@ -46,7 +48,7 @@ Simple usage:
 
 ## Requirements
 
-- [jQuery](https://jquery.com/) >= 1.8.3
+- [jQuery](https://jquery.com/) >= 1.8.2
 - [EmojiOne](https://github.com/Ranks/emojione) >= 1.5.0
 
 ## License
