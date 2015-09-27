@@ -7,7 +7,7 @@ The end result is a secure text/plain in which the image icons will be replaced 
 
 ![EmojiOne Area](http://mervick.github.io/emojionearea/images/screen.png)
 
-[Demo](http://mervick.github.io/emojionearea/)
+See a [Demo page](http://mervick.github.io/emojionearea/).
 
 ## Installation
 
