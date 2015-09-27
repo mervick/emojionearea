@@ -38,11 +38,7 @@
         cursor: text;
         @include border-radius(0);
         @include box-shadow(none);
-        &:empty:before{
-            content: attr(placeholder);
-            display: block;
-        }
-        .placeholder-fix:first-child:empty:before{
+        &:empty:before {
             content: attr(placeholder);
             display: block;
         }
@@ -89,7 +85,7 @@
             border-right-width: 14px;
             @include opacity(0.7);
 
-            span {
+            i, img {
                 display: block;
                 width: 28px;
                 height: 28px;
@@ -202,7 +198,7 @@
         }
         .emojionearea-tab {
             @include box-sizing(border-box);
-            padding: 4px 10px;
+            padding: 4px 4px 4px 10px;
             max-height: 136px;
             overflow: auto;
             .emojibtn {
@@ -216,6 +212,11 @@
                     @include border-radius(4px);
                     background-color: #e4e4e4;
                     cursor: pointer;
+                }
+                i, img {
+                    display: block;
+                    width: 24px;
+                    height: 24px;
                 }
             }
         }
