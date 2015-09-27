@@ -1,11 +1,13 @@
 (function(document, window, $, emojione) {
     'use strict';
 
+    var blankImg = 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==';
+
     var default_options = {
         template          : "<editor/><filters/><tabs/>",
 
         dir               : "ltr",
-        spellcheck        : true,
+        spellcheck        : false,
         autocomplete      : "off",
         autocorrect       : "off",
         autocapitalize    : "off",
@@ -14,6 +16,8 @@
         container         : null,
         hideSource        : true,
         autoHideFilters   : false,
+
+        useSprite         : true,
 
         filters: {
             people: {
@@ -174,7 +178,6 @@
     var slice = [].slice,
         saveSelection, restoreSelection,
         emojioneList = {},
-        doc = $(document),
         eventStorage = {};
 
     $.each(emojione.emojioneList, function(shortname, keys) {
@@ -290,7 +293,6 @@
     }
 
     var EmojioneArea = function(element, options) {
-        this.id = time();
         init.apply(this, [element, options]);
     };
 
@@ -381,13 +383,14 @@
         }
     }
 
-    function htmlFromText(str) {
-        return unicodeToImage(str
+    function htmlFromText(str, self) {
+        return unicodeTo(str
             .replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/(?:\r\n|\r|\n)/g, '\n')
             .replace(/(\n+)/g, '<div>$1</div>')
             .replace(/\n/g, '<br/>')
-            .replace(/<br\/><\/div>/g, '</div>'))
+            .replace(/<br\/><\/div>/g, '</div>'),
+            '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">'))
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
             .replace(/  /g, '&nbsp;&nbsp;');
     }
@@ -417,7 +420,7 @@
 
     EmojioneArea.prototype.setText = function(str) {
         var self = this;
-        self.editor.html(htmlFromText(str));
+        self.editor.html(htmlFromText(str, self));
         self.content = self.editor.html();
         if (arguments.length === 1) {
             trigger(self, 'change', [self.editor]);
@@ -428,34 +431,33 @@
         return textFromHtml(this.editor.html());
     }
 
-    function unicodeToImage(str) {
-        return str.replace(new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
-            emojione.unicodeRegexp+")", "gi"),function(unicodeChar) {
-            if((typeof unicodeChar === 'undefined') || (unicodeChar === '') || (!(unicodeChar in emojione.jsecapeMap))) {
-                return unicodeChar;
-            } else {
-                var unicode = emojione.jsecapeMap[unicodeChar],
-                    alt = emojione.convert(unicode);
+    var uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
+        emojione.unicodeRegexp+")", "gi");
 
-                return '<img class="emojione" alt="'+alt+'" src="'+emojione.imagePathPNG+unicode+'.png'+emojione.cacheBustParam+'"/>';
+    function getTemplate(template, unicode, shortname) {
+        return template
+            .replace('{name}', shortname || '')
+            .replace('{img}', emojione.imagePathPNG + unicode + '.png'/* + emojione.cacheBustParam*/)
+            .replace('{uni}', unicode)
+            .replace('{alt}', emojione.convert(unicode));
+    }
+
+    function unicodeTo(str, template) {
+        return str.replace(uniRegexp, function(unicodeChar) {
+            if (typeof unicodeChar !== 'undefined' && unicodeChar in emojione.jsecapeMap) {
+                return getTemplate(template, emojione.jsecapeMap[unicodeChar]);
             }
+            return unicodeChar;
         });
     }
 
     function shortnameTo(str, template) {
-        return str.replace(/:?[\w_]+:?,?/g, function(shortname) {
-            shortname = ":" + shortname.replace(/,$/,'').replace(/:$/,'').replace(/^:/,'') + ":";
-            if (!(shortname in emojioneList)) {
-                return shortname;
-            } else {
-                var unicode = emojioneList[shortname][emojioneList[shortname].length-1].toUpperCase(),
-                    alt = emojione.convert(unicode);
-                return template
-                    .replace('{shortname}', shortname)
-                    .replace('{imagePng}', emojione.imagePathPNG+unicode+'.png'+emojione.cacheBustParam)
-                    .replace('{unicode}', unicode)
-                    .replace('{alt}', alt);
+        return str.replace(/:?[\w_]+:?/g, function(shortname) {
+            shortname = ":" + shortname.replace(/:$/,'').replace(/^:/,'') + ":";
+            if (shortname in emojioneList) {
+                return getTemplate(template, emojioneList[shortname][emojioneList[shortname].length-1].toUpperCase(), shortname);
             }
+            return shortname;
         });
     };
 
@@ -479,7 +481,9 @@
                 }
             }, resizeHandlerID;
 
+        self.id = time();
         self.placeholder = options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "";
+        self.sprite = options.useSprite;
 
         eventStorage[self.id] = {};
 
@@ -518,16 +522,16 @@
         $.each(options.filters, function(filter, params) {
             // filters
             $("<i/>")
-                .wrapInner(shortnameTo(params.icon, '<i class="emojione-{unicode}">{alt}</i>'))
+                .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
                 .addClass('emojionearea-filter')
-                .attr("data-filter", filter)
-                .attr("role", "button")
+                .data("filter", filter)
                 .appendTo(filters);
 
             // tabs
             $("<div/>")
-                .wrapInner(shortnameTo(params.emoji,
-                    '<i class="emojibtn" role="button"><i class="emojione-{unicode}" data-shortname="{shortname}">{alt}</i></i>'))
+                .data("items", shortnameTo(params.emoji, '<i class="emojibtn" role="button">' +
+                    (self.sprite ? '<i class="emojione-{uni}"' : '<img class="emojione" src="{img}"') +
+                    ' data-name="{name}"/></i>'))
                 .addClass('emojionearea-tab')
                 .addClass('emojionearea-tab-' + filter)
                 .hide()
@@ -560,7 +564,6 @@
         attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
         attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], editor);
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
-        attach(self, tabs.find(".emojibtn"), {click: "emojibtn.click"});
         attach(self, filtersArrowLeft, {click: "arrowLeft.click"});
         attach(self, filtersArrowRight, {click: "arrowRight.click"});
 
@@ -601,8 +604,26 @@
                 } else {
                     filtersBtns.filter(".active").removeClass("active");
                     element.addClass("active");
-                    tabs.children().hide()
-                        .filter(".emojionearea-tab-" + element.data("filter")).show();
+                    var i, timer, tab = tabs.children().hide()
+                        .filter(".emojionearea-tab-" + element.data("filter")).show(),
+                        items = tab.data("items"),
+                        event = {click: "emojibtn.click"};
+                    if (items) {
+                        tab.data("items", false);
+                        items = items.split(',');
+                        if (self.sprite) {
+                            tab.html(items.join(''));
+                            attach(self, tab.find(".emojibtn"), event);
+                        } else {
+                            timer = window.setInterval(function () {
+                                for (i = 0; i < 20 && items.length; i++) {
+                                    tab.append(items.shift());
+                                    attach(self, tab.find(".emojibtn").not(".handled").addClass("handled"), event);
+                                }
+                                if (!items.length) window.clearInterval(timer);
+                            }, 5);
+                        }
+                    }
                 }
             })
 
@@ -636,7 +657,7 @@
                     var UID = "caret-" + time();
                     element.focus();
                     restoreSelection(element[0], sel);
-                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'))));
+                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>')), self));
                     clipboard.remove();
                     pasteHtmlAtCaret('<i id="' + UID +'"></i>');
                     element.scrollTop(editorScrollTop);
@@ -653,8 +674,8 @@
 
             .on("@emojibtn.click", function(element) {
                 saveSelection(editor[0]);
-                pasteHtmlAtCaret(shortnameTo(element.children().data("shortname"),
-                    '<img class="emojione" alt="{alt}" src="{imagePng}"/>'));
+                pasteHtmlAtCaret(shortnameTo(element.children().data("name"),
+                    '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">')));
             })
 
             .on("@area.mousedown", function(element, event) {
