@@ -1,8 +1,11 @@
-# Emojione-area
+# EmojiOne Area
 
-Emojione-area is a small jQuery plugin that allows you to transform any html element into simple WYSIWYG editor with 
+EmojiOne Area is a small jQuery plugin that allows you to transform any html element into simple WYSIWYG editor with 
 ability to use Emojione icons. 
 The end result is a secure text/plain in which the image icons will be replaced with their Unicode analogues.
+
+
+![EmojiOne Area](http://mervick.github.io/emojionearea/images/screen.png)
 
 [Demo](http://mervick.github.io/emojionearea/)
 
