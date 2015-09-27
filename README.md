@@ -48,3 +48,7 @@ Simple usage:
 
 - [jQuery](https://jquery.com/) >= 1.8.3
 - [EmojiOne](https://github.com/Ranks/emojione) >= 1.5.0
+
+## License
+
+EmojiOneArea is released under the MIT license.
