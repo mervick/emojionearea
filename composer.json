@@ -1,5 +1,5 @@
 {
-    "name": "mervick/emojione-area",
+    "name": "mervick/emojionearea",
     "description": "Simple jQuery WYSIWYG editor with emojione smiles for use in replies and comments",
     "type": "plugin",
     "license": "MIT",
@@ -11,7 +11,7 @@
     ],
     "minimum-stability": "dev",
     "require" : {
-        "bower-asset/jquery": "^2.1.4",
+        "bower-asset/jquery": "^1.8.2",
         "emojione/emojione": "^1.5.0"
     },
     "config": {
