@@ -1,4 +1,4 @@
-(function(document, window, $, emojione) {
+(function(document, window, $) {
     'use strict';
 
     var blankImg = 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==';
@@ -176,13 +176,47 @@
     };
 
     var slice = [].slice,
+        emojione = window.emojione || false,
         saveSelection, restoreSelection,
         emojioneList = {},
-        eventStorage = {};
+        eventStorage = {},
+        setInterval = window.setInterval,
+        clearInterval = window.clearInterval,
+        readyCallbacks = [],
+        uniRegexp;
 
-    $.each(emojione.emojioneList, function(shortname, keys) {
-        // fix shortnames for emojione v1.5.0
-        emojioneList[shortname.replace('-', '_')] = keys;
+    function emojioneReady(fn) {
+        if (emojione) {
+            fn();
+        } else {
+            readyCallbacks.push(fn);
+        }
+    };
+
+    if (!emojione) {
+        $.getScript("https://cdn.jsdelivr.net/emojione/1.5.0/lib/js/emojione.min.js", function () {
+            emojione = window.emojione;
+            emojione.imagePathPNG = "https://cdnjs.cloudflare.com/ajax/libs/emojione/1.5.0/assets/png/";
+            var sprite = "https://cdnjs.cloudflare.com/ajax/libs/emojione/1.5.0/assets/sprites/emojione.sprites.css";
+            if (document.createStyleSheet) {
+                document.createStyleSheet(sprite);
+            } else {
+                $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
+            }
+            $.each(readyCallbacks, function(i, fn) {
+                fn();
+            });
+        });
+    }
+
+    emojioneReady(function() {
+        $.each(emojione.emojioneList, function (shortname, keys) {
+            // fix shortnames for emojione v1.5.0
+            emojioneList[shortname.replace('-', '_')] = keys;
+        });
+
+        uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
+            emojione.unicodeRegexp+")", "gi");
     });
 
     if (window.getSelection && document.createRange) {
@@ -293,7 +327,10 @@
     }
 
     var EmojioneArea = function(element, options) {
-        init.apply(this, [element, options]);
+        var self = this;
+        emojioneReady(function() {
+            init.apply(self, [element, options]);
+        });
     };
 
     EmojioneArea.prototype.on = function(events, handler) {
@@ -419,20 +456,19 @@
     }
 
     EmojioneArea.prototype.setText = function(str) {
-        var self = this;
-        self.editor.html(htmlFromText(str, self));
-        self.content = self.editor.html();
-        if (arguments.length === 1) {
-            trigger(self, 'change', [self.editor]);
-        }
+        var self = this, args = arguments;
+        emojioneReady(function() {
+            self.editor.html(htmlFromText(str, self));
+            self.content = self.editor.html();
+            if (args.length === 1) {
+                trigger(self, 'change', [self.editor]);
+            }
+        });
     }
 
     EmojioneArea.prototype.getText = function() {
         return textFromHtml(this.editor.html());
     }
-
-    var uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
-        emojione.unicodeRegexp+")", "gi");
 
     function getTemplate(template, unicode, shortname) {
         return template
@@ -615,12 +651,12 @@
                             tab.html(items.join(''));
                             attach(self, tab.find(".emojibtn"), event);
                         } else {
-                            timer = window.setInterval(function () {
+                            timer = setInterval(function () {
                                 for (i = 0; i < 20 && items.length; i++) {
                                     tab.append(items.shift());
                                     attach(self, tab.find(".emojibtn").not(".handled").addClass("handled"), event);
                                 }
-                                if (!items.length) window.clearInterval(timer);
+                                if (!items.length) clearInterval(timer);
                             }, 5);
                         }
                     }
@@ -697,7 +733,7 @@
 
             .on("@focus", function() {
                 resizeHandler();
-                resizeHandlerID = window.setInterval(resizeHandler, 500);
+                resizeHandlerID = setInterval(resizeHandler, 500);
                 app.addClass("focused");
                 if (options.autoHideFilters) {
                     filters.slideDown(400);
@@ -708,7 +744,7 @@
                 scrollLeft = 0;
                 scrollFilters();
                 app.removeClass("focused");
-                window.clearInterval(resizeHandlerID);
+                clearInterval(resizeHandlerID);
                 if (options.autoHideFilters) {
                     filters.slideUp(400);
                 }
@@ -730,4 +766,4 @@
         });
     };
 
-}) (document, window, jQuery, emojione);
+}) (document, window, jQuery);
