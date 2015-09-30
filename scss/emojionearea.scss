@@ -48,7 +48,7 @@
             @include box-shadow(none);
         }
 
-        .emojione {
+        [class*=emojione-], .emojione {
             font-size: inherit;
             height: 2ex;
             width: 2.1ex;
@@ -59,6 +59,7 @@
             line-height: normal;
             vertical-align: middle;
             max-width: 100%;
+            top: 0;
         }
     }
 
@@ -205,7 +206,8 @@
                 @include box-sizing(content-box);
                 width: 24px;
                 height: 24px;
-                display: inline-block;
+                float: left;
+                display: block;
                 margin: 1px;
                 padding: 3px;
                 &:hover {
@@ -214,6 +216,7 @@
                     cursor: pointer;
                 }
                 i, img {
+                    float: left;
                     display: block;
                     width: 24px;
                     height: 24px;
