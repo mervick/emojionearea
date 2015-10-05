@@ -518,7 +518,6 @@
             }, resizeHandlerID;
 
         self.id = time();
-        self.placeholder = options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "";
         self.sprite = options.useSprite;
 
         eventStorage[self.id] = {};
@@ -529,17 +528,15 @@
         }
 
         // wrap application
-        app = $('<div>' + app + '</div>')
-            .addClass("emojionearea")
-            .attr("role", "application");
+        app = $('<div/>', {"class" : source.attr("class"), role: "application"}).addClass("emojionearea").html(app);
 
         // set editor attributes
-        this.editor = app.find(".emojionearea-editor")
-            .attr("contenteditable", "true")
-            .attr("placeholder", self.placeholder)
-            .attr('tabindex', 0);
-
-        editor = self.editor;
+        editor = self.editor = app.find(".emojionearea-editor")
+            .attr({
+                contenteditable: true,
+                placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
+                tabindex: 0
+            });
 
         for (var attr = ["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], i=0; i<5; i++) {
             editor.attr(attr[i], options[attr[i]]);
@@ -557,26 +554,21 @@
         // parse icons
         $.each(options.filters, function(filter, params) {
             // filters
-            $("<i/>")
+            $("<i/>", {"class": "emojionearea-filter", "data-filter": filter})
                 .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
-                .addClass('emojionearea-filter')
-                .data("filter", filter)
                 .appendTo(filters);
 
             // tabs
-            $("<div/>")
+            $("<div/>", {"class": "emojionearea-tab emojionearea-tab-" + filter}).hide()
                 .data("items", shortnameTo(params.emoji, '<i class="emojibtn" role="button">' +
                     (self.sprite ? '<i class="emojione-{uni}"' : '<img class="emojione" src="{img}"') +
                     ' data-name="{name}"/></i>'))
-                .addClass('emojionearea-tab')
-                .addClass('emojionearea-tab-' + filter)
-                .hide()
                 .appendTo(tabs);
         });
 
         filters.wrapInner('<div class="emojionearea-filters-scroll"/>');
-        filtersArrowLeft = $('<i class="emojionearea-filter-arrow-left"/>').attr("role", "button").appendTo(filters);
-        filtersArrowRight = $('<i class="emojionearea-filter-arrow-right"/>').attr("role", "button").appendTo(filters);
+        filtersArrowLeft = $('<i class="emojionearea-filter-arrow-left"/>', {role: "button"}).appendTo(filters);
+        filtersArrowRight = $('<i class="emojionearea-filter-arrow-right"/>', {role: "button"}).appendTo(filters);
 
         filtersBtns = filters.find(".emojionearea-filter");
         scrollArea = filters.children(".emojionearea-filters-scroll");
@@ -754,6 +746,9 @@
                 if (self.content !== content) {
                     self.content = content;
                     trigger(self, 'change', [editor]);
+                    source.blur().trigger("change");
+                } else {
+                    source.blur();
                 }
             });
     };
