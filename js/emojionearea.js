@@ -17,6 +17,8 @@
         hideSource        : true,
         autoHideFilters   : false,
 
+        shortnames        : false,
+
         useSprite         : true,
 
         filters: {
@@ -421,19 +423,23 @@
     }
 
     function htmlFromText(str, self) {
-        return unicodeTo(str
+        str = str
             .replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/(?:\r\n|\r|\n)/g, '\n')
             .replace(/(\n+)/g, '<div>$1</div>')
             .replace(/\n/g, '<br/>')
-            .replace(/<br\/><\/div>/g, '</div>'),
+            .replace(/<br\/><\/div>/g, '</div>');
+        if (self.shortnames) {
+            str = emojione.shortnameToUnicode(str);
+        }
+        return unicodeTo(str,
             '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">'))
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
             .replace(/  /g, '&nbsp;&nbsp;');
     }
 
-    function textFromHtml(str) {
-        return str
+    function textFromHtml(str, self) {
+        str = str
             .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
             .replace(/\n|\r/g, '')
             .replace(/<br[^>]*>/ig, '\n')
@@ -453,6 +459,7 @@
             .replace(/&nbsp;/g, ' ')
             .replace(/\x20\x20/g, '&nbsp; ')
             .replace(/\x20\x20/g, ' &nbsp;');
+        return self && self.shortnames ? emojione.toShort(str) : str;
     }
 
     EmojioneArea.prototype.setText = function(str) {
@@ -467,7 +474,7 @@
     }
 
     EmojioneArea.prototype.getText = function() {
-        return textFromHtml(this.editor.html());
+        return textFromHtml(this.editor.html(), this);
     }
 
     function getTemplate(template, unicode, shortname) {
@@ -519,6 +526,7 @@
 
         self.id = time();
         self.sprite = options.useSprite;
+        self.shortnames = options.shortnames;
 
         eventStorage[self.id] = {};
 
@@ -685,7 +693,7 @@
                     var UID = "caret-" + time();
                     element.focus();
                     restoreSelection(element[0], sel);
-                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>')), self));
+                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self), self));
                     clipboard.remove();
                     pasteHtmlAtCaret('<i id="' + UID +'"></i>');
                     element.scrollTop(editorScrollTop);
