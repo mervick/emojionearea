@@ -18,7 +18,6 @@
         autoHideFilters   : false,
 
         shortnames        : false,
-
         useSprite         : true,
 
         filters: {
@@ -178,14 +177,15 @@
     };
 
     var slice = [].slice,
-        emojione = window.emojione || false,
+        emojione = window.emojione,
         saveSelection, restoreSelection,
         emojioneList = {},
         eventStorage = {},
         setInterval = window.setInterval,
         clearInterval = window.clearInterval,
         readyCallbacks = [],
-        uniRegexp;
+        uniRegexp,
+        unique = 0;
 
     function emojioneReady(fn) {
         if (emojione) {
@@ -198,16 +198,17 @@
     if (!emojione) {
         $.getScript("https://cdn.jsdelivr.net/emojione/1.5.0/lib/js/emojione.min.js", function () {
             emojione = window.emojione;
-            emojione.imagePathPNG = "https://cdnjs.cloudflare.com/ajax/libs/emojione/1.5.0/assets/png/";
-            var sprite = "https://cdnjs.cloudflare.com/ajax/libs/emojione/1.5.0/assets/sprites/emojione.sprites.css";
+            var base = "https://cdnjs.cloudflare.com/ajax/libs/emojione/1.5.0/assets",
+                sprite = base +"/sprites/emojione.sprites.css";
+            emojione.imagePathPNG = base + "/png/";
             if (document.createStyleSheet) {
                 document.createStyleSheet(sprite);
             } else {
                 $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
             }
-            $.each(readyCallbacks, function(i, fn) {
-                fn();
-            });
+            while (readyCallbacks.length) {
+                readyCallbacks.shift().call();
+            }
         });
     }
 
@@ -221,141 +222,30 @@
             emojione.unicodeRegexp+")", "gi");
     });
 
-    if (window.getSelection && document.createRange) {
-        saveSelection = function(containerEl) {
-            var range = window.getSelection().getRangeAt(0);
-            var preSelectionRange = range.cloneRange();
-            preSelectionRange.selectNodeContents(containerEl);
-            preSelectionRange.setEnd(range.startContainer, range.startOffset);
-            var start = preSelectionRange.toString().length;
-
-            return {
-                start: start,
-                end: start + textFromHtml($("<div/>").append(range.extractContents()).html()).length
-            };
-        };
-
-        restoreSelection = function(containerEl, savedSel) {
-            var charIndex = 0, range = document.createRange();
-            range.setStart(containerEl, 0);
-            range.collapse(true);
-            var nodeStack = [containerEl], node, foundStart = false, stop = false;
-
-            while (!stop && (node = nodeStack.pop())) {
-                if (node.nodeType == 3) {
-                    var nextCharIndex = charIndex + node.length;
-                    if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
-                        range.setStart(node, savedSel.start - charIndex);
-                        foundStart = true;
-                    }
-                    if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
-                        range.setEnd(node, savedSel.end - charIndex);
-                        stop = true;
-                    }
-                    charIndex = nextCharIndex;
-                } else {
-                    var i = node.childNodes.length;
-                    while (i--) {
-                        nodeStack.push(node.childNodes[i]);
-                    }
-                }
-            }
-
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-    } else if (document.selection && document.body.createTextRange) {
-        saveSelection = function(containerEl) {
-            var selectedTextRange = document.selection.createRange();
-            var preSelectionTextRange = document.body.createTextRange();
-            preSelectionTextRange.moveToElementText(containerEl);
-            preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
-            var start = preSelectionTextRange.text.length;
-
-            return {
-                start: start,
-                end: start + selectedTextRange.text.length
-            }
-        };
-
-        restoreSelection = function(containerEl, savedSel) {
-            var textRange = document.body.createTextRange();
-            textRange.moveToElementText(containerEl);
-            textRange.collapse(true);
-            textRange.moveEnd("character", savedSel.end);
-            textRange.moveStart("character", savedSel.start);
-            textRange.select();
-        };
-    }
-
-    function pasteHtmlAtCaret(html) {
-        var sel, range;
-        if (window.getSelection) {
-            // IE9 and non-IE
-            sel = window.getSelection();
-            if (sel.getRangeAt && sel.rangeCount) {
-                range = sel.getRangeAt(0);
-                range.deleteContents();
-
-                // Range.createContextualFragment() would be useful here but is
-                // only relatively recently standardized and is not supported in
-                // some browsers (IE9, for one)
-                var el = document.createElement("div");
-                el.innerHTML = html;
-                var frag = document.createDocumentFragment(), node, lastNode;
-                while ( (node = el.firstChild) ) {
-                    lastNode = frag.appendChild(node);
-                }
-                range.insertNode(frag);
-
-                // Preserve the selection
-                if (lastNode) {
-                    range = range.cloneRange();
-                    range.setStartAfter(lastNode);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-            }
-        } else if (document.selection && document.selection.type != "Control") {
-            // IE < 9
-            document.selection.createRange().pasteHTML(html);
-        }
-    }
-
-    function time() {
-        return (new Date()).getTime();
-    }
-
     var EmojioneArea = function(element, options) {
         var self = this;
+        eventStorage[self.id = ++unique] = {};
         emojioneReady(function() {
-            init.apply(self, [element, options]);
+            init(self, element, options);
         });
     };
 
     EmojioneArea.prototype.on = function(events, handler) {
-        var id = this.id;
-        if (!!events && $.isFunction(handler)) {
+        if (events && $.isFunction(handler)) {
+            var id = this.id;
             $.each(events.toLowerCase().split(' '), function(i, event) {
-                if (!eventStorage[id][event]) {
-                    eventStorage[id][event] = [];
-                }
-                eventStorage[id][event].push(handler);
+                (eventStorage[id][event] || (eventStorage[id][event] = [])).push(handler);
             });
         }
         return this;
     };
 
     EmojioneArea.prototype.off = function(events, handler) {
-        var id = this.id,
-            // disabling turn off the system events
-            system = /^@/;
-        if (!!events) {
+        if (events) {
+            var id = this.id;
             $.each(events.toLowerCase().split(' '), function(i, event) {
-                if (!!eventStorage[id][event] && !system.test(event)) {
-                    if (!!handler) {
+                if (eventStorage[id][event] && !/^@/.test(event)) {
+                    if (handler) {
                         $.each(eventStorage[id][event], function(j, fn) {
                             if (fn === handler) {
                                 eventStorage[id][event] = eventStorage[id][event].splice(j, 1);
@@ -372,14 +262,13 @@
 
     function trigger(self, event, args) {
         var result = true, j = 1;
-        if (!!event) {
+        if (event) {
             event = event.toLowerCase();
-            args = args || [];
             do {
                 var _event = j==1 ? '@' + event : event;
-                if (!!eventStorage[self.id][_event] && !!eventStorage[self.id][_event].length) {
+                if (eventStorage[self.id][_event] && eventStorage[self.id][_event].length) {
                     $.each(eventStorage[self.id][_event], function (i, fn) {
-                        return result = fn.apply(self, args) !== false;
+                        return result = fn.apply(self, args|| []) !== false;
                     });
                 }
             } while (result && !!j--);
@@ -387,39 +276,19 @@
         return result;
     }
 
-    function getTarget(event, callerEvent) {
-        return $(callerEvent.currentTarget);
-    };
-
     function attach(self, element, events, target) {
-        target = target || getTarget;
+        target = target || function (event, callerEvent) { return $(callerEvent.currentTarget) };
 
-        function attachEvents(element, event, handler) {
-            element.on(event, function() {
-                var _target = $.isFunction(target) ? target.apply(self, [event].concat(slice.call(arguments))) : target;
-                if (!!_target) {
-                    trigger(self, handler, [_target].concat(slice.call(arguments)));
-                }
-            });
-        }
-
-        function attachElement(element) {
-            if ((typeof events).toLowerCase() === "string") {
-                attachEvents(element, events, events);
-            } else {
-                $.each(events, function(event, handler) {
-                    attachEvents(element, $.isArray(events) ? handler : event, handler);
+        $.each($.isArray(element) ? element : [element], function(i, el) {
+            $.each(events, function(event, handler) {
+                $(el).on(event = $.isArray(events) ? handler : event, function() {
+                    var _target = $.isFunction(target) ? target.apply(self, [event].concat(slice.call(arguments))) : target;
+                    if (_target) {
+                        trigger(self, handler, [_target].concat(slice.call(arguments)));
+                    }
                 });
-            }
-        }
-
-        if ($.isArray(element)) {
-            $.each(element, function(i, el) {
-                attachElement($(el));
             });
-        } else {
-            attachElement(element);
-        }
+        });
     }
 
     function htmlFromText(str, self) {
@@ -504,17 +373,14 @@
         });
     };
 
-    function init(source, options) {
+    function init(self, source, options) {
         options = $.extend({}, default_options, options);
 
-        var self = this,
-            sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
+        var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             app = options.template,
             stayFocused = false,
-            // DOM
             container = !!options.container ? $(options.container) : false,
             editor, filters, tabs, scrollArea, filtersBtns, filtersArrowLeft, filtersArrowRight,
-            // scroll vars
             filtersWidth, scrollLeft = 0, scrollAreaWidth = 0, filterWidth,
             resizeHandler = function() {
                 var width = filters.width();
@@ -524,21 +390,14 @@
                 }
             }, resizeHandlerID;
 
-        self.id = time();
         self.sprite = options.useSprite;
         self.shortnames = options.shortnames;
 
-        eventStorage[self.id] = {};
-
-        // parse template
         for (var el = ["editor", "filters", "tabs"], i=0; i<3; i++) {
             app = app.replace(new RegExp('<' + el[i] + '/?>' ,'i'), '<div class="emojionearea-' + el[i] + '"></div>');
         }
 
-        // wrap application
         app = $('<div/>', {"class" : source.attr("class"), role: "application"}).addClass("emojionearea").html(app);
-
-        // set editor attributes
         editor = self.editor = app.find(".emojionearea-editor")
             .attr({
                 contenteditable: true,
@@ -550,23 +409,17 @@
             editor.attr(attr[i], options[attr[i]]);
         }
 
-        // filters
         filters = app.find(".emojionearea-filters");
         if (options.autoHideFilters) {
             filters.hide();
         }
 
-        // tabs
         tabs = app.find(".emojionearea-tabs");
 
-        // parse icons
         $.each(options.filters, function(filter, params) {
-            // filters
             $("<i/>", {"class": "emojionearea-filter", "data-filter": filter})
                 .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
                 .appendTo(filters);
-
-            // tabs
             $("<div/>", {"class": "emojionearea-tab emojionearea-tab-" + filter}).hide()
                 .data("items", shortnameTo(params.emoji, '<i class="emojibtn" role="button">' +
                     (self.sprite ? '<i class="emojione-{uni}"' : '<img class="emojione" src="{img}"') +
@@ -581,7 +434,6 @@
         filtersBtns = filters.find(".emojionearea-filter");
         scrollArea = filters.children(".emojionearea-filters-scroll");
 
-        // show application
         if (!!container) {
             container.wrapInner(app);
         } else {
@@ -594,9 +446,8 @@
 
         self.setText(source[sourceValFunc]());
 
-        // attach events
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
-        attach(self, editor, "paste", editor);
+        attach(self, editor, ["paste"], editor);
         attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
         attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], editor);
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
@@ -683,21 +534,20 @@
 
                 var sel = saveSelection(element[0]),
                     editorScrollTop = element.scrollTop(),
-                    clipboard = $("<div/>")
-                        .appendTo($("BODY"))
-                        .attr("contenteditable", "true")
+                    clipboard = $("<div/>", {contenteditable: true})
                         .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: "20px", overflow: "hidden"})
+                        .appendTo($("BODY"))
                         .focus();
 
                 window.setTimeout(function() {
-                    var UID = "caret-" + time();
+                    var caretID = "caret-" + (new Date()).getTime();
                     element.focus();
                     restoreSelection(element[0], sel);
                     pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self), self));
                     clipboard.remove();
-                    pasteHtmlAtCaret('<i id="' + UID +'"></i>');
+                    pasteHtmlAtCaret('<i id="' + caretID +'"></i>');
                     element.scrollTop(editorScrollTop);
-                    var caret = $("#" + UID),
+                    var caret = $("#" + caretID),
                         top = caret.offset().top - element.offset().top,
                         height = element.height();
                     if (editorScrollTop + top >= height || editorScrollTop > top) {
@@ -768,5 +618,90 @@
             return this.emojioneArea = new EmojioneArea($(this), options);
         });
     };
+
+
+    if (window.getSelection && document.createRange) {
+        saveSelection = function(el) {
+            var range = window.getSelection().getRangeAt(0);
+            var preSelectionRange = range.cloneRange();
+            preSelectionRange.selectNodeContents(el);
+            preSelectionRange.setEnd(range.startContainer, range.startOffset);
+            return preSelectionRange.toString().length;
+        };
+
+        restoreSelection = function(el, sel) {
+            var charIndex = 0, range = document.createRange();
+            range.setStart(el, 0);
+            range.collapse(true);
+            var nodeStack = [el], node, foundStart = false, stop = false;
+
+            while (!stop && (node = nodeStack.pop())) {
+                if (node.nodeType == 3) {
+                    var nextCharIndex = charIndex + node.length;
+                    if (!foundStart && sel >= charIndex && sel <= nextCharIndex) {
+                        range.setStart(node, sel - charIndex);
+                        range.setEnd(node, sel - charIndex);
+                        stop = true;
+                    }
+                    charIndex = nextCharIndex;
+                } else {
+                    var i = node.childNodes.length;
+                    while (i--) {
+                        nodeStack.push(node.childNodes[i]);
+                    }
+                }
+            }
+
+            sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    } else if (document.selection && document.body.createTextRange) {
+        saveSelection = function(el) {
+            var selectedTextRange = document.selection.createRange(),
+                preSelectionTextRange = document.body.createTextRange();
+            preSelectionTextRange.moveToElementText(el);
+            preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
+            var start = preSelectionTextRange.text.length;
+
+            return [start, start + selectedTextRange.text.length];
+        };
+
+        restoreSelection = function(el, sel) {
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(el);
+            textRange.collapse(true);
+            textRange.moveEnd("character", sel[1]);
+            textRange.moveStart("character", sel[0]);
+            textRange.select();
+        };
+    }
+
+    function pasteHtmlAtCaret(html) {
+        var sel, range;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+                var el = document.createElement("div");
+                el.innerHTML = html;
+                var frag = document.createDocumentFragment(), node, lastNode;
+                while ( (node = el.firstChild) ) {
+                    lastNode = frag.appendChild(node);
+                }
+                range.insertNode(frag);
+                if (lastNode) {
+                    range = range.cloneRange();
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+        } else if (document.selection && document.selection.type != "Control") {
+            document.selection.createRange().pasteHTML(html);
+        }
+    }
 
 }) (document, window, jQuery);
