@@ -367,7 +367,7 @@
         return str.replace(/:?[\w_]+:?/g, function(shortname) {
             shortname = ":" + shortname.replace(/:$/,'').replace(/^:/,'') + ":";
             if (shortname in emojioneList) {
-                return getTemplate(template, emojioneList[shortname][emojioneList[shortname].length-1].toUpperCase(), shortname);
+                return getTemplate(template, emojioneList[shortname][emojioneList[shortname].length-1], shortname);
             }
             return shortname;
         });

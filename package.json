@@ -20,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/mervick/emojionearea/issues"
   },
-  "homepage": "https://github.com/mervick/emojionearea#readme"
+  "homepage": "https://github.com/mervick/emojionearea#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.3"
+  }
 }
