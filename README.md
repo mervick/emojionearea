@@ -43,7 +43,8 @@ Simple usage:
     // emojione.imagePathPNG = '../vendor/emojione/emojione/assets/png/';
     $("#example1").emojioneArea({
       // options
-      autoHideFilters: true
+      autoHideFilters: true,
+      emojioneVersion: "1.5.0"//Specify emojione library version for broader support
     });
   });
 </script>

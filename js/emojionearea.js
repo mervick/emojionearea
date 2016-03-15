@@ -4,6 +4,8 @@
     var blankImg = 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==';
 
     var default_options = {
+        emojioneVersion   : "2.1.2",
+        supportMode       : false,
         template          : "<editor/><filters/><tabs/>",
 
         dir               : "ltr",
@@ -176,6 +178,30 @@
         }
     };
 
+    var SUPPORT_MODE = false;
+
+    function checkEmojiSupport(version) {
+        var supportedVersion = [1,9,9];
+        
+        version = version.split(".");
+        version = version.map(function(val){
+            var int = parseInt(val);
+            if (isNaN(int)){
+                return 0;
+            }
+            return int;
+        });
+        
+        var support = true;
+        for (var i = 0; i < version.length; i++){
+            if (version[i] > supportedVersion[i]){
+                support = false;
+                break;
+            }
+        }
+        return support;
+    };
+
     var slice = [].slice,
         emojione = window.emojione,
         saveSelection, restoreSelection,
@@ -193,7 +219,7 @@
         } else {
             readyCallbacks.push(fn);
         }
-    };
+    };    
 
     if (!emojione) {
         $.getScript("https://cdn.jsdelivr.net/emojione/1.5.0/lib/js/emojione.min.js", function () {
@@ -350,7 +376,7 @@
         return template
             .replace('{name}', shortname || '')
             .replace('{img}', emojione.imagePathPNG + unicode + '.png'/* + emojione.cacheBustParam*/)
-            .replace('{uni}', unicode)
+            .replace('{uni}', SUPPORT_MODE ? unicode.toUpperCase() : unicode)
             .replace('{alt}', emojione.convert(unicode));
     }
 
@@ -375,6 +401,9 @@
 
     function init(self, source, options) {
         options = $.extend({}, default_options, options);
+
+        //Check support option new option {emojioneVersion: "?.?.?"}
+        SUPPORT_MODE = checkEmojiSupport(options.emojioneVersion);
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             app = options.template,
@@ -415,6 +444,13 @@
         }
 
         tabs = app.find(".emojionearea-tabs");
+
+        //Check support option and fix some changed missing emojis
+        if(SUPPORT_MODE){
+            options.filters.objects_symbols.emoji = options.filters.objects_symbols.emoji.replace(",cross,", ",cross_heavy,");
+            options.filters.travel.emoji = options.filters.travel.emoji.replace(",construction_site,", ",contruction_site,");
+            options.filters.objects_symbols.emoji = options.filters.objects_symbols.emoji.replace(",ten,", ",keycap_ten,");
+        }
 
         $.each(options.filters, function(filter, params) {
             $("<i/>", {"class": "emojionearea-filter", "data-filter": filter})
@@ -609,6 +645,7 @@
                     source.blur();
                 }
             });
+
     };
 
 
