@@ -4,7 +4,7 @@
     var blankImg = 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==';
 
     var default_options = {
-        emojioneVersion   : "2.1.2",
+        emojioneVersion   : "2.0.0",
         supportMode       : false,
         template          : "<editor/><filters/><tabs/>",
 

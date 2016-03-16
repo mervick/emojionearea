@@ -44,7 +44,7 @@ Simple usage:
     $("#example1").emojioneArea({
       // options
       autoHideFilters: true,
-      //Specify emojione library version for broader support, if not specified will use 2.1.2
+      //Specify emojione library version for broader support, if not specified will use 2.0.0
       emojioneVersion: "1.5.0"
     });
   });
