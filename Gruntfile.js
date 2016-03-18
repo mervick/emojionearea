@@ -48,6 +48,16 @@ module.exports = function(grunt) {
                 }
             },
         },
+        cssmin: {
+            target: {
+                files: {
+                    'css/emojionearea.min.css': ['css/emojionearea.css']
+                },
+                options: {
+                    sourceMap: false
+                }
+            }
+        },
         watch: {
             admin: {
                 files: [
@@ -62,6 +72,7 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadTasks("tasks");
