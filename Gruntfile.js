@@ -22,7 +22,7 @@ module.exports = function(grunt) {
                     preserveComments: false,
                     sourceMap: true,
                     ASCIIOnly: true,
-                    sourceMapName: "dist/emojionearea.min.map",
+                    sourceMapName: "js/emojionearea.min.map",
                     report: "min",
                     beautify: {
                         "ascii_only": true
