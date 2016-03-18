@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v2.0.0
+ * EmojioneArea v2.0.1
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-03-18T05:55Z
+ * Date: 2016-03-18T21:32Z
  */
 (function(document, window, $) {
     'use strict';
@@ -348,7 +348,7 @@
 
     var cdn_base = "https://cdnjs.cloudflare.com/ajax/libs/emojione/";
     function detectSupportMode() {
-        return (typeof emojione['jsEscapeMap']).toLowerCase() !== 'object';
+        return (typeof emojione['jsEscapeMap']).toLowerCase() === 'object' ? emojione.cacheBustParam === "?v=1.2.4" ? 2 : 1 : 0;
     }
     if (!emojione) {
         $.getScript(cdn_base + emojioneVersion + "/lib/js/emojione.min.js", function () {
@@ -367,11 +367,10 @@
         });
     } else {
         emojioneSupportMode = detectSupportMode();
-        cdn_base += (emojioneSupportMode ? '1.5.2' : '2.1.1') + "/assets";
+        cdn_base += (emojioneSupportMode > 0 ? emojioneSupportMode > 1 ? '2.0.0' : '2.1.1' : '1.5.2') + "/assets";
     }
 
     emojioneReady(function() {
-        emojioneSupportMode = !emojioneSupportMode ? emojione.cacheBustParam === "?v=1.2.4" ? 2 : 1 : 0;
         emojione.imagePathPNG = cdn_base + "/png/";
         emojione.imagePathSVG = cdn_base + "/svg/";
         emojione.imagePathSVGSprites = cdn_base + "/sprites/emojione.sprites.svg";
