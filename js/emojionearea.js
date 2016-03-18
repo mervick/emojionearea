@@ -1,8 +1,102 @@
+/*!
+ * EmojioneArea v2.0.0
+ * https://github.com/mervick/emojionearea
+ * Copyright Andrey Izman and other contributors
+ * Released under the MIT license
+ * Date: 2016-03-18T05:55Z
+ */
 (function(document, window, $) {
     'use strict';
 
+    var unique = 0;
+    var eventStorage = {};
+    var emojione = window.emojione;
+    var readyCallbacks = [];
+    function emojioneReady (fn) {
+        if (emojione) {
+            fn();
+        } else {
+            readyCallbacks.push(fn);
+        }
+    };
     var blankImg = 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==';
+    var setInterval = window.setInterval;
+    var clearInterval = window.clearInterval;
+    function trigger(self, event, args) {
+        var result = true, j = 1;
+        if (event) {
+            event = event.toLowerCase();
+            do {
+                var _event = j==1 ? '@' + event : event;
+                if (eventStorage[self.id][_event] && eventStorage[self.id][_event].length) {
+                    $.each(eventStorage[self.id][_event], function (i, fn) {
+                        return result = fn.apply(self, args|| []) !== false;
+                    });
+                }
+            } while (result && !!j--);
+        }
+        return result;
+    }
+    var slice = [].slice;
+    function attach(self, element, events, target) {
+        target = target || function (event, callerEvent) { return $(callerEvent.currentTarget) };
 
+        $.each($.isArray(element) ? element : [element], function(i, el) {
+            $.each(events, function(event, handler) {
+                $(el).on(event = $.isArray(events) ? handler : event, function() {
+                    var _target = $.isFunction(target) ? target.apply(self, [event].concat(slice.call(arguments))) : target;
+                    if (_target) {
+                        trigger(self, handler, [_target].concat(slice.call(arguments)));
+                    }
+                });
+            });
+        });
+    }
+    var emojioneList = [];
+    var emojioneVersion = '1.5.2';
+    var emojioneSupportMode = 0;
+    function getTemplate(template, unicode, shortname) {
+        return template
+            .replace('{name}', shortname || '')
+            .replace('{img}', emojione.imagePathPNG + (emojioneSupportMode !== 1 ? unicode.toUpperCase() : unicode) + '.png'/* + emojione.cacheBustParam*/)
+            .replace('{uni}', emojioneSupportMode < 1 ? unicode.toUpperCase() : unicode)
+            .replace('{alt}', emojione.convert(unicode));
+    }
+    function shortnameTo(str, template) {
+        return str.replace(/:?[\w_]+:?/g, function(shortname) {
+            shortname = ":" + shortname.replace(/:$/,'').replace(/^:/,'') + ":";
+            if (shortname in emojioneList) {
+                return getTemplate(template, emojioneList[shortname][emojioneList[shortname].length-1], shortname);
+            }
+            return shortname;
+        });
+    };
+    function pasteHtmlAtCaret(html) {
+        var sel, range;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+                var el = document.createElement("div");
+                el.innerHTML = html;
+                var frag = document.createDocumentFragment(), node, lastNode;
+                while ( (node = el.firstChild) ) {
+                    lastNode = frag.appendChild(node);
+                }
+                range.insertNode(frag);
+                if (lastNode) {
+                    range = range.cloneRange();
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+        } else if (document.selection && document.selection.type != "Control") {
+            document.selection.createRange().pasteHTML(html);
+        }
+    }
     var default_options = {
         template          : "<editor/><filters/><tabs/>",
 
@@ -175,32 +269,93 @@
             }
         }
     };
+    function getOptions(options) {
+        options = $.extend({}, default_options, options);
 
-    var slice = [].slice,
-        emojione = window.emojione,
-        saveSelection, restoreSelection,
-        emojioneList = {},
-        eventStorage = {},
-        setInterval = window.setInterval,
-        clearInterval = window.clearInterval,
-        readyCallbacks = [],
-        uniRegexp,
-        unique = 0;
-
-    function emojioneReady(fn) {
-        if (emojione) {
-            fn();
-        } else {
-            readyCallbacks.push(fn);
+        if (emojioneSupportMode > 0) {
+            options.filters.people.emoji = options.filters.people.emoji
+                .replace(",writing_hand,", ",");
+            options.filters.travel.emoji = options.filters.travel.emoji
+                .replace(",contruction_site,", ",construction_site,");
+            options.filters.objects_symbols.emoji = options.filters.objects_symbols.emoji
+                .replace(",keycap_ten,", ",ten,")
+                .replace(",cross_heavy,", ",cross,");
         }
-    };
 
+        return options;
+    }
+
+    var saveSelection, restoreSelection;
+    if (window.getSelection && document.createRange) {
+        saveSelection = function(el) {
+            var range = window.getSelection().getRangeAt(0);
+            var preSelectionRange = range.cloneRange();
+            preSelectionRange.selectNodeContents(el);
+            preSelectionRange.setEnd(range.startContainer, range.startOffset);
+            return preSelectionRange.toString().length;
+        };
+
+        restoreSelection = function(el, sel) {
+            var charIndex = 0, range = document.createRange();
+            range.setStart(el, 0);
+            range.collapse(true);
+            var nodeStack = [el], node, foundStart = false, stop = false;
+
+            while (!stop && (node = nodeStack.pop())) {
+                if (node.nodeType == 3) {
+                    var nextCharIndex = charIndex + node.length;
+                    if (!foundStart && sel >= charIndex && sel <= nextCharIndex) {
+                        range.setStart(node, sel - charIndex);
+                        range.setEnd(node, sel - charIndex);
+                        stop = true;
+                    }
+                    charIndex = nextCharIndex;
+                } else {
+                    var i = node.childNodes.length;
+                    while (i--) {
+                        nodeStack.push(node.childNodes[i]);
+                    }
+                }
+            }
+
+            sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    } else if (document.selection && document.body.createTextRange) {
+        saveSelection = function(el) {
+            var selectedTextRange = document.selection.createRange(),
+                preSelectionTextRange = document.body.createTextRange();
+            preSelectionTextRange.moveToElementText(el);
+            preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
+            var start = preSelectionTextRange.text.length;
+
+            return [start, start + selectedTextRange.text.length];
+        };
+
+        restoreSelection = function(el, sel) {
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(el);
+            textRange.collapse(true);
+            textRange.moveEnd("character", sel[1]);
+            textRange.moveStart("character", sel[0]);
+            textRange.select();
+        };
+    }
+
+
+    var uniRegexp = 0;
+
+    var cdn_base = "https://cdnjs.cloudflare.com/ajax/libs/emojione/";
+    function detectSupportMode() {
+        return (typeof emojione['jsEscapeMap']).toLowerCase() !== 'object';
+    }
     if (!emojione) {
-        $.getScript("https://cdn.jsdelivr.net/emojione/1.5.0/lib/js/emojione.min.js", function () {
+        $.getScript(cdn_base + emojioneVersion + "/lib/js/emojione.min.js", function () {
             emojione = window.emojione;
-            var base = "https://cdnjs.cloudflare.com/ajax/libs/emojione/1.5.0/assets",
-                sprite = base +"/sprites/emojione.sprites.css";
-            emojione.imagePathPNG = base + "/png/";
+            emojioneSupportMode = detectSupportMode();
+            cdn_base += emojioneVersion + "/assets";
+            var sprite = cdn_base +"/sprites/emojione.sprites.css";
             if (document.createStyleSheet) {
                 document.createStyleSheet(sprite);
             } else {
@@ -210,9 +365,17 @@
                 readyCallbacks.shift().call();
             }
         });
+    } else {
+        emojioneSupportMode = detectSupportMode();
+        cdn_base += (emojioneSupportMode ? '1.5.2' : '2.1.1') + "/assets";
     }
 
     emojioneReady(function() {
+        emojioneSupportMode = !emojioneSupportMode ? emojione.cacheBustParam === "?v=1.2.4" ? 2 : 1 : 0;
+        emojione.imagePathPNG = cdn_base + "/png/";
+        emojione.imagePathSVG = cdn_base + "/svg/";
+        emojione.imagePathSVGSprites = cdn_base + "/sprites/emojione.sprites.svg";
+
         $.each(emojione.emojioneList, function (shortname, keys) {
             // fix shortnames for emojione v1.5.0
             emojioneList[shortname.replace('-', '_')] = keys;
@@ -221,76 +384,15 @@
         uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
             emojione.unicodeRegexp+")", "gi");
     });
-
-    var EmojioneArea = function(element, options) {
-        var self = this;
-        eventStorage[self.id = ++unique] = {};
-        emojioneReady(function() {
-            init(self, element, options);
-        });
-    };
-
-    EmojioneArea.prototype.on = function(events, handler) {
-        if (events && $.isFunction(handler)) {
-            var id = this.id;
-            $.each(events.toLowerCase().split(' '), function(i, event) {
-                (eventStorage[id][event] || (eventStorage[id][event] = [])).push(handler);
-            });
-        }
-        return this;
-    };
-
-    EmojioneArea.prototype.off = function(events, handler) {
-        if (events) {
-            var id = this.id;
-            $.each(events.toLowerCase().split(' '), function(i, event) {
-                if (eventStorage[id][event] && !/^@/.test(event)) {
-                    if (handler) {
-                        $.each(eventStorage[id][event], function(j, fn) {
-                            if (fn === handler) {
-                                eventStorage[id][event] = eventStorage[id][event].splice(j, 1);
-                            }
-                        });
-                    } else {
-                        eventStorage[id][event] = [];
-                    }
-                }
-            });
-        }
-        return this;
-    };
-
-    function trigger(self, event, args) {
-        var result = true, j = 1;
-        if (event) {
-            event = event.toLowerCase();
-            do {
-                var _event = j==1 ? '@' + event : event;
-                if (eventStorage[self.id][_event] && eventStorage[self.id][_event].length) {
-                    $.each(eventStorage[self.id][_event], function (i, fn) {
-                        return result = fn.apply(self, args|| []) !== false;
-                    });
-                }
-            } while (result && !!j--);
-        }
-        return result;
-    }
-
-    function attach(self, element, events, target) {
-        target = target || function (event, callerEvent) { return $(callerEvent.currentTarget) };
-
-        $.each($.isArray(element) ? element : [element], function(i, el) {
-            $.each(events, function(event, handler) {
-                $(el).on(event = $.isArray(events) ? handler : event, function() {
-                    var _target = $.isFunction(target) ? target.apply(self, [event].concat(slice.call(arguments))) : target;
-                    if (_target) {
-                        trigger(self, handler, [_target].concat(slice.call(arguments)));
-                    }
-                });
-            });
+    function unicodeTo(str, template) {
+        return str.replace(uniRegexp, function(unicodeChar) {
+            var map = emojione[(emojioneSupportMode < 1 ? 'jsecapeMap' : 'jsEscapeMap')];
+            if (typeof unicodeChar !== 'undefined' && unicodeChar in map) {
+                return getTemplate(template, map[unicodeChar]);
+            }
+            return unicodeChar;
         });
     }
-
     function htmlFromText(str, self) {
         str = str
             .replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -302,11 +404,10 @@
             str = emojione.shortnameToUnicode(str);
         }
         return unicodeTo(str,
-            '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">'))
+            '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '">' : '" src="{img}">'))
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
             .replace(/  /g, '&nbsp;&nbsp;');
     }
-
     function textFromHtml(str, self) {
         str = str
             .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
@@ -330,51 +431,8 @@
             .replace(/\x20\x20/g, ' &nbsp;');
         return self && self.shortnames ? emojione.toShort(str) : str;
     }
-
-    EmojioneArea.prototype.setText = function(str) {
-        var self = this, args = arguments;
-        emojioneReady(function() {
-            self.editor.html(htmlFromText(str, self));
-            self.content = self.editor.html();
-            if (args.length === 1) {
-                trigger(self, 'change', [self.editor]);
-            }
-        });
-    }
-
-    EmojioneArea.prototype.getText = function() {
-        return textFromHtml(this.editor.html(), this);
-    }
-
-    function getTemplate(template, unicode, shortname) {
-        return template
-            .replace('{name}', shortname || '')
-            .replace('{img}', emojione.imagePathPNG + unicode + '.png'/* + emojione.cacheBustParam*/)
-            .replace('{uni}', unicode)
-            .replace('{alt}', emojione.convert(unicode));
-    }
-
-    function unicodeTo(str, template) {
-        return str.replace(uniRegexp, function(unicodeChar) {
-            if (typeof unicodeChar !== 'undefined' && unicodeChar in emojione.jsecapeMap) {
-                return getTemplate(template, emojione.jsecapeMap[unicodeChar]);
-            }
-            return unicodeChar;
-        });
-    }
-
-    function shortnameTo(str, template) {
-        return str.replace(/:?[\w_]+:?/g, function(shortname) {
-            shortname = ":" + shortname.replace(/:$/,'').replace(/^:/,'') + ":";
-            if (shortname in emojioneList) {
-                return getTemplate(template, emojioneList[shortname][emojioneList[shortname].length-1], shortname);
-            }
-            return shortname;
-        });
-    };
-
     function init(self, source, options) {
-        options = $.extend({}, default_options, options);
+        options = getOptions(options);
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             app = options.template,
@@ -405,8 +463,8 @@
                 tabindex: 0
             });
 
-        for (var attr = ["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], i=0; i<5; i++) {
-            editor.attr(attr[i], options[attr[i]]);
+        for (var attr = ["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], j=0; j<5; j++) {
+            editor.attr(attr[j], options[attr[j]]);
         }
 
         filters = app.find(".emojionearea-filters");
@@ -421,8 +479,8 @@
                 .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
                 .appendTo(filters);
             $("<div/>", {"class": "emojionearea-tab emojionearea-tab-" + filter}).hide()
-                .data("items", shortnameTo(params.emoji, '<i class="emojibtn" role="button">' +
-                    (self.sprite ? '<i class="emojione-{uni}"' : '<img class="emojione" src="{img}"') +
+                .data("items", shortnameTo(params.emoji, '<i class="emojibtn" role="button"><' +
+                    (self.sprite ? 'i class="emojione-{uni}"' : 'img class="emojione" src="{img}"') +
                     ' data-name="{name}"/></i>'))
                 .appendTo(tabs);
         });
@@ -610,7 +668,58 @@
                 }
             });
     };
+    var EmojioneArea = function(element, options) {
+        var self = this;
+        eventStorage[self.id = ++unique] = {};
+        emojioneReady(function() {
+            init(self, element, options);
+        });
+    };
 
+    EmojioneArea.prototype.on = function(events, handler) {
+        if (events && $.isFunction(handler)) {
+            var id = this.id;
+            $.each(events.toLowerCase().split(' '), function(i, event) {
+                (eventStorage[id][event] || (eventStorage[id][event] = [])).push(handler);
+            });
+        }
+        return this;
+    };
+
+    EmojioneArea.prototype.off = function(events, handler) {
+        if (events) {
+            var id = this.id;
+            $.each(events.toLowerCase().split(' '), function(i, event) {
+                if (eventStorage[id][event] && !/^@/.test(event)) {
+                    if (handler) {
+                        $.each(eventStorage[id][event], function(j, fn) {
+                            if (fn === handler) {
+                                eventStorage[id][event] = eventStorage[id][event].splice(j, 1);
+                            }
+                        });
+                    } else {
+                        eventStorage[id][event] = [];
+                    }
+                }
+            });
+        }
+        return this;
+    };
+
+    EmojioneArea.prototype.setText = function (str) {
+        var self = this, args = arguments;
+        emojioneReady(function () {
+            self.editor.html(htmlFromText(str, self));
+            self.content = self.editor.html();
+            if (args.length === 1) {
+                trigger(self, 'change', [self.editor]);
+            }
+        });
+    }
+
+    EmojioneArea.prototype.getText = function() {
+        return textFromHtml(this.editor.html(), this);
+    }
 
     $.fn.emojioneArea = function(options) {
         return this.each(function() {
@@ -618,90 +727,5 @@
             return this.emojioneArea = new EmojioneArea($(this), options);
         });
     };
-
-
-    if (window.getSelection && document.createRange) {
-        saveSelection = function(el) {
-            var range = window.getSelection().getRangeAt(0);
-            var preSelectionRange = range.cloneRange();
-            preSelectionRange.selectNodeContents(el);
-            preSelectionRange.setEnd(range.startContainer, range.startOffset);
-            return preSelectionRange.toString().length;
-        };
-
-        restoreSelection = function(el, sel) {
-            var charIndex = 0, range = document.createRange();
-            range.setStart(el, 0);
-            range.collapse(true);
-            var nodeStack = [el], node, foundStart = false, stop = false;
-
-            while (!stop && (node = nodeStack.pop())) {
-                if (node.nodeType == 3) {
-                    var nextCharIndex = charIndex + node.length;
-                    if (!foundStart && sel >= charIndex && sel <= nextCharIndex) {
-                        range.setStart(node, sel - charIndex);
-                        range.setEnd(node, sel - charIndex);
-                        stop = true;
-                    }
-                    charIndex = nextCharIndex;
-                } else {
-                    var i = node.childNodes.length;
-                    while (i--) {
-                        nodeStack.push(node.childNodes[i]);
-                    }
-                }
-            }
-
-            sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-    } else if (document.selection && document.body.createTextRange) {
-        saveSelection = function(el) {
-            var selectedTextRange = document.selection.createRange(),
-                preSelectionTextRange = document.body.createTextRange();
-            preSelectionTextRange.moveToElementText(el);
-            preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
-            var start = preSelectionTextRange.text.length;
-
-            return [start, start + selectedTextRange.text.length];
-        };
-
-        restoreSelection = function(el, sel) {
-            var textRange = document.body.createTextRange();
-            textRange.moveToElementText(el);
-            textRange.collapse(true);
-            textRange.moveEnd("character", sel[1]);
-            textRange.moveStart("character", sel[0]);
-            textRange.select();
-        };
-    }
-
-    function pasteHtmlAtCaret(html) {
-        var sel, range;
-        if (window.getSelection) {
-            sel = window.getSelection();
-            if (sel.getRangeAt && sel.rangeCount) {
-                range = sel.getRangeAt(0);
-                range.deleteContents();
-                var el = document.createElement("div");
-                el.innerHTML = html;
-                var frag = document.createDocumentFragment(), node, lastNode;
-                while ( (node = el.firstChild) ) {
-                    lastNode = frag.appendChild(node);
-                }
-                range.insertNode(frag);
-                if (lastNode) {
-                    range = range.cloneRange();
-                    range.setStartAfter(lastNode);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-            }
-        } else if (document.selection && document.selection.type != "Control") {
-            document.selection.createRange().pasteHTML(html);
-        }
-    }
 
 }) (document, window, jQuery);
