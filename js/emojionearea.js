@@ -4,6 +4,8 @@
     var blankImg = 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==';
 
     var default_options = {
+        emojioneVersion   : "2.0.0",
+        supportMode       : false,
         template          : "<editor/><filters/><tabs/>",
 
         dir               : "ltr",
@@ -105,7 +107,7 @@
                 "couch,fork_knife_plate,shopping_bags,statue_of_liberty,moyai,foggy,tokyo_tower,fountain," +
                 "european_castle,japanese_castle,classical_building,stadium,mountain_snow,camping,beach," +
                 "desert,island,park,cityscape,city_sunset,city_dusk,night_with_stars,bridge_at_night,house," +
-                "homes,house_with_garden,house_abandoned,contruction_site,office,department_store,factory," +
+                "homes,house_with_garden,house_abandoned,construction_site,office,department_store,factory," +
                 "post_office,european_post_office,hospital,bank,hotel,love_hotel,wedding,church," +
                 "convenience_store,school,map"
             },
@@ -131,7 +133,7 @@
                 "triangular_ruler,round_pushpin,straight_ruler,triangular_flag_on_post,flag_white,flag_black," +
                 "hole,file_folder,open_file_folder,file_cabinet,black_nib,pencil2,pen_ballpoint,pen_fountain," +
                 "paintbrush,crayon,pencil,lock_with_ink_pen,closed_lock_with_key,lock,unlock,mega,loudspeaker," +
-                "speaker,sound,loud_sound,mute,zzz,bell,no_bell,cross_heavy,om_symbol,dove,thought_balloon," +
+                "speaker,sound,loud_sound,mute,zzz,bell,no_bell,cross,om_symbol,dove,thought_balloon," +
                 "speech_balloon,anger_right,children_crossing,shield,mag,mag_right,speaking_head," +
                 "sleeping_accommodation,no_entry_sign,no_entry,name_badge,no_pedestrians,do_not_litter," +
                 "no_bicycles,non_potable_water,no_mobile_phones,underage,sparkle,eight_spoked_asterisk," +
@@ -144,7 +146,7 @@
                 "arrow_down,arrow_upper_right,arrow_lower_right,arrow_lower_left,arrow_upper_left,arrow_up_down," +
                 "left_right_arrow,arrows_counterclockwise,arrow_right_hook,leftwards_arrow_with_hook," +
                 "arrow_heading_up,arrow_heading_down,twisted_rightwards_arrows,repeat,repeat_one,hash," +
-                "zero,one,two,three,four,five,six,seven,eight,nine,keycap_ten,1234,abc,abcd,capital_abcd," +
+                "zero,one,two,three,four,five,six,seven,eight,nine,ten,1234,abc,abcd,capital_abcd," +
                 "information_source,signal_strength,cinema,symbols,heavy_plus_sign,heavy_minus_sign,wavy_dash," +
                 "heavy_division_sign,heavy_multiplication_x,heavy_check_mark,arrows_clockwise,tm,copyright," +
                 "registered,currency_exchange,heavy_dollar_sign,curly_loop,loop,part_alternation_mark," +
@@ -176,6 +178,30 @@
         }
     };
 
+    var SUPPORT_MODE = false;
+
+    function checkEmojiSupport(version) {
+        var supportedVersion = [1,9,9];
+        
+        version = version.split(".");
+        version = version.map(function(val){
+            var int = parseInt(val);
+            if (isNaN(int)){
+                return 0;
+            }
+            return int;
+        });
+        
+        var support = true;
+        for (var i = 0; i < version.length; i++){
+            if (version[i] > supportedVersion[i]){
+                support = false;
+                break;
+            }
+        }
+        return support;
+    };
+
     var slice = [].slice,
         emojione = window.emojione,
         saveSelection, restoreSelection,
@@ -193,7 +219,7 @@
         } else {
             readyCallbacks.push(fn);
         }
-    };
+    };    
 
     if (!emojione) {
         $.getScript("https://cdn.jsdelivr.net/emojione/1.5.0/lib/js/emojione.min.js", function () {
@@ -350,7 +376,7 @@
         return template
             .replace('{name}', shortname || '')
             .replace('{img}', emojione.imagePathPNG + unicode + '.png'/* + emojione.cacheBustParam*/)
-            .replace('{uni}', unicode)
+            .replace('{uni}', SUPPORT_MODE ? unicode.toUpperCase() : unicode)
             .replace('{alt}', emojione.convert(unicode));
     }
 
@@ -375,6 +401,9 @@
 
     function init(self, source, options) {
         options = $.extend({}, default_options, options);
+
+        //Check support option new option {emojioneVersion: "?.?.?"}
+        SUPPORT_MODE = checkEmojiSupport(options.emojioneVersion);
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             app = options.template,
@@ -415,6 +444,13 @@
         }
 
         tabs = app.find(".emojionearea-tabs");
+
+        //Check support option and fix some changed missing emojis
+        if(SUPPORT_MODE){
+            options.filters.objects_symbols.emoji = options.filters.objects_symbols.emoji.replace(",cross,", ",cross_heavy,");
+            options.filters.travel.emoji = options.filters.travel.emoji.replace(",construction_site,", ",contruction_site,");
+            options.filters.objects_symbols.emoji = options.filters.objects_symbols.emoji.replace(",ten,", ",keycap_ten,");
+        }
 
         $.each(options.filters, function(filter, params) {
             $("<i/>", {"class": "emojionearea-filter", "data-filter": filter})
@@ -609,6 +645,7 @@
                     source.blur();
                 }
             });
+
     };
 
 
