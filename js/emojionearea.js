@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v2.0.1
+ * EmojioneArea v2.0.3
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-03-24T05:16Z
+ * Date: 2016-03-24T09:00Z
  */
 (function(document, window, $) {
     'use strict';
@@ -506,7 +506,7 @@
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
         attach(self, editor, ["paste"], editor);
         attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
-        attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], editor);
+        attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
         attach(self, filtersArrowLeft, {click: "arrowLeft.click"});
         attach(self, filtersArrowRight, {click: "arrowRight.click"});
@@ -540,6 +540,11 @@
             }
         }
 
+        if (typeof options.events === 'object' && !$.isEmptyObject(options.events)) {
+            $.each(options.events, function(event, handler) {
+                self.on(event.replace(/_/g, '.'), handler);
+            });
+        }
 
         self.on("@filter.click", function(element) {
                 if (element.is(".active")) {
@@ -688,7 +693,7 @@
     EmojioneArea.prototype.off = function(events, handler) {
         if (events) {
             var id = this.id;
-            $.each(events.toLowerCase().split(' '), function(i, event) {
+            $.each(events.toLowerCase().replace(/_/g, '.').split(' '), function(i, event) {
                 if (eventStorage[id][event] && !/^@/.test(event)) {
                     if (handler) {
                         $.each(eventStorage[id][event], function(j, fn) {

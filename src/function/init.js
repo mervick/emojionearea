@@ -92,7 +92,7 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
         attach(self, editor, ["paste"], editor);
         attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
-        attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown"], editor);
+        attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
         attach(self, filtersArrowLeft, {click: "arrowLeft.click"});
         attach(self, filtersArrowRight, {click: "arrowRight.click"});
@@ -126,6 +126,11 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
             }
         }
 
+        if (typeof options.events === 'object' && !$.isEmptyObject(options.events)) {
+            $.each(options.events, function(event, handler) {
+                self.on(event.replace(/_/g, '.'), handler);
+            });
+        }
 
         self.on("@filter.click", function(element) {
                 if (element.is(".active")) {

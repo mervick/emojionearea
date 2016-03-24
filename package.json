@@ -1,6 +1,6 @@
 {
   "name": "emojionearea",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "Simple jQuery WYSIWYG-like plugin with emojione smiles for use in replies and comments",
   "main": "js/emojionearea.js",
   "scripts": {
