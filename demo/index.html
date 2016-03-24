@@ -112,142 +112,6 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
 
   <p>Also you can download source files directly from <a href="https://github.com/mervick/emojionearea">Github</a>.</p>
 
-
-  <h2 id="examples"><a href="#examples">Examples</a></h2>
-  <p>Auto hide filters</p>
-<textarea id="example1">
-Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-</textarea>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $("#example1").emojioneArea({
-        autoHideFilters: true
-      });
-    });
-  </script>
-
-  <p></p>
-
-<pre class="prettyprint linenums">
-&lt;textarea id=&quot;example1&quot;&gt;
-Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-&lt;/textarea&gt;
-
-&lt;script type=&quot;text/javascript&quot;&gt;
-  $(document).ready(function() {
-    $(&quot;#example1&quot;).emojioneArea({
-      autoHideFilters: true
-    });
-  });
-&lt;/script&gt;
-</pre>
-
-  <p></p>
-
-  <p>Using <code>div</code></p>
-  <div id="example2">Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.</div>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $("#example2").emojioneArea();
-    });
-  </script>
-
-  <p></p>
-
-<pre class="prettyprint linenums">
-&lt;div id=&quot;example2&quot;&gt;
-Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-&lt;/div&gt;
-
-&lt;script type=&quot;text/javascript&quot;&gt;
-  $(document).ready(function() {
-    $(&quot;#example2&quot;).emojioneArea();
-  });
-&lt;/script&gt;
-</pre>
-
-  <p></p>
-  <p>Using <code>input</code></p>
-  <input id="example3" value="Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.">
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $("#example3").emojioneArea();
-    });
-  </script>
-
-  <p></p>
-
-<pre class="prettyprint linenums:1">
-&lt;input id=&quot;example3&quot; value=&quot;Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.&quot;&gt;
-
-&lt;script type=&quot;text/javascript&quot;&gt;
-  $(document).ready(function() {
-    $(&quot;#example3&quot;).emojioneArea();
-  });
-&lt;/script&gt;
-</pre>
-
-  <p>Images instead of the sprite</p>
-<textarea id="example4">
-Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-</textarea>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $("#example4").emojioneArea({
-        useSprite: false
-      });
-    });
-  </script>
-
-  <p></p>
-
-<pre class="prettyprint linenums">
-&lt;textarea id=&quot;example4&quot;&gt;
-Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-&lt;/textarea&gt;
-
-&lt;script type=&quot;text/javascript&quot;&gt;
-  $(document).ready(function() {
-    $(&quot;#example3&quot;).emojioneArea({
-      useSprite: false
-    });
-  });
-&lt;/script&gt;
-</pre>
-
-  <p>Customize layout</p>
-<textarea id="example5">
-Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-</textarea>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $("#example5").emojioneArea({
-        template: "<filters/><tabs/><editor/>"
-      });
-    });
-  </script>
-
-  <p></p>
-
-<pre class="prettyprint linenums">
-&lt;textarea id=&quot;example5&quot;&gt;
-Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-&lt;/textarea&gt;
-
-&lt;script type=&quot;text/javascript&quot;&gt;
-  $(document).ready(function() {
-    $(&quot;#example5&quot;).emojioneArea({
-      template: &quot;&lt;filters/&gt;&lt;tabs/&gt;&lt;editor/&gt;&quot;
-    });
-  });
-&lt;/script&gt;
-</pre>
-
   <style>
     a > .com {
       color: blue!important;
@@ -623,6 +487,141 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
       });
     });
   </script>
+
+  <h2 id="examples"><a href="#examples">Examples</a></h2>
+  <p>Auto hide filters</p>
+<textarea id="example1">
+Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+</textarea>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#example1").emojioneArea({
+        autoHideFilters: true
+      });
+    });
+  </script>
+
+  <p></p>
+
+<pre class="prettyprint linenums">
+&lt;textarea id=&quot;example1&quot;&gt;
+Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+&lt;/textarea&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+  $(document).ready(function() {
+    $(&quot;#example1&quot;).emojioneArea({
+      autoHideFilters: true
+    });
+  });
+&lt;/script&gt;
+</pre>
+
+  <p></p>
+
+  <p>Using <code>div</code></p>
+  <div id="example2">Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.</div>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#example2").emojioneArea();
+    });
+  </script>
+
+  <p></p>
+
+<pre class="prettyprint linenums">
+&lt;div id=&quot;example2&quot;&gt;
+Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+&lt;/div&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+  $(document).ready(function() {
+    $(&quot;#example2&quot;).emojioneArea();
+  });
+&lt;/script&gt;
+</pre>
+
+  <p></p>
+  <p>Using <code>input</code></p>
+  <input id="example3" value="Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.">
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#example3").emojioneArea();
+    });
+  </script>
+
+  <p></p>
+
+<pre class="prettyprint linenums:1">
+&lt;input id=&quot;example3&quot; value=&quot;Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.&quot;&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+  $(document).ready(function() {
+    $(&quot;#example3&quot;).emojioneArea();
+  });
+&lt;/script&gt;
+</pre>
+
+  <p>Images instead of the sprite</p>
+<textarea id="example4">
+Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+</textarea>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#example4").emojioneArea({
+        useSprite: false
+      });
+    });
+  </script>
+
+  <p></p>
+
+<pre class="prettyprint linenums">
+&lt;textarea id=&quot;example4&quot;&gt;
+Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+&lt;/textarea&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+  $(document).ready(function() {
+    $(&quot;#example3&quot;).emojioneArea({
+      useSprite: false
+    });
+  });
+&lt;/script&gt;
+</pre>
+
+  <p>Customize layout</p>
+<textarea id="example5">
+Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+</textarea>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#example5").emojioneArea({
+        template: "<filters/><tabs/><editor/>"
+      });
+    });
+  </script>
+
+  <p></p>
+
+<pre class="prettyprint linenums">
+&lt;textarea id=&quot;example5&quot;&gt;
+Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+&lt;/textarea&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+  $(document).ready(function() {
+    $(&quot;#example5&quot;).emojioneArea({
+      template: &quot;&lt;filters/&gt;&lt;tabs/&gt;&lt;editor/&gt;&quot;
+    });
+  });
+&lt;/script&gt;
+</pre>
 
   <p></p>
 
