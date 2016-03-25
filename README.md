@@ -76,6 +76,8 @@ Default options
       autoHideFilters   : false, // auto hide filters panel
 
       useSprite         : true, // use sprite instead of images, is awesome, but not works in old browsers
+      shortnames        : false, // if true - will converts emojis to short names,
+                                 // by default converts emojis to unicode characters
 
       filters: {
         // customize filters & emoji buttons
@@ -108,7 +110,7 @@ Default options
   //   A handler function previously attached for the event(s)
 
   // built-in events:
-  //   "mousedown", "mouseup", "click", "keyup", "keydown",
+  //   "mousedown", "mouseup", "click", "keyup", "keydown", "keypress"
   //   "filter.click", "emojibtn.click", "arrowLeft.click", "arrowRight.click",
   //   "focus", "blur", "paste", "resize", "change"
 
@@ -122,7 +124,7 @@ Default options
 
   // Usage methods, example:
   var el = $("selector").emojioneArea();
-  el[0].emojioneArea.on("emojibtn.click", function(btn) {
+  el[0].emojioneArea.on("emojibtn.click", function(btn, event) {
     console.log(btn.html());
   });
 ```
