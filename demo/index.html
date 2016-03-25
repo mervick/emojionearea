@@ -144,6 +144,8 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
       autoHideFilters   : false, // auto hide filters panel
 
       useSprite         : true, // use sprite instead of images, is awesome, but not works in old browsers
+      shortnames        : false, // if true - will converts emojis to short names,
+                                 // by default converts emojis to unicode characters
 
       filters: {
         // customize filters & emoji buttons
@@ -176,7 +178,7 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
   //   A handler function previously attached for the event(s)
 
   // built-in events:
-  //   "mousedown", "mouseup", "click", "keyup", "keydown",
+  //   "mousedown", "mouseup", "click", "keyup", "keydown", "keypress"
   //   "filter.click", "emojibtn.click", "arrowLeft.click", "arrowRight.click",
   //   "focus", "blur", "paste", "resize", "change"
 
