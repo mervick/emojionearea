@@ -39,7 +39,7 @@ Simple usage:
 <textarea id="example1"></textarea>
 <script type="text/javascript">
   $(document).ready(function() {
-    $("textarea").emojioneArea();
+    $("#example1").emojioneArea();
   });
 </script>
 ```
