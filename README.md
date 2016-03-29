@@ -39,12 +39,7 @@ Simple usage:
 <textarea id="example1"></textarea>
 <script type="text/javascript">
   $(document).ready(function() {
-    // define emojione location (optional, see more at https://github.com/Ranks/emojione)
-    // emojione.imagePathPNG = '../vendor/emojione/emojione/assets/png/';
-    $("#example1").emojioneArea({
-      // options
-      autoHideFilters: true
-    });
+    $("textarea").emojioneArea();
   });
 </script>
 ```
