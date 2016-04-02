@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v2.0.3
+ * EmojioneArea v2.1.0
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-03-24T09:00Z
+ * Date: 2016-04-02T16:55Z
  */
 (function(document, window, $) {
     'use strict';
@@ -445,7 +445,13 @@
                     filtersWidth = width;
                     trigger(self, 'resize', [editor]);
                 }
-            }, resizeHandlerID;
+            }, resizeHandlerID,
+            hide = function(e) {
+                return e.addClass("ea-hidden");
+            },
+            show = function(e) {
+                return e.removeClass("ea-hidden");
+            };
 
         self.sprite = options.useSprite;
         self.shortnames = options.shortnames;
@@ -468,10 +474,11 @@
 
         filters = app.find(".emojionearea-filters");
         if (options.autoHideFilters) {
-            filters.hide();
+            hide(filters);
         }
 
         tabs = app.find(".emojionearea-tabs");
+        hide(tabs);
 
         $.each(options.filters, function(filter, params) {
             $("<i/>", {"class": "emojionearea-filter", "data-filter": filter})
@@ -549,11 +556,11 @@
         self.on("@filter.click", function(element) {
                 if (element.is(".active")) {
                     element.removeClass("active");
-                    tabs.children().hide();
+                    hide(tabs);
                 } else {
                     filtersBtns.filter(".active").removeClass("active");
                     element.addClass("active");
-                    var i, timer, tab = tabs.children().hide()
+                    var i, timer, tab = show(tabs).children().hide()
                         .filter(".emojionearea-tab-" + element.data("filter")).show(),
                         items = tab.data("items"),
                         event = {click: "emojibtn.click"};
@@ -648,7 +655,7 @@
                 resizeHandlerID = setInterval(resizeHandler, 500);
                 app.addClass("focused");
                 if (options.autoHideFilters) {
-                    filters.slideDown(400);
+                    show(filters);
                 }
             })
 
@@ -658,10 +665,10 @@
                 app.removeClass("focused");
                 clearInterval(resizeHandlerID);
                 if (options.autoHideFilters) {
-                    filters.slideUp(400);
+                    hide(filters);
                 }
                 filtersBtns.filter(".active").removeClass("active");
-                tabs.children().hide();
+                hide(tabs);
                 var content = element.html();
                 if (self.content !== content) {
                     self.content = content;
@@ -671,6 +678,8 @@
                     source.blur();
                 }
             });
+
+        trigger(self, 'ready', [editor]);
     };
     var EmojioneArea = function(element, options) {
         var self = this;
