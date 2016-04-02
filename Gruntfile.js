@@ -59,7 +59,7 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            admin: {
+            all: {
                 files: [
                     'scss/**/*.scss'
                 ],
