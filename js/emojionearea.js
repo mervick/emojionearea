@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-03T09:21Z
+ * Date: 2016-04-03T13:42Z
  */
 (function(document, window, $) {
     'use strict';
@@ -493,7 +493,7 @@
             $("<i/>", {"class": "emojionearea-filter", "data-filter": filter})
                 .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
                 .appendTo(filters);
-            $("<div/>", {"class": "emojionearea-tab emojionearea-tab-" + filter}).hide()
+            hide($("<div/>", {"class": "emojionearea-tab emojionearea-tab-" + filter}))
                 .data("items", shortnameTo(params.emoji, '<i class="emojibtn" role="button"><' +
                     (self.sprite ? 'i class="emojione-{uni}"' : 'img class="emojione" src="{img}"') +
                     ' data-name="{name}"/></i>'))
@@ -569,8 +569,8 @@
                 } else {
                     filtersBtns.filter(".active").removeClass("active");
                     element.addClass("active");
-                    var i, timer, tab = show(tabs).children().hide()
-                        .filter(".emojionearea-tab-" + element.data("filter")).show(),
+                    var i, timer, tab = show(hide(show(tabs).children())
+                        .filter(".emojionearea-tab-" + element.data("filter"))),
                         items = tab.data("items"),
                         event = {click: "emojibtn.click"};
                     if (items) {
@@ -583,8 +583,8 @@
                             timer = setInterval(function () {
                                 for (i = 0; i < 20 && items.length; i++) {
                                     tab.append(items.shift());
-                                    attach(self, tab.find(".emojibtn").not(".handled").addClass("handled"), event);
                                 }
+                                attach(self, tab.find(".emojibtn").not(".handled").addClass("handled"), event);
                                 if (!items.length) clearInterval(timer);
                             }, 5);
                         }

@@ -225,8 +225,9 @@
 
         .emojionearea-tab {
             @include box-sizing(border-box);
+            position: absolute;
             padding: 4px 4px 4px 10px;
-            max-height: $tabs-height;
+            height: $tabs-height;
             overflow: auto;
 
             .emojibtn {
@@ -265,10 +266,22 @@
         }
     }
 
+    .emojionearea-tab {
+        @include opacity(1);
+        @include transition(all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
+        //@include transition(all 500ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
+
+        &.ea-hidden {
+            //@include transform(scale(2));
+            @include opacity(0);
+            z-index: -1;
+        }
+    }
+
     .emojionearea-filters,
     .emojionearea-tabs,
     .emojionearea-editor {
-        @include transition(all 600ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
+        @include transition(all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
     }
 
     .emojionearea-editor + .emojionearea-filters,
