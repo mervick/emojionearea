@@ -43,16 +43,15 @@ define([], function() {
             preSelectionTextRange.moveToElementText(el);
             preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
             var start = preSelectionTextRange.text.length;
-
-            return [start, start + selectedTextRange.text.length];
+            return start + selectedTextRange.text.length;
         };
 
         restoreSelection = function(el, sel) {
             var textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
             textRange.collapse(true);
-            textRange.moveEnd("character", sel[1]);
-            textRange.moveStart("character", sel[0]);
+            textRange.moveEnd("character", sel);
+            textRange.moveStart("character", sel);
             textRange.select();
         };
     }
