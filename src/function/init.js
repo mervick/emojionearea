@@ -97,7 +97,7 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
         self.setText(source[sourceValFunc]());
 
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
-        attach(self, editor, ["paste"], editor);
+        attach(self, editor, {paste :"editor.paste"}, editor);
         attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
         attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
@@ -183,9 +183,10 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
                 scrollFilters();
             })
 
-            .on("@paste", function(element) {
+            .on("@editor.paste", function(element) {
                 stayFocused = true;
-                pasteHtmlAtCaret('<span> </span>');
+                // inserts invisible character for fix caret
+                pasteHtmlAtCaret('<span>&#8291;</span>');
 
                 var sel = saveSelection(element[0]),
                     editorScrollTop = element.scrollTop(),
@@ -198,7 +199,9 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
                     var caretID = "caret-" + (new Date()).getTime();
                     element.focus();
                     restoreSelection(element[0], sel);
-                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self), self));
+                    var text = textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self),
+                        html = htmlFromText(text, self);
+                    pasteHtmlAtCaret(html);
                     clipboard.remove();
                     pasteHtmlAtCaret('<i id="' + caretID +'"></i>');
                     element.scrollTop(editorScrollTop);
@@ -210,6 +213,7 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
                     }
                     caret.remove();
                     stayFocused = false;
+                    trigger(self, 'paste', [element, text, html]);
                 }, 200);
             })
 
