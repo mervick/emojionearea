@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-03T13:42Z
+ * Date: 2016-04-03T14:37Z
  */
 (function(document, window, $) {
     'use strict';
@@ -524,9 +524,15 @@
         attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
         attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
-        attach(self, filtersArrowLeft, {click: "arrowLeft.click"});
-        attach(self, filtersArrowRight, {click: "arrowRight.click"});
+        attach(self, filtersArrowLeft,  {click: "arrowLeft.click",  mousedown: "arrowLeft.mousedown",  mouseup: "arrowLeft.mouseup"});
+        attach(self, filtersArrowRight, {click: "arrowRight.click", mousedown: "arrowRight.mousedown", mouseup: "arrowRight.mouseup"});
 
+        var mousedownInterval;
+        function clearMousedownInterval() {
+            if (mousedownInterval) {
+                clearInterval(mousedownInterval);
+            }
+        }
         function scrollFilters() {
             if (!scrollAreaWidth) {
                 $.each(filtersBtns, function (i, e) {
@@ -541,12 +547,15 @@
                 if (scrollLeft + scrollAreaWidth <= filtersWidth) {
                     scrollLeft = filtersWidth - scrollAreaWidth;
                     filtersArrowRight.removeClass("active");
+                    clearMousedownInterval();
                 } else if (scrollLeft >= 0) {
                     scrollLeft = 0;
                     filtersArrowLeft.removeClass("active");
+                    clearMousedownInterval();
                 }
                 scrollArea.css("left", scrollLeft);
             } else {
+                clearMousedownInterval();
                 if (scrollLeft !== 0) {
                     scrollLeft = 0;
                     scrollArea.css("left", scrollLeft);
@@ -554,6 +563,16 @@
                 filtersArrowRight.removeClass("active");
                 filtersArrowLeft.removeClass("active");
             }
+        }
+        function filterScrollLeft(val) {
+            val = val | filterWidth;
+            scrollLeft += val;
+            scrollFilters();
+        }
+        function filterScrollRight(val) {
+            val = val | filterWidth;
+            scrollLeft -= val;
+            scrollFilters();
         }
 
         if (typeof options.events === 'object' && !$.isEmptyObject(options.events)) {
@@ -596,15 +615,15 @@
                 scrollFilters();
             })
 
-            .on("@arrowLeft.click", function() {
-                scrollLeft += filterWidth;
-                scrollFilters();
+            .on("@arrowLeft.click", filterScrollLeft)
+            .on("@arrowRight.click", filterScrollRight)
+            .on("@arrowLeft.mousedown", function() {
+                mousedownInterval = setInterval(function() {filterScrollLeft(5);}, 50);
             })
-
-            .on("@arrowRight.click", function() {
-                scrollLeft -= filterWidth;
-                scrollFilters();
+            .on("@arrowRight.mousedown", function() {
+                mousedownInterval = setInterval(function() {filterScrollRight(5);}, 50);
             })
+            .on("@arrowLeft.mouseup @arrowRight.mouseup",clearMousedownInterval)
 
             .on("@editor.paste", function(element) {
                 stayFocused = true;
