@@ -20,13 +20,14 @@ function(emojione) {
             .replace(/\n<div>/ig, '\n')
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '')
+            .replace(/&#8291;/g, '')
             .replace(/&nbsp;/g, ' ')
-            .replace(/&amp;/g, '&')
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"')
             .replace(/&#x27;/g, "'")
-            .replace(/&#x60;/g, '`');
+            .replace(/&#x60;/g, '`')
+            .replace(/&amp;/g, '&');
         return self && self.shortnames ? emojione.toShort(str) : str;
     }
 });

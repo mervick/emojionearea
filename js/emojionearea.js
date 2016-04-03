@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v2.1.1
+ * EmojioneArea v2.1.2
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-03T00:38Z
+ * Date: 2016-04-03T09:21Z
  */
 (function(document, window, $) {
     'use strict';
@@ -393,7 +393,12 @@
     }
     function htmlFromText(str, self) {
         str = str
-            .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/`/g, '&#x60;')
             .replace(/(?:\r\n|\r|\n)/g, '\n')
             .replace(/(\n+)/g, '<div>$1</div>')
             .replace(/\n/g, '<br/>')
@@ -424,13 +429,14 @@
             .replace(/\n<div>/ig, '\n')
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '')
+            .replace(/&#8291;/g, '')
             .replace(/&nbsp;/g, ' ')
-            .replace(/&amp;/g, '&')
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
             .replace(/&quot;/g, '"')
             .replace(/&#x27;/g, "'")
-            .replace(/&#x60;/g, '`');
+            .replace(/&#x60;/g, '`')
+            .replace(/&amp;/g, '&');
         return self && self.shortnames ? emojione.toShort(str) : str;
     }
     function init(self, source, options) {
