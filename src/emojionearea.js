@@ -10,7 +10,8 @@ function($, EmojioneArea) {
     $.fn.emojioneArea = function(options) {
         return this.each(function() {
             if (!!this.emojioneArea) return this.emojioneArea;
-            return this.emojioneArea = new EmojioneArea($(this), options);
+            $.data(this, 'emojioneArea', this.emojioneArea = new EmojioneArea($(this), options));
+            return this.emojioneArea;
         });
     };
 });

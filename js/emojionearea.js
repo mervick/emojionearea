@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v2.1.0
+ * EmojioneArea v2.1.1
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-02T16:55Z
+ * Date: 2016-04-03T00:38Z
  */
 (function(document, window, $) {
     'use strict';
@@ -329,16 +329,15 @@
             preSelectionTextRange.moveToElementText(el);
             preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
             var start = preSelectionTextRange.text.length;
-
-            return [start, start + selectedTextRange.text.length];
+            return start + selectedTextRange.text.length;
         };
 
         restoreSelection = function(el, sel) {
             var textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
             textRange.collapse(true);
-            textRange.moveEnd("character", sel[1]);
-            textRange.moveStart("character", sel[0]);
+            textRange.moveEnd("character", sel);
+            textRange.moveStart("character", sel);
             textRange.select();
         };
     }
@@ -426,8 +425,12 @@
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '')
             .replace(/&nbsp;/g, ' ')
-            .replace(/\x20\x20/g, '&nbsp; ')
-            .replace(/\x20\x20/g, ' &nbsp;');
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#x27;/g, "'")
+            .replace(/&#x60;/g, '`');
         return self && self.shortnames ? emojione.toShort(str) : str;
     }
     function init(self, source, options) {
@@ -511,7 +514,7 @@
         self.setText(source[sourceValFunc]());
 
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
-        attach(self, editor, ["paste"], editor);
+        attach(self, editor, {paste :"editor.paste"}, editor);
         attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
         attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
@@ -597,9 +600,10 @@
                 scrollFilters();
             })
 
-            .on("@paste", function(element) {
+            .on("@editor.paste", function(element) {
                 stayFocused = true;
-                pasteHtmlAtCaret('<span> </span>');
+                // inserts invisible character for fix caret
+                pasteHtmlAtCaret('<span>&#8291;</span>');
 
                 var sel = saveSelection(element[0]),
                     editorScrollTop = element.scrollTop(),
@@ -612,7 +616,9 @@
                     var caretID = "caret-" + (new Date()).getTime();
                     element.focus();
                     restoreSelection(element[0], sel);
-                    pasteHtmlAtCaret(htmlFromText(textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self), self));
+                    var text = textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self),
+                        html = htmlFromText(text, self);
+                    pasteHtmlAtCaret(html);
                     clipboard.remove();
                     pasteHtmlAtCaret('<i id="' + caretID +'"></i>');
                     element.scrollTop(editorScrollTop);
@@ -624,6 +630,7 @@
                     }
                     caret.remove();
                     stayFocused = false;
+                    trigger(self, 'paste', [element, text, html]);
                 }, 200);
             })
 
@@ -737,7 +744,8 @@
     $.fn.emojioneArea = function(options) {
         return this.each(function() {
             if (!!this.emojioneArea) return this.emojioneArea;
-            return this.emojioneArea = new EmojioneArea($(this), options);
+            $.data(this, 'emojioneArea', this.emojioneArea = new EmojioneArea($(this), options));
+            return this.emojioneArea;
         });
     };
 
