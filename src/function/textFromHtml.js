@@ -21,8 +21,12 @@ function(emojione) {
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '')
             .replace(/&nbsp;/g, ' ')
-            .replace(/\x20\x20/g, '&nbsp; ')
-            .replace(/\x20\x20/g, ' &nbsp;');
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#x27;/g, "'")
+            .replace(/&#x60;/g, '`');
         return self && self.shortnames ? emojione.toShort(str) : str;
     }
 });
