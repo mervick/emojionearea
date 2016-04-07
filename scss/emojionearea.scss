@@ -211,8 +211,8 @@
         @include box-sizing(border-box);
 
         @at-root .focused#{&} {
-            border-color: $border-color-focused;
-            @include box-shadow($box-shadow-focused);
+            border-color: inherit;
+            @include box-shadow(inherit);
         }
 
         [class*=emojione-] {
@@ -268,7 +268,7 @@
 
     .emojionearea-tab {
         @include opacity(1);
-        @include transition(all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
+        @include transition(all 250ms ease);
         //@include transition(all 500ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
 
         &.ea-hidden {
@@ -281,7 +281,7 @@
     .emojionearea-filters,
     .emojionearea-tabs,
     .emojionearea-editor {
-        @include transition(all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
+        @include transition(all 250ms ease);
     }
 
     .emojionearea-editor + .emojionearea-filters,

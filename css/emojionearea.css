@@ -239,10 +239,10 @@
   box-sizing: border-box; }
   /* line 213, ../scss/emojionearea.scss */
   .focused.emojionearea .emojionearea-tabs {
-    border-color: #66afe9;
-    -moz-box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
-    -webkit-box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
-    box-shadow: 0 0 8px rgba(102, 175, 233, 0.6); }
+    border-color: inherit;
+    -moz-box-shadow: inherit;
+    -webkit-box-shadow: inherit;
+    box-shadow: inherit; }
   /* line 218, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-tabs [class*=emojione-] {
     -moz-box-sizing: content-box;
@@ -301,10 +301,10 @@
 .emojionearea .emojionearea-tab {
   filter: progid:DXImageTransform.Microsoft.Alpha(enabled=false);
   opacity: 1;
-  -moz-transition: all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-  -o-transition: all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-  -webkit-transition: all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-  transition: all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94); }
+  -moz-transition: all 250ms ease;
+  -o-transition: all 250ms ease;
+  -webkit-transition: all 250ms ease;
+  transition: all 250ms ease; }
   /* line 274, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-tab.ea-hidden {
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
@@ -314,10 +314,10 @@
 .emojionearea .emojionearea-filters,
 .emojionearea .emojionearea-tabs,
 .emojionearea .emojionearea-editor {
-  -moz-transition: all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-  -o-transition: all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-  -webkit-transition: all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-  transition: all 800ms cubic-bezier(0.17, 0.04, 0.03, 0.94); }
+  -moz-transition: all 250ms ease;
+  -o-transition: all 250ms ease;
+  -webkit-transition: all 250ms ease;
+  transition: all 250ms ease; }
 /* line 287, ../scss/emojionearea.scss */
 .emojionearea .emojionearea-editor + .emojionearea-filters,
 .emojionearea .emojionearea-editor + .emojionearea-tabs,
