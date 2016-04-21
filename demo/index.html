@@ -46,31 +46,30 @@
 
   <h2 id="demo"><a href="#demo">Demo</a></h2>
 
-  <div class="clearfix">
-    <div class="row">
-      <div class="col-6">
-        <p>From:</p>
-        <textarea id="demo1">
-  Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-        </textarea>
-      </div>
-      <div class="col-6">
-        <p>To:</p>
-        <div id="container1"></div>
-      </div>
+  <div class="row clearfix">
+    <div class="col-6">
+      <p>From:</p>
+      <textarea id="demo1">
+Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
+      </textarea>
+    </div>
+    <div class="col-6">
+      <p>To:</p>
+      <div id="container1"></div>
     </div>
   </div>
 
-  <div class="clearfix">
-    <div class="row">
-      <div class="col-6">
-        <p>From:</p>
-        <button id="demo2">:smile:</button>
-      </div>
-      <div class="col-6">
-        <p>To:</p>
-        <div id="container2"></div>
-      </div>
+  <div class="row clearfix">
+    <div class="col-6">
+      <p>Standalone from button:</p>
+      <button id="demo2">:smile:</button>
+      <p><small>(Can also be initialised with a data-placeholder attribute)</small></p>
+      <button id="demo3" data-placeholder=":grin:"></button>
+    </div>
+    <div class="col-6">
+      <p>To:</p>
+      <div id="container2"></div>
+      <div id="container3"></div>
     </div>
   </div>
 
@@ -82,26 +81,24 @@
         useSprite: false
       });
 
-      var test = $("#demo2").emojioneArea({
+      $("#demo2").emojioneArea({
         container: "#container2",
-        template: "<button/><filters/><tabs/>",
-        //autoHideFilters: true,
         shortnames: true,
         hideSource: false,
-        useSprite: false,
         standalone: true
       });
 
-      test[0].emojioneArea.on("emojibtn.click", function(btn) {
-        var text = test[0].emojioneArea.getText();
-        console.log(text);
+      $("#demo3").emojioneArea({
+        container: "#container3",
+        shortnames: true,
+        standalone: true
       });
     });
   </script>
 
   <p>Code:</p>
 <pre class="prettyprint linenums">
-&lt;div class=&quot;row&quot;&gt;
+&lt;div class=&quot;row clearfix&quot;&gt;
   &lt;div class=&quot;col-6&quot;&gt;
     &lt;p&gt;From:&lt;/p&gt;
     &lt;textarea id=&quot;demo1&quot;&gt;
@@ -114,11 +111,38 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
   &lt;/div&gt;
 &lt;/div&gt;
 
+&lt;div class=&quot;row clearfix&quot;&gt;
+  &lt;div class=&quot;col-6&quot;&gt;
+    &lt;p&gt;Standalone from button:&lt;/p&gt;
+    &lt;button id=&quot;demo2&quot;&gt;:smile:&lt;/button&gt;
+    &lt;p&gt;&lt;small&gt;(Can also be initialised with a data-placeholder attribute)&lt;/small&gt;&lt;/p&gt;
+    &lt;button id=&quot;demo3&quot; data-placeholder=&quot;:grin:&quot;&gt;&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;col-6&quot;&gt;
+    &lt;p&gt;To:&lt;/p&gt;
+    &lt;div id=&quot;container2&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;container3&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
 &lt;script type=&quot;text/javascript&quot;&gt;
   $(document).ready(function() {
     $(&quot;#demo1&quot;).emojioneArea({
       container: &quot;#container&quot;,
       hideSource: false,
+    });
+
+    $(&quot;#demo2&quot;).emojioneArea({
+      container: &quot;#container2&quot;,
+      shortnames: true,
+      hideSource: false,
+      standalone: true
+    });
+
+    $(&quot;#demo3&quot;).emojioneArea({
+      container: &quot;#container3&quot;,
+      shortnames: true,
+      standalone: true
     });
   });
 &lt;/script&gt;
@@ -156,7 +180,7 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
   <p>Default options</p>
 <pre class="prettyprint">
   var default_options = {
-      template          : "&lt;editor/&gt;&lt;filters/&gt;&lt;tabs/&gt;", // plugin template
+      template          : "&lt;editor/&gt;&lt;filters/&gt;&lt;tabs/&gt;", // plugin template (not used in standalone mode)
 
       dir               : "ltr", // direction <a class="link" href="http://www.w3schools.com/tags/att_global_dir.asp">http://www.w3schools.com/tags/att_global_dir.asp</a>
       spellcheck        : false, // spellcheck <a href="http://www.w3schools.com/tags/att_global_spellcheck.asp">http://www.w3schools.com/tags/att_global_spellcheck.asp</a>
@@ -174,6 +198,7 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
       useSprite         : true, // use sprite instead of images, is awesome, but not works in old browsers
       shortnames        : false, // if true - will converts emojis to short names,
                                  // by default converts emojis to unicode characters
+      standalone        : false // removes the text area and just gives a button for picking single emoji
 
       filters: {
         // customize filters & emoji buttons

@@ -44,6 +44,11 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
         self.shortnames = options.shortnames;
         self.standalone = options.standalone;
 
+        // in standalone mode we're using css for positioning so fix order
+        if (self.standalone) {
+            app = "<button/><filters/><tabs/>";
+        }
+
         var els = ["filters", "tabs"];
         if (self.standalone) {
             els.push("button");
@@ -109,7 +114,14 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
             source.hide();
         }
 
-        self.setText(source[sourceValFunc]());
+        var initial = source[sourceValFunc]();
+        var placeholder = false;
+        // if there's no initial value try and fetch a placeholder
+        if (!initial && self.standalone) {
+            placeholder = true;
+            initial = source.data("placeholder") || ":smile:";
+        }
+        self.setText(initial, placeholder);
 
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
         attach(self, editor, {paste :"editor.paste"}, editor);
@@ -258,6 +270,7 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
                 
                 if (self.standalone) {
                     self.button.html(img);
+                    self.button.removeClass("placeholder");
                     app.find(".emojionearea-filter.active").trigger("click");
                     hide(filters);
                 } else {

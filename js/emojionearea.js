@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-21T14:10Z
+ * Date: 2016-04-21T16:50Z
  */
 (function(document, window, $) {
     'use strict';
@@ -113,6 +113,7 @@
 
         shortnames        : false,
         useSprite         : true,
+        standalone        : false,
 
         filters: {
             people: {
@@ -467,6 +468,11 @@
         self.shortnames = options.shortnames;
         self.standalone = options.standalone;
 
+        // in standalone mode we're using css for positioning so fix order
+        if (self.standalone) {
+            app = "<button/><filters/><tabs/>";
+        }
+
         var els = ["filters", "tabs"];
         if (self.standalone) {
             els.push("button");
@@ -532,7 +538,14 @@
             source.hide();
         }
 
-        self.setText(source[sourceValFunc]());
+        var initial = source[sourceValFunc]();
+        var placeholder = false;
+        // if there's no initial value try and fetch a placeholder
+        if (!initial && self.standalone) {
+            placeholder = true;
+            initial = source.data("placeholder") || ":smile:";
+        }
+        self.setText(initial, placeholder);
 
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
         attach(self, editor, {paste :"editor.paste"}, editor);
@@ -681,6 +694,7 @@
                 
                 if (self.standalone) {
                     self.button.html(img);
+                    self.button.removeClass("placeholder");
                     app.find(".emojionearea-filter.active").trigger("click");
                     hide(filters);
                 } else {
@@ -790,13 +804,14 @@
         return this;
     };
 
-    EmojioneArea.prototype.setText = function (str) {
+    EmojioneArea.prototype.setText = function (str, placeholder) {
         var self = this, args = arguments;
 
         emojioneReady(function () {
             if (self.standalone) {
                 self.button.html(htmlFromText(str, self));
                 self.content = self.button.html();
+                self.button.toggleClass("placeholder", placeholder);
                 if (args.length === 1) {
                     trigger(self, 'change', [self.button]);
                 }
