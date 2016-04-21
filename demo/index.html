@@ -50,13 +50,26 @@
     <div class="row">
       <div class="col-6">
         <p>From:</p>
-            <textarea id="demo1">
+        <textarea id="demo1">
   Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do eiusmod tempor ☔ incididunt ut labore et dolore magna aliqua 🐬.
-  </textarea>
+        </textarea>
       </div>
       <div class="col-6">
         <p>To:</p>
-        <div id="container"></div>
+        <div id="container1"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="clearfix">
+    <div class="row">
+      <div class="col-6">
+        <p>From:</p>
+        <button id="demo2">:smile:</button>
+      </div>
+      <div class="col-6">
+        <p>To:</p>
+        <div id="container2"></div>
       </div>
     </div>
   </div>
@@ -64,9 +77,24 @@
   <script type="text/javascript">
     $(document).ready(function() {
       $("#demo1").emojioneArea({
-        container: "#container",
+        container: "#container1",
         hideSource: false,
         useSprite: false
+      });
+
+      var test = $("#demo2").emojioneArea({
+        container: "#container2",
+        template: "<button/><filters/><tabs/>",
+        //autoHideFilters: true,
+        shortnames: true,
+        hideSource: false,
+        useSprite: false,
+        standalone: true
+      });
+
+      test[0].emojioneArea.on("emojibtn.click", function(btn) {
+        var text = test[0].emojioneArea.getText();
+        console.log(text);
       });
     });
   </script>

@@ -290,4 +290,67 @@
     .emojionearea-tabs + .emojionearea-editor {
         border-top: 1px solid #cfcfcf;
     }
+
+    &.has-button {
+        border:0;
+        background:transparent;
+        box-shadow:none;
+        display:inline-block;
+        width:auto;
+        .emojionearea-filters,
+        .emojionearea-tabs {
+            width:306px;
+            transition:none;
+        }
+        .emojionearea-filters {
+            border:1px solid $border-color;
+            border-top-left-radius:3px;
+            border-top-right-radius:3px;
+            position:absolute;
+            top:40px;
+            left:0;
+        }
+        .emojionearea-tabs {
+            top:86px;
+            left:0;
+            right:0;
+        }
+        .emojionearea-filter-arrow-left.active {
+            left:0;
+        }
+        .emojionearea-filter-arrow-right.active {
+            right:0;
+        }
+    }
+    .emojionearea-button {
+        margin-bottom:10px;
+        background-color:#d6d6d6;
+        cursor:pointer;
+        width:auto;
+        display:inline-block;
+        border-radius:4px;
+        user-select:none;
+        -webkit-user-select:none;
+        position:relative;
+        padding:6px 55px 6px 10px;
+        background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAQlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACO4fbyAAAAFXRSTlMAAwUHIy0uUVJ9gIiXm6eorbTq6/obDOScAAAAV0lEQVR42u3MORKAIBBEUURxwxX997+qAeUkXaSa8COqXg+u9n3DZM9+9erjTXz94mxlsANz9gSpk0GzATHfk4K4Lcw1fwCLeekPcVmYFxbZi/k1uNpPPfINBK4XBDDlAAAAAElFTkSuQmCC);
+        background-repeat:no-repeat;
+        background-position:88% center;
+        &:hover {
+            background-color:#d0d0d0;
+        }
+        &::after {
+            content:"";
+            position:absolute;
+            top:0;
+            left:50%;
+            bottom:0;
+            border-left:1px solid $border-color;
+        }
+        img {
+            display:block;
+            width:25px;
+            height:auto;
+        }
+    }
 }

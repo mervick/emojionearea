@@ -324,5 +324,67 @@
 .emojionearea .emojionearea-filters + .emojionearea-editor,
 .emojionearea .emojionearea-tabs + .emojionearea-editor {
   border-top: 1px solid #cfcfcf; }
+/* line 294, ../scss/emojionearea.scss */
+.emojionearea.has-button {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  display: inline-block;
+  width: auto; }
+  /* line 300, ../scss/emojionearea.scss */
+  .emojionearea.has-button .emojionearea-filters,
+  .emojionearea.has-button .emojionearea-tabs {
+    width: 306px;
+    transition: none; }
+  /* line 305, ../scss/emojionearea.scss */
+  .emojionearea.has-button .emojionearea-filters {
+    border: 1px solid #ccc;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    position: absolute;
+    top: 40px;
+    left: 0; }
+  /* line 313, ../scss/emojionearea.scss */
+  .emojionearea.has-button .emojionearea-tabs {
+    top: 86px;
+    left: 0;
+    right: 0; }
+  /* line 318, ../scss/emojionearea.scss */
+  .emojionearea.has-button .emojionearea-filter-arrow-left.active {
+    left: 0; }
+  /* line 321, ../scss/emojionearea.scss */
+  .emojionearea.has-button .emojionearea-filter-arrow-right.active {
+    right: 0; }
+/* line 325, ../scss/emojionearea.scss */
+.emojionearea .emojionearea-button {
+  margin-bottom: 10px;
+  background-color: #d6d6d6;
+  cursor: pointer;
+  width: auto;
+  display: inline-block;
+  border-radius: 4px;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  padding: 6px 55px 6px 10px;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAQlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACO4fbyAAAAFXRSTlMAAwUHIy0uUVJ9gIiXm6eorbTq6/obDOScAAAAV0lEQVR42u3MORKAIBBEUURxwxX997+qAeUkXaSa8COqXg+u9n3DZM9+9erjTXz94mxlsANz9gSpk0GzATHfk4K4Lcw1fwCLeekPcVmYFxbZi/k1uNpPPfINBK4XBDDlAAAAAElFTkSuQmCC);
+  background-repeat: no-repeat;
+  background-position: 88% center; }
+  /* line 339, ../scss/emojionearea.scss */
+  .emojionearea .emojionearea-button:hover {
+    background-color: #d0d0d0; }
+  /* line 342, ../scss/emojionearea.scss */
+  .emojionearea .emojionearea-button::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    bottom: 0;
+    border-left: 1px solid #ccc; }
+  /* line 350, ../scss/emojionearea.scss */
+  .emojionearea .emojionearea-button img {
+    display: block;
+    width: 25px;
+    height: auto; }
 
 /*# sourceMappingURL=emojionearea.css.map */
