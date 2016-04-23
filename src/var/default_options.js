@@ -15,6 +15,7 @@ define([], function() {
 
         shortnames        : false,
         useSprite         : true,
+        standalone        : false,
 
         filters: {
             people: {
