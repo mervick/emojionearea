@@ -1,9 +1,8 @@
 define([
     'jquery',
-    'var/default_options',
-    'var/emojioneSupportMode'
+    'var/default_options'
 ],
-function($, default_options, emojioneSupportMode) {
+function($, default_options) {
     return function(options) {
         if (options['filters']) {
             var filters = default_options.filters;
@@ -18,18 +17,6 @@ function($, default_options, emojioneSupportMode) {
             });
             options['filters'] = filters;
         }
-        options = $.extend({}, default_options, options);
-
-        if (emojioneSupportMode > 0) {
-            options.filters.people.emoji = options.filters.people.emoji
-                .replace(",writing_hand,", ",");
-            options.filters.travel.emoji = options.filters.travel.emoji
-                .replace(",contruction_site,", ",construction_site,");
-            options.filters.objects_symbols.emoji = options.filters.objects_symbols.emoji
-                .replace(",keycap_ten,", ",ten,")
-                .replace(",cross_heavy,", ",cross,");
-        }
-
-        return options;
+        return $.extend({}, default_options, options);
     }
 });
