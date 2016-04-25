@@ -59,6 +59,7 @@ module.exports = function( grunt ) {
         // Convert var modules
         if ( /.\/var\//.test( path.replace( process.cwd(), "" ) ) ) {
             contents = contents
+                .replace( /define\([\w\W]*?return undefined\s*;/, "    var " + ( /var\/([\w-]+)/.exec( name )[ 1 ] ) + ";" )
                 .replace( /define\([\w\W]*?return/, "    var " + ( /var\/([\w-]+)/.exec( name )[ 1 ] ) + " =" )
                 .replace( rdefineEnd, "" );
 
