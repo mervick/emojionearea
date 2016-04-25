@@ -1,7 +1,5 @@
 define([], function() {
     return {
-        template          : "<editor/><filters/><tabs/>",
-
         dir               : "ltr",
         spellcheck        : false,
         autocomplete      : "off",
@@ -11,12 +9,20 @@ define([], function() {
         placeholder       : null,
         container         : null,
         hideSource        : true,
-        autoHideFilters   : false,
+        shortnames        : true,
+        sprite            : true,
+        pickerPosition    : "left", // top | left
+        filtersPosition   : "top", // top | bottom
+        inline            : false,
 
-        shortnames        : false,
-        useSprite         : true,
+        nanoScroller      : true,
 
         filters: {
+            //recent : {
+            //    icon: "clock3",
+            //    title: "Recent",
+            //},
+
             smileys_people: {
                 icon: "yum",
                 title: "Smileys & People",
@@ -76,7 +82,7 @@ define([], function() {
             },
 
             activity: {
-                icon: "soccer",
+                icon: "basketball",
                 title: "Activity",
                 emoji: "soccer basketball football baseball tennis volleyball rugby_football 8ball golf golfer ping_pong " +
                 "badminton hockey field_hockey cricket ski skier snowboarder ice_skate bow_and_arrow fishing_pole_and_fish " +
