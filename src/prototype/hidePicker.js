@@ -11,5 +11,6 @@ function(EmojioneArea) {
         self._sh_timer =  window.setTimeout(function() {
             self.picker.addClass("hidden");
         }, 500);
+        return self;
     }
 });
