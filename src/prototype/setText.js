@@ -3,9 +3,10 @@ define([
     'function/emojioneReady',
     'function/htmlFromText',
     'function/trigger',
+    'function/calcButtonPosition',
     'prototype/var/EmojioneArea'
 ],
-function($, emojioneReady, htmlFromText, trigger, EmojioneArea) {
+function($, emojioneReady, htmlFromText, trigger, calcButtonPosition, EmojioneArea) {
     EmojioneArea.prototype.setText = function (str) {
         var self = this, args = arguments;
         emojioneReady(function () {
@@ -14,7 +15,8 @@ function($, emojioneReady, htmlFromText, trigger, EmojioneArea) {
             if (args.length === 1) {
                 trigger(self, 'change', [self.editor]);
             }
-            trigger(self, '!resize', []);
+            calcButtonPosition.apply(self);
         });
+        return self;
     }
 });
