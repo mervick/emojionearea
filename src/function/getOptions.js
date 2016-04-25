@@ -1,13 +1,14 @@
 define([
     'jquery',
-    'var/default_options'
+    'var/default_options',
+    'function/isObject'
 ],
-function($, default_options) {
+function($, default_options, isObject) {
     return function(options) {
         if (options['filters']) {
             var filters = default_options.filters;
             $.each(options['filters'], function(filter, data) {
-                if (typeof data !== 'object' || $.isEmptyObject(data)) {
+                if (!isObject(data) || $.isEmptyObject(data)) {
                     delete filters[filter];
                     return;
                 }
