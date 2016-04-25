@@ -28,7 +28,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         self.pickerPosition = options.pickerPosition;
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, emojis, filters, filtersBtns, emojisList,
+            editor, button, picker, tones, emojis, filters, filtersBtns, emojisList, headers,
             app = div({"class" : css_class + " " + source.attr("class"), role: "application"},
                 editor = self.editor = div('editor').attr({
                     contenteditable: true,
@@ -76,9 +76,29 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
             });
             options.filters = null;
             attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
+            headers = emojisList.find("h1");
         });
 
         filtersBtns = filters.find(selector("filter"));
+        filtersBtns.eq(0).addClass("active");
+
+        var noListenScroll = false;
+        emojisList.on('scroll', function () {
+            if (!noListenScroll) {
+                var item = headers.eq(0), scrollTop = emojisList.offset().top;
+                headers.each(function (i, e) {
+                    if ($(e).offset().top - scrollTop >= 3) {
+                        return false;
+                    }
+                    item = $(e);
+                });
+                var filter = filtersBtns.filter('[data-filter="' + item.attr("name") + '"]');
+                if (!filter.is(".active")) {
+                    filtersBtns.removeClass("active");
+                    filter.addClass("active");
+                }
+            }
+        });
 
         if (options.container) {
             $(options.container).wrapInner(app);
@@ -108,10 +128,19 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         }
 
         self.on("@filter.click", function(filter) {
+                noListenScroll = true;
                 if (!filter.is(".active")) {
                     filtersBtns.filter(".active").removeClass("active");
                     filter.addClass("active");
                 }
+                var headerOffset = emojisList.find('h1[name="' + filter.data('filter') + '"]').offset().top,
+                    scroll = emojisList.scrollTop(),
+                    offsetTop = emojisList.offset().top;
+                emojisList.stop().animate({
+                    scrollTop: headerOffset + scroll - offsetTop - 2
+                }, 200, 'swing', function() {
+                    noListenScroll = false;
+                });
             })
 
             .on("@button.click", function(button) {
