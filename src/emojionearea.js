@@ -4,7 +4,9 @@ define([
     'prototype/on',
     'prototype/off',
     'prototype/setText',
-    'prototype/getText'
+    'prototype/getText',
+    'prototype/showPicker',
+    'prototype/hidePicker'
 ],
 function($, EmojioneArea) {
     $.fn.emojioneArea = function(options) {
