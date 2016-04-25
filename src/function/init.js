@@ -23,15 +23,12 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
 {
     return function(self, source, options) {
         options = getOptions(options);
-
-        var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            stayFocused = false;
-
         self.sprite     = options.sprite;
         self.shortnames = options.shortnames;
         self.pickerPosition = options.pickerPosition;
 
-        var editor, button, picker, tones, emojis, filters, emojisList,
+        var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
+            editor, button, picker, tones, emojis, filters, filtersBtns, emojisList,
             app = div({"class" : css_class + " " + source.attr("class"), role: "application"},
                 editor = self.editor = div('editor').attr({
                     contenteditable: true,
@@ -81,7 +78,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
             attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
         });
 
-        var filtersBtns = filters.find(selector("filter"));
+        filtersBtns = filters.find(selector("filter"));
 
         if (options.container) {
             $(options.container).wrapInner(app);
@@ -100,7 +97,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
         attach(self, button, {click: "button.click"});
         attach(self, editor, {paste :"!paste"}, editor);
-        attach(self, editor, ["focus", "blur"], function() { return stayFocused ? false : editor; });
+        attach(self, editor, ["focus", "blur"], function() { return self.stayFocused ? false : editor; });
         attach(self, [editor, picker], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
 
@@ -111,9 +108,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         }
 
         self.on("@filter.click", function(filter) {
-                if (filter.is(".active")) {
-                    filter.removeClass("active");
-                } else {
+                if (!filter.is(".active")) {
                     filtersBtns.filter(".active").removeClass("active");
                     filter.addClass("active");
                 }
@@ -128,8 +123,8 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
             })
 
             .on("@!paste", function(editor) {
-                stayFocused = true;
-                // inserts invisible character for fix caret
+                self.stayFocused = true;
+                // insert invisible character for fix caret position
                 pasteHtmlAtCaret('<span>&#8291;</span>');
 
                 var sel = saveSelection(editor[0]),
@@ -156,7 +151,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                         editor.scrollTop(editorScrollTop + top - 2 * height/3);
                     }
                     caret.remove();
-                    stayFocused = false;
+                    self.stayFocused = false;
                     calcButtonPosition.apply(self);
                     trigger(self, 'paste', [editor, text, html]);
                 }, 200);
@@ -180,7 +175,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
 
             .on("@change", function(editor) {
                 var html = editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
-                // clear input, fix: chrome add <br> on contenteditable is empty
+                // clear input: chrome adds <br> when contenteditable is empty
                 if (!html.length || /^<br[^>]*>$/i.test(html)) {
                     self.setText('', false);
                 }
