@@ -1,7 +1,12 @@
 @import "compass/css3";
 @import "variables";
+@import "image";
 
-.emojionearea {
+.#{$css-prefix} {
+    &, & * {
+        @include box-sizing(border-box);
+    }
+
     &, &.form-control {
         display: block;
         position: relative !important;
@@ -14,8 +19,10 @@
         border: 1px solid $border-color;
         @include border-radius($border-radius);
         @include box-shadow($box-shadow-inset);
-        @include transition(border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s);
-        @include box-sizing(border-box);
+           -moz-transition: border-color 0.15s ease-in-out,    -moz-box-shadow 0.15s ease-in-out;
+             -o-transition: border-color 0.15s ease-in-out,         box-shadow 0.15s ease-in-out;
+        -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+                transition: border-color 0.15s ease-in-out,         box-shadow 0.15s ease-in-out;
     }
 
     &.focused {
@@ -24,14 +31,13 @@
         @include box-shadow($box-shadow-inset, $box-shadow-focused);
     }
 
-    .emojionearea-editor {
+    .#{$css-prefix}-editor {
         display: block;
-        @include box-sizing(border-box);
         height: auto;
         min-height: 8em;
         max-height: 15em;
         overflow: auto;
-        padding: 6px 12px;
+        padding: 6px 20px 6px 12px;
         line-height: 1.42857143;
         font-size: inherit;
         color: $text-color;
@@ -41,14 +47,15 @@
         margin-right: 1px;
         @include border-radius(0);
         @include box-shadow(none);
-        @include box-sizing(border-box);
 
         &:empty:before {
             content: attr(placeholder);
             display: block;
+            color: $placeholder-color;
         }
 
         &:focus {
+            border: 0;
             outline: 0;
             @include box-shadow(none);
         }
@@ -68,167 +75,198 @@
         }
     }
 
-    .emojionearea-filters {
-        @include box-sizing(border-box);
-        background: $filters-bg;
-        width: 100%;
-        height: 46px;
-        position: relative;
-        overflow: hidden;
+    .#{$css-prefix}-button {
+        z-index: 5;
+        position: absolute;
+        right: 2px;
+        top: 3px;
+        width: 24px;
+        height: 24px;
+        opacity: 0.6;
+        cursor: pointer;
+        @include transition(opacity 300ms ease-in-out);
 
-        .emojionearea-filter {
-            @include box-sizing(content-box);
-            top: 0 !important;
-            margin: 0;
-            width: 32px;
-            height: 32px;
-            width: 28px;
-            height: 28px;
-            display: inline-block;
-            background-color: $filters-bg;
-            border: 9px solid $filters-bg;
-            border-left-width: 14px;
-            border-right-width: 14px;
-            @include opacity(0.7);
-
-            i, img {
-                display: block;
-                width: 28px;
-                height: 28px;
-                top: 0;
-                margin: 0;
-            }
-
-            &:hover {
-                background-color: $filters-bg-hover;
-                border-color: $filters-bg-hover;
-                @include opacity(0.9);
-            }
-
-            &.active {
-                background-color: $filters-bg-active;
-                border-color: $filters-bg-active;
-                @include opacity(1);
-            }
+        &:hover {
+            opacity: 1;
         }
 
-        .emojionearea-filters-scroll {
-            height: 46px;
-            overflow: hidden;
-            width: 10000%;
+        > div {
             display: block;
-            left: 0;
-            margin: 0;
+            width: 24px;
+            height: 24px;
             position: absolute;
-            background: $filters-bg;
-            @include transition(left ease-in-out .25s);
-            @at-root .focused#{&} {
-                z-index: $z-index + 1;
+            @include transition(all 400ms ease-in-out);
+            $_hack: inline-image-store(background, $sprite);
+
+            &.#{$css-prefix}-button-open {
+                background-position: 0 -24px;
+                opacity: 1;
+            }
+
+            &.#{$css-prefix}-button-close {
+                background-position: 0 0;
+                -webkit-transform: rotate(-45deg);
+                -o-transform: rotate(-45deg);
+                transform: rotate(-45deg);
+                opacity: 0;
             }
         }
+        &.active {
+            > div {
+                &.#{$css-prefix}-button-open {
+                    -webkit-transform: rotate(45deg);
+                    -o-transform: rotate(45deg);
+                    transform: rotate(45deg);
+                    opacity: 0;
+                }
 
-        .emojionearea-filter-arrow-left,
-        .emojionearea-filter-arrow-right {
-            display: block;
-            width: 22px;
-            height: 46px;
-            position: absolute;
-            top: 0;
-            @include box-shadow(0px 0px 2px rgba(0,0,0,0.2));
-            background: $filters-bg;
-            z-index: 1;
-
-            @at-root .focused#{&} {
-                z-index: $z-index + 2;
-            }
-
-            &:hover {
-                background: $filters-bg-hover;
-            }
-
-            &:after {
-                content: "";
-                width: 0;
-                height: 0;
-                border-style: solid;
-                border-width: 5px 0;
-                border-color: transparent;
-                position: absolute;
-                top: 18px;
-            }
-
-            &.disabled {
-                @include box-shadow(none);
-            }
-        }
-
-        .emojionearea-filter-arrow-left {
-            @include transition(left ease-in-out .15s);
-            left: -30px;
-            border-right: 1px solid #c9c9c9;
-            &:after {
-                left: 6px;
-                border-right: 8px solid #333;
-            }
-            &.disabled:after {
-                border-right-color: #aaa;
-            }
-            @at-root .focused#{&}.active {
-                left: 0;
-            }
-        }
-
-        .emojionearea-filter-arrow-right {
-            @include transition(right ease-in-out .15s);
-            right: -30px;
-            border-left: 1px solid #c9c9c9;
-            &:after {
-                right: 6px;
-                border-left: 8px solid #333;
-            }
-            &.disabled:after {
-                border-left-color: #aaa;
-            }
-            @at-root .focused#{&}.active {
-                right: 0;
+                &.#{$css-prefix}-button-close {
+                    -webkit-transform: rotate(0deg);
+                    -o-transform: rotate(0deg);
+                    transform: rotate(0deg);
+                    opacity: 1;
+                }
             }
         }
     }
 
-    .emojionearea-tabs {
+    .#{$css-prefix}-picker {
+        background: $picker-bg;
         position: absolute;
-        left: -1px;
-        right: -1px;
-        border: 1px solid $border-color;
-        border-top: 0!important;
-        padding: 1px 0 2px;
-        margin-top: -1px;
-        background: $tabs-bg;
-        height: $tabs-height + ceil($border-radius / 2);
+        @include box-shadow(0 1px 5px rgba(0, 0, 0, 0.32));
+        @include border-radius($picker-border-radius);
+        height: $picker-height;
+        width: $picker-width;
+        top: -15px;
+        right: -15px;
         z-index: $z-index;
-        @include border-bottom-left-radius($border-radius);
-        @include border-bottom-right-radius($border-radius);
-        @include box-sizing(border-box);
+        @include transition(all ease-in-out .25s);
+        @include opacity(0);
+        @include user-select(none);
 
-        @at-root .focused#{&} {
-            border-color: inherit;
-            @include box-shadow(inherit);
+        .#{$css-prefix}-wrapper {
+            position: relative;
+            height: $picker-height;
+            width: $picker-width;
+
+            &:after {
+                content: "";
+                display: block;
+                position: absolute;
+                $_hack: inline-image-store(background, $sprite);
+                background-repeat: no-repeat;
+                z-index: $z-index + 1;
+            }
         }
 
-        [class*=emojione-] {
-            @include box-sizing(content-box);
-            margin: 0;
-            width: 24px;
-            height: 24px;
-            top: 0;
-        }
-
-        .emojionearea-tab {
-            @include box-sizing(border-box);
+        .#{$css-prefix}-filters {
+            width: 100%;
             position: absolute;
-            padding: 4px 4px 4px 10px;
-            height: $tabs-height;
+            background: #F5F7F9;
+            padding: 0 0 0 7px;
+            height: $filters-height;
+            /* border: 1px solid #e4e4e4; */
+            /* border: 1px solid rgba(0,0,0,0.1); */
+            z-index: $z-index + 5;
+
+            .#{$css-prefix}-filter {
+                display: block;
+                float: left;
+                height: $filters-height;
+                width: 32px;
+                filter: inherit;
+                padding: 7px 1px 0;
+                cursor: pointer;
+                @include filter(grayscale(1));
+
+                &.active {
+                    background: #fff;
+                }
+
+                &.active, &:hover {
+                    @include filter(grayscale(0));
+                }
+
+                > i {
+                    width: 24px;
+                    height: 24px;
+                    top: 0;
+                }
+            }
+        }
+
+        .#{$css-prefix}-scroll-area {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+
+            &:after, &:before {
+                content: "";
+                display: block;
+                left: 5px;
+                right: 20px;
+                height: 12px;
+                position: absolute;
+                z-index: $z-index + 3;
+                $_hack: inline-image-store(background, $sprite);
+                background-repeat: repeat-x;
+                pointer-events: none;
+            }
+
+            &:before {
+                background-position: 0 -92px;
+                top: 0;
+            }
+
+            &:after {
+                background-position: 0 -80px;
+                bottom: 0;
+            }
+        }
+
+        .#{$css-prefix}-emojis-list {
+            height: $picker-height - $filters-height;
             overflow: auto;
+            overflow-x: hidden;
+            width: 100%;
+            position: absolute;
+            padding: 0 0 5px;
+
+            h1 {
+                display: block;
+                font-size: 13px;
+                font-weight: normal;
+                color: #b2b2b2;
+                padding-left: 13px;
+                background: #fff;
+                line-height: 20px;
+                margin: 7px 0 5px;
+
+                &:after, &:before {
+                    content: " ";
+                    display: block;
+                    clear: both;
+                }
+            }
+
+            .#{$css-prefix}-emojis {
+                padding: 0 0 0 7px;
+
+                &:after, &:before {
+                    content: " ";
+                    display: block;
+                    clear: both;
+                }
+            }
+
+            [class*=emojione-] {
+                @include box-sizing(content-box);
+                margin: 0;
+                width: 24px;
+                height: 24px;
+                top: 0;
+            }
 
             .emojibtn {
                 @include box-sizing(content-box);
@@ -253,41 +291,303 @@
                 }
             }
         }
-    }
 
-    .emojionearea-filters,
-    .emojionearea-tabs {
-        overflow: hidden;
-        @include opacity(1);
+        &.#{$css-prefix}-filters-position-top {
+            .#{$css-prefix}-filters {
+                top: 0;
+                @include border-top-left-radius($picker-border-radius);
+                @include border-top-right-radius($picker-border-radius);
+            }
+            .#{$css-prefix}-emojis-list {
+                bottom: 0;
+            }
+        }
 
-        &.ea-hidden {
-            height: 0;
-            @include opacity(0);
+        &.#{$css-prefix}-filters-position-bottom {
+            .#{$css-prefix}-filters {
+                bottom: 0;
+                @include border-bottom-left-radius($picker-border-radius);
+                @include border-bottom-right-radius($picker-border-radius);
+            }
+            .#{$css-prefix}-emojis-list {
+                top: 0;
+            }
+        }
+
+        &.#{$css-prefix}-picker-position-top {
+            margin-top: - $picker-height - 10;
+
+            .#{$css-prefix}-wrapper:after {
+                width: 19px;
+                height: 10px;
+                background-position: -2px -49px;
+                bottom: -10px;
+                right: 20px;
+            }
+
+            &.#{$css-prefix}-filters-position-bottom {
+                .#{$css-prefix}-wrapper:before {
+                    display: block;
+                    content: "";
+                    position: absolute;
+                    z-index: $z-index + 2;
+                    border: 6px solid transparent;
+                    border-top-color: $filters-bg;
+                    bottom: -12px;
+                    right: 24px;
+                }
+            }
+        }
+
+        &.#{$css-prefix}-picker-position-left {
+            margin-right: - $picker-width - 10;
+            top: -8px;
+
+            .#{$css-prefix}-wrapper:after {
+                width: 10px;
+                height: 19px;
+                background-position: 0px -60px;
+                top: 13px;
+                left: -10px;
+            }
+
+            &.#{$css-prefix}-filters-position-bottom {
+                .#{$css-prefix}-wrapper:after {
+                    background-position: right -60px;
+                }
+            }
         }
     }
 
-    .emojionearea-tab {
+    .#{$css-prefix}-button.active + .#{$css-prefix}-picker {
         @include opacity(1);
-        @include transition(all 250ms ease);
-        //@include transition(all 500ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
-
-        &.ea-hidden {
-            //@include transform(scale(2));
-            @include opacity(0);
-            z-index: -1;
-        }
     }
 
-    .emojionearea-filters,
-    .emojionearea-tabs,
-    .emojionearea-editor {
-        @include transition(all 250ms ease);
+    .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-top {
+        margin-top: - $picker-height + 8;
     }
 
-    .emojionearea-editor + .emojionearea-filters,
-    .emojionearea-editor + .emojionearea-tabs,
-    .emojionearea-filters + .emojionearea-editor,
-    .emojionearea-tabs + .emojionearea-editor {
-        border-top: 1px solid #cfcfcf;
+    .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-left {
+        margin-right: - $picker-width + 8;
     }
+
+
+
+    //.#{$css-prefix}-filters {
+        //@include box-sizing(border-box);
+        //background: $filters-bg;
+        //width: 100%;
+        //height: 46px;
+        //position: relative;
+        //overflow: hidden;
+        //
+        //.#{$css-prefix}-filter {
+        //    @include box-sizing(content-box);
+        //    top: 0 !important;
+        //    margin: 0;
+        //    width: 32px;
+        //    height: 32px;
+        //    width: 28px;
+        //    height: 28px;
+        //    display: inline-block;
+        //    background-color: $filters-bg;
+        //    border: 9px solid $filters-bg;
+        //    border-left-width: 14px;
+        //    border-right-width: 14px;
+        //    @include opacity(0.7);
+        //
+        //    i, img {
+        //        display: block;
+        //        width: 28px;
+        //        height: 28px;
+        //        top: 0;
+        //        margin: 0;
+        //    }
+        //
+        //    &:hover {
+        //        background-color: $filters-bg-hover;
+        //        border-color: $filters-bg-hover;
+        //        @include opacity(0.9);
+        //    }
+        //
+        //    &.active {
+        //        background-color: $filters-bg-active;
+        //        border-color: $filters-bg-active;
+        //        @include opacity(1);
+        //    }
+        //}
+
+        //.#{$css-prefix}-filters-scroll {
+        //    height: 46px;
+        //    overflow: hidden;
+        //    width: 10000%;
+        //    display: block;
+        //    left: 0;
+        //    margin: 0;
+        //    position: absolute;
+        //    background: $filters-bg;
+        //    @include transition(left ease-in-out .25s);
+        //    @at-root .focused#{&} {
+        //        z-index: $z-index + 1;
+        //    }
+        //}
+
+        //.#{$css-prefix}-filter-arrow-left,
+        //.#{$css-prefix}-filter-arrow-right {
+        //    display: block;
+        //    width: 22px;
+        //    height: 46px;
+        //    position: absolute;
+        //    top: 0;
+        //    @include box-shadow(0px 0px 2px rgba(0,0,0,0.2));
+        //    background: $filters-bg;
+        //    z-index: 1;
+        //
+        //    @at-root .focused#{&} {
+        //        z-index: $z-index + 2;
+        //    }
+        //
+        //    &:hover {
+        //        background: $filters-bg-hover;
+        //    }
+        //
+        //    &:after {
+        //        content: "";
+        //        width: 0;
+        //        height: 0;
+        //        border-style: solid;
+        //        border-width: 5px 0;
+        //        border-color: transparent;
+        //        position: absolute;
+        //        top: 18px;
+        //    }
+        //
+        //    &.disabled {
+        //        @include box-shadow(none);
+        //    }
+        //}
+
+        //.#{$css-prefix}-filter-arrow-left {
+        //    @include transition(left ease-in-out .15s);
+        //    left: -30px;
+        //    border-right: 1px solid #c9c9c9;
+        //    &:after {
+        //        left: 6px;
+        //        border-right: 8px solid #333;
+        //    }
+        //    &.disabled:after {
+        //        border-right-color: #aaa;
+        //    }
+        //    @at-root .focused#{&}.active {
+        //        left: 0;
+        //    }
+        //}
+        //
+        //.#{$css-prefix}-filter-arrow-right {
+        //    @include transition(right ease-in-out .15s);
+        //    right: -30px;
+        //    border-left: 1px solid #c9c9c9;
+        //    &:after {
+        //        right: 6px;
+        //        border-left: 8px solid #333;
+        //    }
+        //    &.disabled:after {
+        //        border-left-color: #aaa;
+        //    }
+        //    @at-root .focused#{&}.active {
+        //        right: 0;
+        //    }
+        //}
+    //}
+
+    //.#{$css-prefix}-tabs {
+    //    position: absolute;
+    //    left: -1px;
+    //    right: -1px;
+    //    border: 1px solid $border-color;
+    //    border-top: 0!important;
+    //    padding: 1px 0 2px;
+    //    margin-top: -1px;
+    //    background: $tabs-bg;
+    //    height: $tabs-height + ceil($border-radius / 2);
+    //    z-index: $z-index;
+    //    @include border-bottom-left-radius($border-radius);
+    //    @include border-bottom-right-radius($border-radius);
+    //    @include box-sizing(border-box);
+    //
+    //    @at-root .focused#{&} {
+    //        border-color: inherit;
+    //        @include box-shadow(inherit);
+    //    }
+    //
+    //    [class*=emojione-] {
+    //        @include box-sizing(content-box);
+    //        margin: 0;
+    //        width: 24px;
+    //        height: 24px;
+    //        top: 0;
+    //    }
+    //
+    //    .#{$css-prefix}-tab {
+    //        @include box-sizing(border-box);
+    //        position: absolute;
+    //        padding: 4px 4px 4px 10px;
+    //        height: $tabs-height;
+    //        overflow: auto;
+    //
+    //        .emojibtn {
+    //            @include box-sizing(content-box);
+    //            width: 24px;
+    //            height: 24px;
+    //            float: left;
+    //            display: block;
+    //            margin: 1px;
+    //            padding: 3px;
+    //
+    //            &:hover {
+    //                @include border-radius(4px);
+    //                background-color: #e4e4e4;
+    //                cursor: pointer;
+    //            }
+    //
+    //            i, img {
+    //                float: left;
+    //                display: block;
+    //                width: 24px;
+    //                height: 24px;
+    //            }
+    //        }
+    //    }
+    //}
+    //
+    //.#{$css-prefix}-filters,
+    //.#{$css-prefix}-tabs {
+    //    overflow: hidden;
+    //    @include opacity(1);
+    //
+    //    &.ea-hidden {
+    //        height: 0;
+    //        @include opacity(0);
+    //    }
+    //}
+
+    //.#{$css-prefix}-tab {
+    //    @include opacity(1);
+    //    @include transition(all 250ms ease);
+    //    //@include transition(all 500ms cubic-bezier(0.17, 0.04, 0.03, 0.94));
+    //
+    //    &.ea-hidden {
+    //        //@include transform(scale(2));
+    //        @include opacity(0);
+    //        z-index: -1;
+    //    }
+    //}
+    //
+    //.#{$css-prefix}-filters,
+    //.#{$css-prefix}-tabs,
+    //.#{$css-prefix}-editor {
+    //    @include transition(all 250ms ease);
+    //}
 }
+
+@include inline-images-flash;
