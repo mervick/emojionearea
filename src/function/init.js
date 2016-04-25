@@ -1,8 +1,7 @@
 define([
     'jquery',
     'var/blankImg',
-    'var/setInterval',
-    'var/clearInterval',
+    'var/slice',
     'function/trigger',
     'function/attach',
     'function/shortnameTo',
@@ -11,81 +10,81 @@ define([
     'function/saveSelection',
     'function/restoreSelection',
     'function/htmlFromText',
-    'function/textFromHtml'
+    'function/textFromHtml',
+    'function/isObject'
 ],
-function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, pasteHtmlAtCaret,
-         getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml)
+function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
+         getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject)
 {
     return function(self, source, options) {
         options = getOptions(options);
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            app = options.template,
-            stayFocused = false,
-            container = !!options.container ? $(options.container) : false,
-            editor, filters, tabs, scrollArea, filtersBtns, filtersArrowLeft, filtersArrowRight,
-            filtersWidth, scrollLeft = 0, scrollAreaWidth = 0, filterWidth,
-            resizeHandler = function() {
-                var width = filters.width();
-                if (width !== filtersWidth) {
-                    filtersWidth = width;
-                    trigger(self, 'resize', [editor]);
-                }
-            }, resizeHandlerID,
-            hide = function(e) {
-                return e.addClass("ea-hidden");
-            },
-            show = function(e) {
-                return e.removeClass("ea-hidden");
-            };
+            stayFocused = false;
 
-        self.sprite = options.useSprite;
+        self.sprite     = options.sprite;
         self.shortnames = options.shortnames;
 
-        for (var el = ["editor", "filters", "tabs"], i=0; i<3; i++) {
-            app = app.replace(new RegExp('<' + el[i] + '/?>' ,'i'), '<div class="emojionearea-' + el[i] + '"></div>');
+        var css_class = "emojionearea";
+        function selector(prefix, skip_dot) {
+            return (skip_dot ? '' : '.') + css_class + (prefix ? ("-" + prefix) : "");
+        }
+        function div(prefix) {
+            var parent = $('<div/>', isObject(prefix) ? prefix : {"class" : selector(prefix, true)});
+            $.each(slice.call(arguments).slice(1), function(i, child) {
+                child.appendTo(parent);
+            });
+            return parent;
         }
 
-        app = $('<div/>', {"class" : source.attr("class"), role: "application"}).addClass("emojionearea").html(app);
-        editor = self.editor = app.find(".emojionearea-editor")
-            .attr({
-                contenteditable: true,
-                placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
-                tabindex: 0
-            });
+        var editor, button, picker, tones, emojis, filters, emojisList,
+            app = div({"class" : css_class + " " + source.attr("class"), role: "application"},
+                editor = self.editor = div('editor').attr({
+                    contenteditable: true,
+                    placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
+                    tabindex: 0
+                }),
+                button = div('button',
+                    div('button-open'),
+                    div('button-close')
+                ),
+                picker = self.picker = div('picker',
+                    div('wrapper',
+                        filters = div('filters'),
+                        emojisList = div('emojis-list',
+                            tones = div('tones'),
+                            emojis = div('emojis')
+                        )
+                    )
+                ).addClass(selector('picker-position-' + options.pickerPosition, true))
+                 .addClass(selector('filters-position-' + options.filtersPosition, true))
+            );
 
         for (var attr = ["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], j=0; j<5; j++) {
             editor.attr(attr[j], options[attr[j]]);
         }
 
-        filters = app.find(".emojionearea-filters");
-        if (options.autoHideFilters) {
-            hide(filters);
-        }
-
-        tabs = app.find(".emojionearea-tabs");
-        hide(tabs);
-
         $.each(options.filters, function(filter, params) {
-            $("<i/>", {"class": "emojionearea-filter", "data-filter": filter})
+            $("<i/>", {"class": selector("filter", true) + " " + selector("filter-" + filter, true), "data-filter": filter})
                 .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
                 .appendTo(filters);
-            hide($("<div/>", {"class": "emojionearea-tab emojionearea-tab-" + filter}))
-                .data("items", shortnameTo(params.emoji, '<i class="emojibtn" role="button"><' +
-                    (self.sprite ? 'i class="emojione-{uni}"' : 'img class="emojione" src="{img}"') +
-                    ' data-name="{name}"/></i>'))
-                .appendTo(tabs);
         });
 
-        filters.wrapInner('<div class="emojionearea-filters-scroll"/>');
-        filtersArrowLeft = $('<i class="emojionearea-filter-arrow-left"/>', {role: "button"}).appendTo(filters);
-        filtersArrowRight = $('<i class="emojionearea-filter-arrow-right"/>', {role: "button"}).appendTo(filters);
+        var flush = function() {
+            flush = null;
+            $.each(options.filters, function(filter, params) {
+                emojisList.append('<h1 name="' + filter + '">' + params.title + '</h1>');
+                div('emojis').html(shortnameTo(params.emoji.replace(' ', ','), '<i class="emojibtn" role="button"><' +
+                    (self.sprite ? 'i class="emojione-{uni}"' : 'img class="emojione" src="{img}"') +
+                    ' data-name="{name}"/></i>') . split(','). join('')).appendTo(emojisList);
+            });
+            attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
+        };
 
-        filtersBtns = filters.find(".emojionearea-filter");
-        scrollArea = filters.children(".emojionearea-filters-scroll");
+        var filtersBtns = filters.find(selector("filter"));
 
-        if (!!container) {
-            container.wrapInner(app);
+        if (options.container) {
+            $(options.container).wrapInner(app);
         } else {
             app.insertAfter(source);
         }
@@ -96,63 +95,14 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
 
         self.setText(source[sourceValFunc]());
 
-        attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
+        attach(self, [picker, button], {mousedown: "area.mousedown"}, editor);
+        attach(self, button, {click: "button.click"});
         attach(self, editor, {paste :"editor.paste"}, editor);
-        attach(self, editor, ["focus", "blur"], function() { return !!stayFocused ? false : editor; });
-        attach(self, [editor, filters, tabs], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
-        attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
-        attach(self, filtersArrowLeft,  {click: "arrowLeft.click",  mousedown: "arrowLeft.mousedown",  mouseup: "arrowLeft.mouseup"});
-        attach(self, filtersArrowRight, {click: "arrowRight.click", mousedown: "arrowRight.mousedown", mouseup: "arrowRight.mouseup"});
+        attach(self, editor, ["focus", "blur"], function() { return stayFocused ? false : editor; });
+        attach(self, [editor, picker], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
+        attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
 
-        var mousedownInterval;
-        function clearMousedownInterval() {
-            if (mousedownInterval) {
-                clearInterval(mousedownInterval);
-            }
-        }
-        function scrollFilters() {
-            if (!scrollAreaWidth) {
-                $.each(filtersBtns, function (i, e) {
-                    scrollAreaWidth += $(e).outerWidth(true);
-                });
-                filterWidth = filtersBtns.eq(0).outerWidth(true);
-            }
-            if (scrollAreaWidth > filtersWidth) {
-                filtersArrowRight.addClass("active");
-                filtersArrowLeft.addClass("active");
-
-                if (scrollLeft + scrollAreaWidth <= filtersWidth) {
-                    scrollLeft = filtersWidth - scrollAreaWidth;
-                    filtersArrowRight.removeClass("active");
-                    clearMousedownInterval();
-                } else if (scrollLeft >= 0) {
-                    scrollLeft = 0;
-                    filtersArrowLeft.removeClass("active");
-                    clearMousedownInterval();
-                }
-                scrollArea.css("left", scrollLeft);
-            } else {
-                clearMousedownInterval();
-                if (scrollLeft !== 0) {
-                    scrollLeft = 0;
-                    scrollArea.css("left", scrollLeft);
-                }
-                filtersArrowRight.removeClass("active");
-                filtersArrowLeft.removeClass("active");
-            }
-        }
-        function filterScrollLeft(val) {
-            val = val | filterWidth;
-            scrollLeft += val;
-            scrollFilters();
-        }
-        function filterScrollRight(val) {
-            val = val | filterWidth;
-            scrollLeft -= val;
-            scrollFilters();
-        }
-
-        if (typeof options.events === 'object' && !$.isEmptyObject(options.events)) {
+        if (isObject(options.events) && !$.isEmptyObject(options.events)) {
             $.each(options.events, function(event, handler) {
                 self.on(event.replace(/_/g, '.'), handler);
             });
@@ -161,46 +111,41 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
         self.on("@filter.click", function(element) {
                 if (element.is(".active")) {
                     element.removeClass("active");
-                    hide(tabs);
                 } else {
                     filtersBtns.filter(".active").removeClass("active");
                     element.addClass("active");
-                    var i, timer, tab = show(hide(show(tabs).children())
-                        .filter(".emojionearea-tab-" + element.data("filter"))),
-                        items = tab.data("items"),
-                        event = {click: "emojibtn.click"};
-                    if (items) {
-                        tab.data("items", false);
-                        items = items.split(',');
-                        if (self.sprite) {
-                            tab.html(items.join(''));
-                            attach(self, tab.find(".emojibtn"), event);
-                        } else {
-                            timer = setInterval(function () {
-                                for (i = 0; i < 20 && items.length; i++) {
-                                    tab.append(items.shift());
-                                }
-                                attach(self, tab.find(".emojibtn").not(".handled").addClass("handled"), event);
-                                if (!items.length) clearInterval(timer);
-                            }, 5);
-                        }
-                    }
+                    //var i, timer, tab = show(hide(show(tabs).children())
+                    //    .filter(".emojionearea-tab-" + element.data("filter"))),
+                    //    items = tab.data("items"),
+                    //    event = {click: "emojibtn.click"};
+                    //if (items) {
+                    //    tab.data("items", false);
+                    //    items = items.split(',');
+                    //    if (self.sprite) {
+                    //        tab.html(items.join(''));
+                    //        attach(self, tab.find(".emojibtn"), event);
+                    //    } else {
+                    //        timer = window.setInterval(function () {
+                    //            for (i = 0; i < 20 && items.length; i++) {
+                    //                tab.append(items.shift());
+                    //            }
+                    //            attach(self, tab.find(".emojibtn").not(".handled").addClass("handled"), event);
+                    //            if (!items.length) window.clearInterval(timer);
+                    //        }, 5);
+                    //    }
+                    //}
                 }
             })
 
-            .on("@resize", function() {
-                scrollFilters();
+            .on("@button.click", function(button) {
+                if (button.is(".active")) {
+                    button.removeClass("active");
+                } else {
+                    if (flush) flush();
+                    //scroll.nanoScroller();
+                    button.addClass("active");
+                }
             })
-
-            .on("@arrowLeft.click", filterScrollLeft)
-            .on("@arrowRight.click", filterScrollRight)
-            .on("@arrowLeft.mousedown", function() {
-                mousedownInterval = setInterval(function() {filterScrollLeft(5);}, 50);
-            })
-            .on("@arrowRight.mousedown", function() {
-                mousedownInterval = setInterval(function() {filterScrollRight(5);}, 50);
-            })
-            .on("@arrowLeft.mouseup @arrowRight.mouseup",clearMousedownInterval)
 
             .on("@editor.paste", function(element) {
                 stayFocused = true;
@@ -260,24 +205,12 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
             })
 
             .on("@focus", function() {
-                resizeHandler();
-                resizeHandlerID = setInterval(resizeHandler, 500);
                 app.addClass("focused");
-                if (options.autoHideFilters) {
-                    show(filters);
-                }
             })
 
             .on("@blur", function(element) {
-                scrollLeft = 0;
-                scrollFilters();
                 app.removeClass("focused");
-                clearInterval(resizeHandlerID);
-                if (options.autoHideFilters) {
-                    hide(filters);
-                }
-                filtersBtns.filter(".active").removeClass("active");
-                hide(tabs);
+
                 var content = element.html();
                 if (self.content !== content) {
                     self.content = content;
