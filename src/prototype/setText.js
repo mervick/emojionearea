@@ -14,6 +14,7 @@ function($, emojioneReady, htmlFromText, trigger, EmojioneArea) {
             if (args.length === 1) {
                 trigger(self, 'change', [self.editor]);
             }
+            trigger(self, '!resize', []);
         });
     }
 });
