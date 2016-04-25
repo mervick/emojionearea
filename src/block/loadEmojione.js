@@ -4,12 +4,13 @@ define([
     'var/emojioneVersion',
     'var/readyCallbacks',
     'var/emojioneSupportMode',
-    'function/emojioneReady'
+    'function/emojioneReady',
+    'function/isObject'
 ],
-function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMode, emojioneReady) {
+function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMode, emojioneReady, isObject) {
     var cdn_base = "https://cdnjs.cloudflare.com/ajax/libs/emojione/";
     function detectSupportMode() {
-        return (typeof emojione['jsEscapeMap']) === 'object' ? emojione.cacheBustParam === "?v=1.2.4" ? 2 : 1 : 0;
+        return isObject(emojione['jsEscapeMap']) ? emojione.cacheBustParam === "?v=1.2.4" ? 2 : 1 : 0;
     }
     if (!emojione || detectSupportMode() === 0) {
         $.getScript(cdn_base + emojioneVersion + "/lib/js/emojione.min.js", function () {
