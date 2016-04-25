@@ -2,6 +2,7 @@ define([
     'jquery',
     'var/blankImg',
     'var/slice',
+    'var/css_class',
     'function/trigger',
     'function/attach',
     'function/shortnameTo',
@@ -11,10 +12,12 @@ define([
     'function/restoreSelection',
     'function/htmlFromText',
     'function/textFromHtml',
-    'function/isObject'
+    'function/isObject',
+    'function/selector',
+    'function/div'
 ],
-function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
-         getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject)
+function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlAtCaret,
+         getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject, selector, div)
 {
     return function(self, source, options) {
         options = getOptions(options);
@@ -25,18 +28,6 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
         self.sprite     = options.sprite;
         self.shortnames = options.shortnames;
 
-        var css_class = "emojionearea";
-        function selector(prefix, skip_dot) {
-            return (skip_dot ? '' : '.') + css_class + (prefix ? ("-" + prefix) : "");
-        }
-        function div(prefix) {
-            var parent = $('<div/>', isObject(prefix) ? prefix : {"class" : selector(prefix, true)});
-            $.each(slice.call(arguments).slice(1), function(i, child) {
-                child.appendTo(parent);
-            });
-            return parent;
-        }
-
         var editor, button, picker, tones, emojis, filters, emojisList,
             app = div({"class" : css_class + " " + source.attr("class"), role: "application"},
                 editor = self.editor = div('editor').attr({
@@ -44,7 +35,7 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
                     placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
                     tabindex: 0
                 }),
-                button = div('button',
+                button = self.button = div('button',
                     div('button-open'),
                     div('button-close')
                 ),
@@ -58,6 +49,7 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
                     )
                 ).addClass(selector('picker-position-' + options.pickerPosition, true))
                  .addClass(selector('filters-position-' + options.filtersPosition, true))
+                 .addClass('hidden')
             );
 
         for (var attr = ["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], j=0; j<5; j++) {
@@ -78,8 +70,20 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
                     (self.sprite ? 'i class="emojione-{uni}"' : 'img class="emojione" src="{img}"') +
                     ' data-name="{name}"/></i>') . split(','). join('')).appendTo(emojisList);
             });
+            options.filters = null;
             attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
         };
+
+        function calcButtonPosition() {
+            var offset = editor[0].offsetWidth - editor[0].clientWidth,
+                current = parseInt(button.css('marginRight'));
+            if (current !== offset) {
+                button.css({marginRight: offset});
+                if (options.pickerPosition === 'top') {
+                    picker.css({right: parseInt(picker.css('right')) - current + offset});
+                }
+            }
+        }
 
         var filtersBtns = filters.find(selector("filter"));
 
@@ -94,10 +98,12 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
         }
 
         self.setText(source[sourceValFunc]());
+        calcButtonPosition();
 
-        attach(self, [picker, button], {mousedown: "area.mousedown"}, editor);
+        attach(self, window, {resize: "!resize"});
+        attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
         attach(self, button, {click: "button.click"});
-        attach(self, editor, {paste :"editor.paste"}, editor);
+        attach(self, editor, {paste :"!paste"}, editor);
         attach(self, editor, ["focus", "blur"], function() { return stayFocused ? false : editor; });
         attach(self, [editor, picker], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
@@ -108,52 +114,31 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
             });
         }
 
-        self.on("@filter.click", function(element) {
-                if (element.is(".active")) {
-                    element.removeClass("active");
+        self.on("@filter.click", function(filter) {
+                if (filter.is(".active")) {
+                    filter.removeClass("active");
                 } else {
                     filtersBtns.filter(".active").removeClass("active");
-                    element.addClass("active");
-                    //var i, timer, tab = show(hide(show(tabs).children())
-                    //    .filter(".emojionearea-tab-" + element.data("filter"))),
-                    //    items = tab.data("items"),
-                    //    event = {click: "emojibtn.click"};
-                    //if (items) {
-                    //    tab.data("items", false);
-                    //    items = items.split(',');
-                    //    if (self.sprite) {
-                    //        tab.html(items.join(''));
-                    //        attach(self, tab.find(".emojibtn"), event);
-                    //    } else {
-                    //        timer = window.setInterval(function () {
-                    //            for (i = 0; i < 20 && items.length; i++) {
-                    //                tab.append(items.shift());
-                    //            }
-                    //            attach(self, tab.find(".emojibtn").not(".handled").addClass("handled"), event);
-                    //            if (!items.length) window.clearInterval(timer);
-                    //        }, 5);
-                    //    }
-                    //}
+                    filter.addClass("active");
                 }
             })
 
             .on("@button.click", function(button) {
                 if (button.is(".active")) {
-                    button.removeClass("active");
+                    self.hidePicker();
                 } else {
                     if (flush) flush();
-                    //scroll.nanoScroller();
-                    button.addClass("active");
+                    self.showPicker();
                 }
             })
 
-            .on("@editor.paste", function(element) {
+            .on("@!paste", function(editor) {
                 stayFocused = true;
                 // inserts invisible character for fix caret
                 pasteHtmlAtCaret('<span>&#8291;</span>');
 
-                var sel = saveSelection(element[0]),
-                    editorScrollTop = element.scrollTop(),
+                var sel = saveSelection(editor[0]),
+                    editorScrollTop = editor.scrollTop(),
                     clipboard = $("<div/>", {contenteditable: true})
                         .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: "20px", overflow: "hidden"})
                         .appendTo($("BODY"))
@@ -161,42 +146,45 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
 
                 window.setTimeout(function() {
                     var caretID = "caret-" + (new Date()).getTime();
-                    element.focus();
-                    restoreSelection(element[0], sel);
+                    editor.focus();
+                    restoreSelection(editor[0], sel);
                     var text = textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self),
                         html = htmlFromText(text, self);
                     pasteHtmlAtCaret(html);
                     clipboard.remove();
                     pasteHtmlAtCaret('<i id="' + caretID +'"></i>');
-                    element.scrollTop(editorScrollTop);
+                    editor.scrollTop(editorScrollTop);
                     var caret = $("#" + caretID),
-                        top = caret.offset().top - element.offset().top,
-                        height = element.height();
+                        top = caret.offset().top - editor.offset().top,
+                        height = editor.height();
                     if (editorScrollTop + top >= height || editorScrollTop > top) {
-                        element.scrollTop(editorScrollTop + top - 2 * height/3);
+                        editor.scrollTop(editorScrollTop + top - 2 * height/3);
                     }
                     caret.remove();
                     stayFocused = false;
-                    trigger(self, 'paste', [element, text, html]);
+                    calcButtonPosition();
+                    trigger(self, 'paste', [editor, text, html]);
                 }, 200);
             })
 
-            .on("@emojibtn.click", function(element) {
+            .on("@emojibtn.click", function(emojibtn) {
                 saveSelection(editor[0]);
-                pasteHtmlAtCaret(shortnameTo(element.children().data("name"),
+                pasteHtmlAtCaret(shortnameTo(emojibtn.children().data("name"),
                     '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">')));
             })
 
-            .on("@area.mousedown", function(element, event) {
+            .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
+
+            .on("@!mousedown", function(editor, event) {
                 if (!options.autoHideFilters && !app.is(".focused")) {
-                    element.focus();
+                    editor.focus();
                 }
                 event.preventDefault();
                 return false;
             })
 
-            .on("@change", function(element) {
-                var html = element.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
+            .on("@change", function(editor) {
+                var html = editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
                 // clear input, fix: chrome add <br> on contenteditable is empty
                 if (!html.length || /^<br[^>]*>$/i.test(html)) {
                     self.setText('', false);
@@ -208,10 +196,14 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
                 app.addClass("focused");
             })
 
-            .on("@blur", function(element) {
+            .on("@blur", function(editor) {
                 app.removeClass("focused");
 
-                var content = element.html();
+                if (options.hidePickerOnBlur) {
+                    self.hidePicker();
+                }
+
+                var content = editor.html();
                 if (self.content !== content) {
                     self.content = content;
                     trigger(self, 'change', [editor]);
@@ -220,7 +212,5 @@ function($, blankImg, slice, trigger, attach, shortnameTo, pasteHtmlAtCaret,
                     source.blur();
                 }
             });
-
-        trigger(self, 'ready', [editor]);
     };
 });
