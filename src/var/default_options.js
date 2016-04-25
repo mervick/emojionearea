@@ -11,11 +11,11 @@ define([], function() {
         hideSource        : true,
         shortnames        : true,
         sprite            : true,
-        pickerPosition    : "left", // top | left
+        pickerPosition    : "top", // top | left
         filtersPosition   : "top", // top | bottom
+        hidePickerOnBlur  : true,
+        buttonTitle       : null,
         inline            : false,
-
-        nanoScroller      : true,
 
         filters: {
             //recent : {
