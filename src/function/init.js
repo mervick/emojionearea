@@ -13,11 +13,13 @@ define([
     'function/htmlFromText',
     'function/textFromHtml',
     'function/isObject',
+    'function/calcButtonPosition',
     'function/selector',
     'function/div'
 ],
 function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlAtCaret,
-         getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject, selector, div)
+         getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
+         calcButtonPosition, selector, div)
 {
     return function(self, source, options) {
         options = getOptions(options);
@@ -27,6 +29,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
 
         self.sprite     = options.sprite;
         self.shortnames = options.shortnames;
+        self.pickerPosition = options.pickerPosition;
 
         var editor, button, picker, tones, emojis, filters, emojisList,
             app = div({"class" : css_class + " " + source.attr("class"), role: "application"},
@@ -38,7 +41,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                 button = self.button = div('button',
                     div('button-open'),
                     div('button-close')
-                ),
+                ).attr('title', options.buttonTitle),
                 picker = self.picker = div('picker',
                     div('wrapper',
                         filters = div('filters'),
@@ -57,13 +60,17 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         }
 
         $.each(options.filters, function(filter, params) {
-            $("<i/>", {"class": selector("filter", true) + " " + selector("filter-" + filter, true), "data-filter": filter})
-                .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
-                .appendTo(filters);
+            $("<i/>", {
+                "class": selector("filter", true) + " " + selector("filter-" + filter, true),
+                "data-filter": filter,
+                title: params.title
+            })
+            .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
+            .appendTo(filters);
         });
 
-        var flush = function() {
-            flush = null;
+        editor.data('render_emojis', function() {
+            editor.data('render_emojis', null);
             $.each(options.filters, function(filter, params) {
                 emojisList.append('<h1 name="' + filter + '">' + params.title + '</h1>');
                 div('emojis').html(shortnameTo(params.emoji.replace(' ', ','), '<i class="emojibtn" role="button"><' +
@@ -72,18 +79,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
             });
             options.filters = null;
             attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
-        };
-
-        function calcButtonPosition() {
-            var offset = editor[0].offsetWidth - editor[0].clientWidth,
-                current = parseInt(button.css('marginRight'));
-            if (current !== offset) {
-                button.css({marginRight: offset});
-                if (options.pickerPosition === 'top') {
-                    picker.css({right: parseInt(picker.css('right')) - current + offset});
-                }
-            }
-        }
+        });
 
         var filtersBtns = filters.find(selector("filter"));
 
@@ -98,7 +94,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         }
 
         self.setText(source[sourceValFunc]());
-        calcButtonPosition();
+        calcButtonPosition.apply(self);
 
         attach(self, window, {resize: "!resize"});
         attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
@@ -127,7 +123,6 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                 if (button.is(".active")) {
                     self.hidePicker();
                 } else {
-                    if (flush) flush();
                     self.showPicker();
                 }
             })
@@ -162,7 +157,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                     }
                     caret.remove();
                     stayFocused = false;
-                    calcButtonPosition();
+                    calcButtonPosition.apply(self);
                     trigger(self, 'paste', [editor, text, html]);
                 }, 200);
             })
