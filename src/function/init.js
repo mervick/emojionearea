@@ -15,12 +15,13 @@ define([
     'function/textFromHtml',
     'function/isObject',
     'function/calcButtonPosition',
+    'function/lazyLoading',
     'function/selector',
     'function/div'
 ],
 function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, shortnameTo, pasteHtmlAtCaret,
          getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
-         calcButtonPosition, selector, div)
+         calcButtonPosition, lazyLoading, selector, div)
 {
     return function(self, source, options) {
         options = getOptions(options);
@@ -49,6 +50,7 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
                                 function() {
                                     var btns = [];
                                     if (options.tones) {
+                                        this.addClass(selector('tones-' + options.tonesStyle, true));
                                         for (var i = 0; i <= 5; i++) {
                                             btns.push($("<button/>", {
                                                 "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
@@ -66,32 +68,6 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
                  .addClass('hidden')
             );
 
-        for (var attr = ["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], j=0; j<5; j++) {
-            editor.attr(attr[j], options[attr[j]]);
-        }
-
-        var render = [],
-            btnEvent = {click: "emojibtn.click"};
-
-        var lazyLoading;
-        if (!self.sprite) {
-            lazyLoading = function(category, items) {
-                var timer = window.setInterval(function () {
-                    if (!items.length) {
-                        window.clearInterval(timer);
-                        if (render.length) {
-                            render.shift().call();
-                        }
-                    }
-                    var section = [];
-                    for (var i = 0; i < 10 && items.length; i++) {
-                        section.push(items.shift());
-                    }
-                    attach(self, category.append(section).find(".emojibtn").not(".handled").addClass("handled"), btnEvent);
-                }, 10);
-            }
-        }
-
         $.each(options.filters, function(filter, params) {
             var skin = 0;
             if (filter !== 'tones') {
@@ -108,34 +84,25 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
                 return;
             }
             do {
-                (function() {
-                    var category = div('category').attr({name: filter, "data-tone": skin}).appendTo(emojisList),
-                        items = params.emoji.replace(/[\s,;]+/g, '|');
-                    if (skin > 0) {
-                        category.hide();
-                        items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
-                    }
-                    items = shortnameTo(items,
-                        '<i class="emojibtn" role="button" data-name="{name}"><{0} class="emojione{1}"{2}></i>',
-                        self.sprite, [["i", "img"], ["-{uni}", ""],
-                            ["></i", ' data-src="{img}" src="'+blankImg+'"/']]).split('|');
-                    $('<h1/>').text(params.title).appendTo(category);
-                    //if (self.sprite) {
-                        category.append(items.join(''));
-                    //} else {
-                    //    render.push(function () {
-                    //        lazyLoading(category, items);
-                    //    });
-                    //}
-                }).call();
+                var category = div('category').attr({name: filter, "data-tone": skin}).appendTo(emojisList),
+                    items = params.emoji.replace(/[\s,;]+/g, '|');
+                if (skin > 0) {
+                    category.hide();
+                    items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
+                }
+                items = shortnameTo(items,
+                    '<i class="emojibtn" role="button" data-name="{name}"><{0} class="emojione{1}"{2}></i>',
+                    self.sprite, [["i", "img"], ["-{uni}", " lazy-emoji"],
+                        ["></i", ' src="'+blankImg+'" data-src="{img}"/']]).split('|');
+                $('<h1/>').text(params.title).appendTo(category);
+                category.append(items.join(''));
             } while (--skin > 0);
         });
 
         options.filters = null;
-        attach(self, emojisList.find(".emojibtn"), btnEvent);
+        attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
         if (!self.sprite) {
-            self.lasyImg = scrollArea.find("img");
-            //render.shift().call();
+            self.lasyEmoji = emojisList.find(".lazy-emoji");
         }
 
         filtersBtns = filters.find(selector("filter"));
@@ -155,24 +122,6 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
         self.setText(source[sourceValFunc]());
         calcButtonPosition.apply(self);
 
-        var noListenScroll = false;
-        scrollArea.on('scroll', function () {
-            if (!noListenScroll) {
-                var item = categories.eq(0), scrollTop = scrollArea.offset().top;
-                categories.each(function (i, e) {
-                    if ($(e).offset().top - scrollTop >= 3) {
-                        return false;
-                    }
-                    item = $(e);
-                });
-                var filter = filtersBtns.filter('[data-filter="' + item.attr("name") + '"]');
-                if (filter[0] && !filter.is(".active")) {
-                    filtersBtns.removeClass("active");
-                    filter.addClass("active");
-                }
-            }
-        });
-
         attach(self, window, {resize: "!resize"});
         attach(self, tones.children(), {click: "tone.click"});
         attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
@@ -188,23 +137,50 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
             });
         }
 
-        self.on("@filter.click", function(filter) {
-            if (scrollArea.is(":not(.skinnable")) {
-                noListenScroll = true;
-                if (!filter.is(".active")) {
-                    filtersBtns.filter(".active").removeClass("active");
-                    filter.addClass("active");
+        var noListenScroll = false;
+        scrollArea.on('scroll', function () {
+            if (!noListenScroll) {
+                lazyLoading.call(self);
+                if (scrollArea.is(":not(.skinnable")) {
+                    var item = categories.eq(0), scrollTop = scrollArea.offset().top;
+                    categories.each(function (i, e) {
+                        if ($(e).offset().top - scrollTop >= 3) {
+                            return false;
+                        }
+                        item = $(e);
+                    });
+                    var filter = filtersBtns.filter('[data-filter="' + item.attr("name") + '"]');
+                    if (filter[0] && !filter.is(".active")) {
+                        filtersBtns.removeClass("active");
+                        filter.addClass("active");
+                    }
                 }
-                var headerOffset = categories.filter('[name="' + filter.data('filter') + '"]').offset().top,
-                    scroll = scrollArea.scrollTop(),
-                    offsetTop = scrollArea.offset().top;
-                scrollArea.stop().animate({
-                    scrollTop: headerOffset + scroll - offsetTop - 2
-                }, 200, 'swing', function () {
-                    noListenScroll = false;
-                });
             }
+        });
+
+        self.on("@filter.click", function(filter) {
+            var isActive = filter.is(".active");
+            if (scrollArea.is(".skinnable")) {
+                if (isActive) return;
+                tones.children().eq(0).click();
+            }
+            noListenScroll = true;
+            if (!isActive) {
+                filtersBtns.filter(".active").removeClass("active");
+                filter.addClass("active");
+            }
+            var headerOffset = categories.filter('[name="' + filter.data('filter') + '"]').offset().top,
+                scroll = scrollArea.scrollTop(),
+                offsetTop = scrollArea.offset().top;
+            scrollArea.stop().animate({
+                scrollTop: headerOffset + scroll - offsetTop - 2
+            }, 200, 'swing', function () {
+                lazyLoading.call(self);
+                noListenScroll = false;
+            });
         })
+
+        .on("@picker.show", lazyLoading)
 
         .on("@tone.click", function(tone) {
             tones.children().removeClass("active");
@@ -216,6 +192,7 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
                 scrollArea.removeClass("skinnable");
                 categories.hide().filter("[data-tone=0]").show();
             }
+            lazyLoading.call(self);
         })
 
         .on("@button.click", function(button) {
