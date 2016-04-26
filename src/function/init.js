@@ -71,18 +71,11 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
         }
 
         var render = [],
-            btnEvent = {click: "emojibtn.click"},
-            skins = ["", "-1f3fb","-1f3fc","-1f3fd","-1f3fe","-1f3ff"];
-        $.each(skins, function(i, skin) {
-            skins[i] = [
-                emojioneSupportMode !== 1 ? skin.toUpperCase() : skin,
-                emojioneSupportMode === 0 ? skin.toUpperCase() : skin
-            ];
-        });
+            btnEvent = {click: "emojibtn.click"};
 
         var lazyLoading;
         if (!self.sprite) {
-            lazyLoading = function(category, items, btnEvent) {
+            lazyLoading = function(category, items) {
                 var timer = window.setInterval(function () {
                     if (!items.length) {
                         window.clearInterval(timer);
@@ -130,7 +123,7 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
                         category.append(items.join(''));
                     } else {
                         render.push(function () {
-                            lazyLoading(category, items, btnEvent);
+                            lazyLoading(category, items);
                         });
                     }
                 }).call();
