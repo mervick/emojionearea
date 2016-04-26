@@ -2,6 +2,7 @@ define([
     'jquery',
     'var/blankImg',
     'var/slice',
+    'var/emojioneSupportMode',
     'var/css_class',
     'function/trigger',
     'function/attach',
@@ -17,7 +18,7 @@ define([
     'function/selector',
     'function/div'
 ],
-function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlAtCaret,
+function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, shortnameTo, pasteHtmlAtCaret,
          getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
          calcButtonPosition, selector, div)
 {
@@ -28,7 +29,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         self.pickerPosition = options.pickerPosition;
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, emojis, filters, filtersBtns, emojisList, headers, scrollArea,
+            editor, button, picker, tones, filters, filtersBtns, emojisList, categories, scrollArea,
             app = div({"class" : css_class + " " + source.attr("class"), role: "application"},
                 editor = self.editor = div('editor').attr({
                     contenteditable: true,
@@ -69,71 +70,82 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
             editor.attr(attr[j], options[attr[j]]);
         }
 
-        $.each(options.filters, function(filter, params) {
-            $("<i/>", {
-                "class": selector("filter", true) + " " + selector("filter-" + filter, true),
-                "data-filter": filter,
-                title: params.title
-            })
-            .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
-            .appendTo(filters);
-        });
-
         var render = [],
-            btnEvent = {click: "emojibtn.click"};
-        $.each(options.filters, function(filter, params) {
-            emojisList.append('<h1 name="' + filter + '">' + params.title + '</h1>');
-            var emojis = div('emojis').appendTo(emojisList),
-                items = shortnameTo(params.emoji.replace(/\s+/g, ','), '<i class="emojibtn" role="button"><' +
-                    (self.sprite ? 'i class="emojione-{uni}"' : 'img class="emojione" src="{img}"') +
-                    ' data-name="{name}"/></i>').split(',');
-
-            if (self.sprite) {
-                emojis.html(items.join(''));
-            } else {
-                render.push(function () {
-                    var timer = setInterval(function () {
-                        if (!items.length) {
-                            clearInterval(timer);
-                            if (render.length) {
-                                render.shift().call();
-                            }
-                        }
-                        for (var i = 0; i < 10 && items.length; i++) {
-                            emojis.append(items.shift());
-                        }
-                        attach(self, emojis.find(".emojibtn").not(".handled").addClass("handled"), btnEvent);
-                    }, 10);
-                });
-            }
+            btnEvent = {click: "emojibtn.click"},
+            skins = ["", "-1f3fb","-1f3fc","-1f3fd","-1f3fe","-1f3ff"];
+        $.each(skins, function(i, skin) {
+            skins[i] = [
+                emojioneSupportMode !== 1 ? skin.toUpperCase() : skin,
+                emojioneSupportMode === 0 ? skin.toUpperCase() : skin
+            ];
         });
+
+        var lazyLoading;
+        if (!self.sprite) {
+            lazyLoading = function(category, items, btnEvent) {
+                var timer = window.setInterval(function () {
+                    if (!items.length) {
+                        window.clearInterval(timer);
+                        if (render.length) {
+                            render.shift().call();
+                        }
+                    }
+                    var section = [];
+                    for (var i = 0; i < 10 && items.length; i++) {
+                        section.push(items.shift());
+                    }
+                    attach(self, category.append(section).find(".emojibtn").not(".handled").addClass("handled"), btnEvent);
+                }, 10);
+            }
+        }
+
+        $.each(options.filters, function(filter, params) {
+            var skin = 0;
+            if (filter !== 'tones') {
+                $("<i/>", {
+                    "class": selector("filter", true) + " " + selector("filter-" + filter, true),
+                    "data-filter": filter,
+                    title: params.title
+                })
+                .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
+                .appendTo(filters);
+            } else if (options.tones) {
+                skin = 5;
+            } else {
+                return;
+            }
+            do {
+                (function() {
+                    var category = div('category').attr({name: filter, "data-tone": skin}).appendTo(emojisList),
+                        items = params.emoji.replace(/\s+/g, ',');
+                    if (skin > 0) {
+                        category.hide();
+                        items = items.split(',').join('_tone' + skin + ',') + '_tone' + skin;
+                    }
+                    items = shortnameTo(items,
+                        '<i class="emojibtn" role="button" data-name="{name}"><{0} class="emojione{1}"{2}></i>',
+                        self.sprite, [["i", "img"], ["-{uni}", ""], ["></i", ' src="{img}"/']]).split(',');
+                    $('<h1/>').text(params.title).appendTo(category);
+                    if (self.sprite) {
+                        category.append(items.join(''));
+                    } else {
+                        render.push(function () {
+                            lazyLoading(category, items, btnEvent);
+                        });
+                    }
+                }).call();
+            } while (--skin > 0);
+        });
+
         options.filters = null;
         attach(self, emojisList.find(".emojibtn"), btnEvent);
-        headers = emojisList.find("h1");
         if (!self.sprite) {
             render.shift().call();
         }
 
         filtersBtns = filters.find(selector("filter"));
         filtersBtns.eq(0).addClass("active");
-
-        var noListenScroll = false;
-        scrollArea.on('scroll', function (event) {
-            if (!noListenScroll) {
-                var item = headers.eq(0), scrollTop = scrollArea.offset().top;
-                headers.each(function (i, e) {
-                    if ($(e).offset().top - scrollTop >= 3) {
-                        return false;
-                    }
-                    item = $(e);
-                });
-                var filter = filtersBtns.filter('[data-filter="' + item.attr("name") + '"]');
-                if (!filter.is(".active")) {
-                    filtersBtns.removeClass("active");
-                    filter.addClass("active");
-                }
-            }
-        });
+        categories = emojisList.find(selector("category"));
 
         if (options.container) {
             $(options.container).wrapInner(app);
@@ -148,7 +160,26 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         self.setText(source[sourceValFunc]());
         calcButtonPosition.apply(self);
 
+        var noListenScroll = false;
+        picker.on('scroll', selector('scroll-area'), function () {
+            if (!noListenScroll) {
+                var item = categories.eq(0), scrollTop = scrollArea.offset().top;
+                categories.each(function (i, e) {
+                    if ($(e).offset().top - scrollTop >= 3) {
+                        return false;
+                    }
+                    item = $(e);
+                });
+                var filter = filtersBtns.filter('[data-filter="' + item.attr("name") + '"]');
+                if (filter[0] && !filter.is(".active")) {
+                    filtersBtns.removeClass("active");
+                    filter.addClass("active");
+                }
+            }
+        });
+
         attach(self, window, {resize: "!resize"});
+        attach(self, tones.children(), {click: "tone.click"});
         attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
         attach(self, button, {click: "button.click"});
         attach(self, editor, {paste :"!paste"}, editor);
@@ -168,7 +199,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                     filtersBtns.filter(".active").removeClass("active");
                     filter.addClass("active");
                 }
-                var headerOffset = emojisList.find('h1[name="' + filter.data('filter') + '"]').offset().top,
+                var headerOffset = categories.filter('[name="' + filter.data('filter') + '"]').offset().top,
                     scroll = scrollArea.scrollTop(),
                     offsetTop = scrollArea.offset().top;
                 scrollArea.stop().animate({
@@ -176,6 +207,18 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                 }, 200, 'swing', function() {
                     noListenScroll = false;
                 });
+            })
+
+            .on("@tone.click", function(tone) {
+                tones.children().removeClass("active");
+                var skin = tone.addClass("active").data("skin");
+                if (skin) {
+                    scrollArea.addClass("skinnable");
+                    categories.hide().filter("[data-tone=" + skin + "]").show();
+                } else {
+                    scrollArea.removeClass("skinnable");
+                    categories.hide().filter("[data-tone=0]").show();
+                }
             })
 
             .on("@button.click", function(button) {
@@ -226,9 +269,8 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                     editor.focus();
                 }
                 saveSelection(editor[0]);
-                pasteHtmlAtCaret(shortnameTo(emojibtn.children().data("name"),
-                    '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">')));
-
+                pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"),
+                    '<img alt="{alt}" class="emojione{0}" src="{1}"/>', self.sprite, [['-{uni}',''], [blankImg,'{img}']]));
             })
 
             .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
