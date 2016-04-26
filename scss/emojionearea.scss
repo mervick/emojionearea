@@ -196,16 +196,100 @@
                     height: 24px;
                     top: 0;
                 }
+
+                > img {
+                    width: 24px;
+                    height: 24px;
+                    margin: 0 3px;
+                }
             }
         }
 
-        .#{$css-prefix}-emojis-list {
+        .#{$css-prefix}-scroll-area {
             height: $picker-height - $filters-height;
             overflow: auto;
             overflow-x: hidden;
             width: 100%;
             position: absolute;
             padding: 0 0 5px;
+
+            .#{$css-prefix}-emojis-list {
+                z-index: 1;
+            }
+
+            .#{$css-prefix}-tones {
+                position: absolute;
+                top: 6px;
+                right: 10px;
+                //width: 130px;
+                height: 22px;
+                z-index: 2;
+
+                > .btn-tone {
+                    display: inline-block;
+                    padding: 0;
+                    border: 0;
+                    vertical-align: middle;
+                    @include border-radius(100%);
+                    outline: none;
+                    background: transparent;
+                    cursor: pointer;
+                    position: relative;
+
+                    &.btn-tone-0 {
+                        background-color: #ffcf3e;
+                    }
+                    &.btn-tone-1 {
+                        background-color: #fae3c5;
+                    }
+                    &.btn-tone-2 {
+                        background-color: #e2cfa5;
+                    }
+                    &.btn-tone-3 {
+                        background-color: #daa478;
+                    }
+                    &.btn-tone-4 {
+                        background-color: #a78058;
+                    }
+                    &.btn-tone-5 {
+                        background-color: #5e4d43;
+                    }
+                }
+
+                &.#{$css-prefix}-tones-bullet {
+                    > .btn-tone {
+                        width: 20px;
+                        height: 20px;
+                        margin: 0px;
+                        border: 4px solid #fff;
+                        &.active {
+                            border: 0;
+                        }
+                    }
+                }
+
+                &.#{$css-prefix}-tones-radio {
+                    > .btn-tone {
+                        width: 16px;
+                        height: 16px;
+                        margin: 0px 2px;
+                        &.active {
+                            &:after {
+                                content: "";
+                                position: absolute;
+                                display: block;
+                                background: transparent;
+                                border: 2px solid #fff;
+                                width: 8px;
+                                height: 8px;
+                                top: 2px;
+                                left: 2px;
+                                @include border-radius(100%);
+                            }
+                        }
+                    }
+                }
+            }
 
             h1 {
                 display: block;
@@ -215,7 +299,7 @@
                 background: #fff;
                 line-height: 20px;
                 margin: 0;
-                padding: 7px 0 5px 13px;
+                padding: 7px 0 5px 6px;
 
                 &:after, &:before {
                     content: " ";
@@ -224,7 +308,7 @@
                 }
             }
 
-            .#{$css-prefix}-emojis {
+            .#{$css-prefix}-category {
                 padding: 0 0 0 7px;
 
                 &:after, &:before {
@@ -272,7 +356,7 @@
                 @include border-top-left-radius($picker-border-radius);
                 @include border-top-right-radius($picker-border-radius);
             }
-            .#{$css-prefix}-emojis-list {
+            .#{$css-prefix}-scroll-area {
                 bottom: 0;
             }
         }
@@ -283,7 +367,7 @@
                 @include border-bottom-left-radius($picker-border-radius);
                 @include border-bottom-right-radius($picker-border-radius);
             }
-            .#{$css-prefix}-emojis-list {
+            .#{$css-prefix}-scroll-area {
                 top: 0;
             }
         }
@@ -331,11 +415,11 @@
     }
 
     .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-top {
-        margin-top: - $picker-height + 8;
+        margin-top: - $picker-height + 7;
     }
 
     .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-left {
-        margin-right: - $picker-width + 8;
+        margin-right: - $picker-width + 7;
     }
 }
 
