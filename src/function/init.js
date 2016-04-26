@@ -110,22 +110,23 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
             do {
                 (function() {
                     var category = div('category').attr({name: filter, "data-tone": skin}).appendTo(emojisList),
-                        items = params.emoji.replace(/\s+/g, ',');
+                        items = params.emoji.replace(/[\s,;]+/g, '|');
                     if (skin > 0) {
                         category.hide();
-                        items = items.split(',').join('_tone' + skin + ',') + '_tone' + skin;
+                        items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
                     }
                     items = shortnameTo(items,
                         '<i class="emojibtn" role="button" data-name="{name}"><{0} class="emojione{1}"{2}></i>',
-                        self.sprite, [["i", "img"], ["-{uni}", ""], ["></i", ' src="{img}"/']]).split(',');
+                        self.sprite, [["i", "img"], ["-{uni}", ""],
+                            ["></i", ' data-src="{img}" src="'+blankImg+'"/']]).split('|');
                     $('<h1/>').text(params.title).appendTo(category);
-                    if (self.sprite) {
+                    //if (self.sprite) {
                         category.append(items.join(''));
-                    } else {
-                        render.push(function () {
-                            lazyLoading(category, items);
-                        });
-                    }
+                    //} else {
+                    //    render.push(function () {
+                    //        lazyLoading(category, items);
+                    //    });
+                    //}
                 }).call();
             } while (--skin > 0);
         });
@@ -133,7 +134,8 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
         options.filters = null;
         attach(self, emojisList.find(".emojibtn"), btnEvent);
         if (!self.sprite) {
-            render.shift().call();
+            self.lasyImg = scrollArea.find("img");
+            //render.shift().call();
         }
 
         filtersBtns = filters.find(selector("filter"));
@@ -154,7 +156,7 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
         calcButtonPosition.apply(self);
 
         var noListenScroll = false;
-        picker.on('scroll', selector('scroll-area'), function () {
+        scrollArea.on('scroll', function () {
             if (!noListenScroll) {
                 var item = categories.eq(0), scrollTop = scrollArea.offset().top;
                 categories.each(function (i, e) {
@@ -187,6 +189,7 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
         }
 
         self.on("@filter.click", function(filter) {
+            if (scrollArea.is(":not(.skinnable")) {
                 noListenScroll = true;
                 if (!filter.is(".active")) {
                     filtersBtns.filter(".active").removeClass("active");
@@ -197,113 +200,114 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
                     offsetTop = scrollArea.offset().top;
                 scrollArea.stop().animate({
                     scrollTop: headerOffset + scroll - offsetTop - 2
-                }, 200, 'swing', function() {
+                }, 200, 'swing', function () {
                     noListenScroll = false;
                 });
-            })
+            }
+        })
 
-            .on("@tone.click", function(tone) {
-                tones.children().removeClass("active");
-                var skin = tone.addClass("active").data("skin");
-                if (skin) {
-                    scrollArea.addClass("skinnable");
-                    categories.hide().filter("[data-tone=" + skin + "]").show();
-                } else {
-                    scrollArea.removeClass("skinnable");
-                    categories.hide().filter("[data-tone=0]").show();
+        .on("@tone.click", function(tone) {
+            tones.children().removeClass("active");
+            var skin = tone.addClass("active").data("skin");
+            if (skin) {
+                scrollArea.addClass("skinnable");
+                categories.hide().filter("[data-tone=" + skin + "]").show();
+            } else {
+                scrollArea.removeClass("skinnable");
+                categories.hide().filter("[data-tone=0]").show();
+            }
+        })
+
+        .on("@button.click", function(button) {
+            if (button.is(".active")) {
+                self.hidePicker();
+            } else {
+                self.showPicker();
+            }
+        })
+
+        .on("@!paste", function(editor) {
+            self.stayFocused = true;
+            // insert invisible character for fix caret position
+            pasteHtmlAtCaret('<span>&#8291;</span>');
+
+            var sel = saveSelection(editor[0]),
+                editorScrollTop = editor.scrollTop(),
+                clipboard = $("<div/>", {contenteditable: true})
+                    .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: "20px", overflow: "hidden"})
+                    .appendTo($("BODY"))
+                    .focus();
+
+            window.setTimeout(function() {
+                var caretID = "caret-" + (new Date()).getTime();
+                editor.focus();
+                restoreSelection(editor[0], sel);
+                var text = textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self),
+                    html = htmlFromText(text, self);
+                pasteHtmlAtCaret(html);
+                clipboard.remove();
+                pasteHtmlAtCaret('<i id="' + caretID +'"></i>');
+                editor.scrollTop(editorScrollTop);
+                var caret = $("#" + caretID),
+                    top = caret.offset().top - editor.offset().top,
+                    height = editor.height();
+                if (editorScrollTop + top >= height || editorScrollTop > top) {
+                    editor.scrollTop(editorScrollTop + top - 2 * height/3);
                 }
-            })
+                caret.remove();
+                self.stayFocused = false;
+                calcButtonPosition.apply(self);
+                trigger(self, 'paste', [editor, text, html]);
+            }, 200);
+        })
 
-            .on("@button.click", function(button) {
-                if (button.is(".active")) {
-                    self.hidePicker();
-                } else {
-                    self.showPicker();
-                }
-            })
+        .on("@emojibtn.click", function(emojibtn) {
+            if (!app.is(".focused")) {
+                editor.focus();
+            }
+            saveSelection(editor[0]);
+            pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"),
+                '<img alt="{alt}" class="emojione{0}" src="{1}"/>', self.sprite, [['-{uni}',''], [blankImg,'{img}']]));
+        })
 
-            .on("@!paste", function(editor) {
-                self.stayFocused = true;
-                // insert invisible character for fix caret position
-                pasteHtmlAtCaret('<span>&#8291;</span>');
+        .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
 
-                var sel = saveSelection(editor[0]),
-                    editorScrollTop = editor.scrollTop(),
-                    clipboard = $("<div/>", {contenteditable: true})
-                        .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: "20px", overflow: "hidden"})
-                        .appendTo($("BODY"))
-                        .focus();
+        .on("@!mousedown", function(editor, event) {
+            if (!options.autoHideFilters && !app.is(".focused")) {
+                editor.focus();
+            }
+            event.preventDefault();
+            return false;
+        })
 
-                window.setTimeout(function() {
-                    var caretID = "caret-" + (new Date()).getTime();
-                    editor.focus();
-                    restoreSelection(editor[0], sel);
-                    var text = textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self),
-                        html = htmlFromText(text, self);
-                    pasteHtmlAtCaret(html);
-                    clipboard.remove();
-                    pasteHtmlAtCaret('<i id="' + caretID +'"></i>');
-                    editor.scrollTop(editorScrollTop);
-                    var caret = $("#" + caretID),
-                        top = caret.offset().top - editor.offset().top,
-                        height = editor.height();
-                    if (editorScrollTop + top >= height || editorScrollTop > top) {
-                        editor.scrollTop(editorScrollTop + top - 2 * height/3);
-                    }
-                    caret.remove();
-                    self.stayFocused = false;
-                    calcButtonPosition.apply(self);
-                    trigger(self, 'paste', [editor, text, html]);
-                }, 200);
-            })
+        .on("@change", function(editor) {
+            var html = editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
+            // clear input: chrome adds <br> when contenteditable is empty
+            if (!html.length || /^<br[^>]*>$/i.test(html)) {
+                self.setText('', false);
+            }
+            source[sourceValFunc](self.getText());
+        })
 
-            .on("@emojibtn.click", function(emojibtn) {
-                if (!app.is(".focused")) {
-                    editor.focus();
-                }
-                saveSelection(editor[0]);
-                pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"),
-                    '<img alt="{alt}" class="emojione{0}" src="{1}"/>', self.sprite, [['-{uni}',''], [blankImg,'{img}']]));
-            })
+        .on("@focus", function() {
+            app.addClass("focused");
+        })
 
-            .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
+        .on("@blur", function(editor) {
+            app.removeClass("focused");
 
-            .on("@!mousedown", function(editor, event) {
-                if (!options.autoHideFilters && !app.is(".focused")) {
-                    editor.focus();
-                }
-                event.preventDefault();
-                return false;
-            })
+            if (options.hidePickerOnBlur) {
+                self.hidePicker();
+            }
 
-            .on("@change", function(editor) {
-                var html = editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
-                // clear input: chrome adds <br> when contenteditable is empty
-                if (!html.length || /^<br[^>]*>$/i.test(html)) {
-                    self.setText('', false);
-                }
-                source[sourceValFunc](self.getText());
-            })
-
-            .on("@focus", function() {
-                app.addClass("focused");
-            })
-
-            .on("@blur", function(editor) {
-                app.removeClass("focused");
-
-                if (options.hidePickerOnBlur) {
-                    self.hidePicker();
-                }
-
-                var content = editor.html();
-                if (self.content !== content) {
-                    self.content = content;
-                    trigger(self, 'change', [editor]);
-                    source.blur().trigger("change");
-                } else {
-                    source.blur();
-                }
-            });
+            var content = editor.html();
+            if (self.content !== content) {
+                self.content = content;
+                trigger(self, 'change', [editor]);
+                source.blur().trigger("change");
+            } else {
+                source.blur();
+            }
+        });
     };
 });
