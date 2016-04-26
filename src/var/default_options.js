@@ -15,17 +15,21 @@ define([], function() {
         filtersPosition   : "top", // top | bottom
         hidePickerOnBlur  : true,
         buttonTitle       : null,
+        tones             : true,
         inline            : false,
 
         filters: {
-            //recent : {
-            //    icon: "clock3",
-            //    title: "Recent",
-            //},
-
             smileys_people: {
                 icon: "yum",
                 title: "Smileys & People",
+
+                tones: "santa runner surfer swimmer lifter ear nose point_up_2 point_down point_left point_right punch " +
+                "wave ok_hand thumbsup thumbsdown clap open_hands boy girl man woman cop bride_with_veil person_with_blond_hair " +
+                "man_with_gua_pi_mao man_with_turban older_man grandma baby construction_worker princess angel " +
+                "information_desk_person guardsman dancer nail_care massage haircut muscle spy hand_splayed middle_finger " +
+                "vulcan no_good ok_woman bow raising_hand raised_hands person_frowning person_with_pouting_face pray rowboat " +
+                "bicyclist mountain_bicyclist walking bath metal point_up basketball_player fist raised_hand v writing_hand",
+
                 emoji: "grinning grimacing grin joy smiley smile sweat_smile laughing innocent wink blush slight_smile " +
                 "upside_down relaxed yum relieved heart_eyes kissing_heart kissing kissing_smiling_eyes " +
                 "kissing_closed_eyes stuck_out_tongue_winking_eye stuck_out_tongue_closed_eyes stuck_out_tongue " +
@@ -39,15 +43,14 @@ define([], function() {
                 "muscle pray point_up point_up_2 point_down point_left point_right middle_finger hand_splayed metal " +
                 "vulcan writing_hand nail_care lips tongue ear nose eye eyes bust_in_silhouette busts_in_silhouette " +
                 "speaking_head baby boy girl man woman person_with_blond_hair older_man older_woman man_with_gua_pi_mao " +
-                "man_with_turban cop construction_worker guardsman spy santa angel princess bride_with_veil " +
-                "walking runner dancer dancers couple two_men_holding_hands two_women_holding_hands bow " +
-                "information_desk_person no_good ok_woman raising_hand person_with_pouting_face person_frowning " +
-                "haircut massage couple_with_heart couple_ww couple_mm couplekiss kiss_ww kiss_mm family family_mwg " +
-                "family_mwgb family_mwbb family_mwgg family_wwb family_wwg family_wwgb family_wwbb family_wwgg " +
-                "family_mmb family_mmg family_mmgb family_mmbb family_mmgg womans_clothes shirt jeans necktie " +
-                "dress bikini kimono lipstick kiss footprints high_heel sandal boot mans_shoe athletic_shoe womans_hat " +
-                "tophat helmet_with_cross mortar_board crown school_satchel pouch purse handbag briefcase eyeglasses " +
-                "dark_sunglasses ring closed_umbrella"
+                "man_with_turban cop construction_worker guardsman spy santa angel princess bride_with_veil walking " +
+                "runner dancer dancers couple two_men_holding_hands two_women_holding_hands bow information_desk_person " +
+                "no_good ok_woman raising_hand person_with_pouting_face person_frowning haircut massage couple_with_heart " +
+                "couple_ww couple_mm couplekiss kiss_ww kiss_mm family family_mwg family_mwgb family_mwbb family_mwgg " +
+                "family_wwb family_wwg family_wwgb family_wwbb family_wwgg family_mmb family_mmg family_mmgb family_mmbb " +
+                "family_mmgg womans_clothes shirt jeans necktie dress bikini kimono lipstick kiss footprints high_heel " +
+                "sandal boot mans_shoe athletic_shoe womans_hat tophat helmet_with_cross mortar_board crown school_satchel " +
+                "pouch purse handbag briefcase eyeglasses dark_sunglasses ring closed_umbrella",
             },
 
             animals_nature: {
@@ -155,16 +158,15 @@ define([], function() {
                 "arrow_lower_right arrow_lower_left arrow_upper_left arrow_up_down left_right_arrow arrows_counterclockwise " +
                 "arrow_right_hook leftwards_arrow_with_hook arrow_heading_up arrow_heading_down hash asterisk information_source " +
                 "abc abcd capital_abcd symbols musical_note notes wavy_dash curly_loop heavy_check_mark arrows_clockwise " +
-                "heavy_plus_sign heavy_minus_sign heavy_division_sign heavy_multiplication_x heavy_dollar_sign " +
-                "currency_exchange copyright registered tm end back on top soon ballot_box_with_check radio_button white_circle " +
-                "black_circle red_circle large_blue_circle small_orange_diamond small_blue_diamond large_orange_diamond " +
-                "large_blue_diamond small_red_triangle black_small_square white_small_square black_large_square " +
-                "white_large_square small_red_triangle_down black_medium_square white_medium_square black_medium_small_square " +
-                "white_medium_small_square black_square_button white_square_button speaker sound loud_sound mute mega loudspeaker " +
-                "bell no_bell black_joker mahjong spades clubs hearts diamonds flower_playing_cards thought_balloon anger_right " +
-                "speech_balloon clock1 clock2 clock3 clock4 clock5 clock6 clock7 clock8 clock9 clock10 clock11 clock12 " +
-                "clock130 clock230 clock330 clock430 clock530 clock630 clock730 clock830 clock930 clock1030 clock1130 " +
-                "clock1230 eye_in_speech_bubble"
+                "heavy_plus_sign heavy_minus_sign heavy_division_sign heavy_multiplication_x heavy_dollar_sign currency_exchange " +
+                "copyright registered tm end back on top soon ballot_box_with_check radio_button white_circle black_circle " +
+                "red_circle large_blue_circle small_orange_diamond small_blue_diamond large_orange_diamond large_blue_diamond " +
+                "small_red_triangle black_small_square white_small_square black_large_square white_large_square small_red_triangle_down " +
+                "black_medium_square white_medium_square black_medium_small_square white_medium_small_square black_square_button " +
+                "white_square_button speaker sound loud_sound mute mega loudspeaker bell no_bell black_joker mahjong spades " +
+                "clubs hearts diamonds flower_playing_cards thought_balloon anger_right speech_balloon clock1 clock2 clock3 " +
+                "clock4 clock5 clock6 clock7 clock8 clock9 clock10 clock11 clock12 clock130 clock230 clock330 clock430 " +
+                "clock530 clock630 clock730 clock830 clock930 clock1030 clock1130 clock1230 eye_in_speech_bubble"
             },
 
             flags: {
