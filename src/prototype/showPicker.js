@@ -3,9 +3,7 @@ define([
 ],
 function(EmojioneArea) {
     EmojioneArea.prototype.showPicker = function () {
-        var self = this,
-            render_emojis = self.editor.data('render_emojis');
-        if (render_emojis) render_emojis();
+        var self = this;
         if (self._sh_timer) {
             window.clearTimeout(self._sh_timer);
         }
