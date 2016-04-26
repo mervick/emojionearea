@@ -66,24 +66,46 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
             .appendTo(filters);
         });
 
-        editor.data('render_emojis', function() {
-            editor.data('render_emojis', null);
-            $.each(options.filters, function(filter, params) {
-                emojisList.append('<h1 name="' + filter + '">' + params.title + '</h1>');
-                div('emojis').html(shortnameTo(params.emoji.replace(' ', ','), '<i class="emojibtn" role="button"><' +
+        var render = [],
+            btnEvent = {click: "emojibtn.click"};
+        $.each(options.filters, function(filter, params) {
+            emojisList.append('<h1 name="' + filter + '">' + params.title + '</h1>');
+            var emojis = div('emojis').appendTo(emojisList),
+                items = shortnameTo(params.emoji.replace(/\s+/g, ','), '<i class="emojibtn" role="button"><' +
                     (self.sprite ? 'i class="emojione-{uni}"' : 'img class="emojione" src="{img}"') +
-                    ' data-name="{name}"/></i>') . split(','). join('')).appendTo(emojisList);
-            });
-            options.filters = null;
-            attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
-            headers = emojisList.find("h1");
+                    ' data-name="{name}"/></i>').split(',');
+
+            if (self.sprite) {
+                emojis.html(items.join(''));
+            } else {
+                render.push(function () {
+                    var timer = setInterval(function () {
+                        if (!items.length) {
+                            clearInterval(timer);
+                            if (render.length) {
+                                render.shift().call();
+                            }
+                        }
+                        for (var i = 0; i < 10 && items.length; i++) {
+                            emojis.append(items.shift());
+                        }
+                        attach(self, emojis.find(".emojibtn").not(".handled").addClass("handled"), btnEvent);
+                    }, 10);
+                });
+            }
         });
+        options.filters = null;
+        attach(self, emojisList.find(".emojibtn"), btnEvent);
+        headers = emojisList.find("h1");
+        if (!self.sprite) {
+            render.shift().call();
+        }
 
         filtersBtns = filters.find(selector("filter"));
         filtersBtns.eq(0).addClass("active");
 
         var noListenScroll = false;
-        emojisList.on('scroll', function () {
+        emojisList.on('scroll', function (event) {
             if (!noListenScroll) {
                 var item = headers.eq(0), scrollTop = emojisList.offset().top;
                 headers.each(function (i, e) {
