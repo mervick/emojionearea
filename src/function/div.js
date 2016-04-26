@@ -9,7 +9,7 @@ function($, slice, selector, isObject) {
         var parent = $('<div/>', isObject(prefix) ? prefix : {"class" : selector(prefix, true)});
         $.each(slice.call(arguments).slice(1), function(i, child) {
             if ($.isFunction(child)) {
-                child = child.call();
+                child = child.call(parent);
             }
             $(child).appendTo(parent);
         });
