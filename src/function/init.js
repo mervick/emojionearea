@@ -47,11 +47,13 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                             tones = div('tones',
                                 function() {
                                     var btns = [];
-                                    for (var i=0; i<=5; i++) {
-                                        btns.push($("<button/>", {
-                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                            "data-skin": i
-                                        }));
+                                    if (options.tones) {
+                                        for (var i = 0; i <= 5; i++) {
+                                            btns.push($("<button/>", {
+                                                "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                                "data-skin": i
+                                            }));
+                                        }
                                     }
                                     return btns;
                                 }
@@ -220,9 +222,13 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
             })
 
             .on("@emojibtn.click", function(emojibtn) {
+                if (!app.is(".focused")) {
+                    editor.focus();
+                }
                 saveSelection(editor[0]);
                 pasteHtmlAtCaret(shortnameTo(emojibtn.children().data("name"),
                     '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">')));
+
             })
 
             .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
