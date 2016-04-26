@@ -28,7 +28,7 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         self.pickerPosition = options.pickerPosition;
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, emojis, filters, filtersBtns, emojisList, headers,
+            editor, button, picker, tones, emojis, filters, filtersBtns, emojisList, headers, scrollArea,
             app = div({"class" : css_class + " " + source.attr("class"), role: "application"},
                 editor = self.editor = div('editor').attr({
                     contenteditable: true,
@@ -42,9 +42,20 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                 picker = self.picker = div('picker',
                     div('wrapper',
                         filters = div('filters'),
-                        emojisList = div('emojis-list',
-                            tones = div('tones'),
-                            emojis = div('emojis')
+                        scrollArea = div('scroll-area',
+                            emojisList = div('emojis-list'),
+                            tones = div('tones',
+                                function() {
+                                    var btns = [];
+                                    for (var i=0; i<=5; i++) {
+                                        btns.push($("<button/>", {
+                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                            "data-skin": i
+                                        }));
+                                    }
+                                    return btns;
+                                }
+                            )
                         )
                     )
                 ).addClass(selector('picker-position-' + options.pickerPosition, true))
@@ -105,9 +116,9 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
         filtersBtns.eq(0).addClass("active");
 
         var noListenScroll = false;
-        emojisList.on('scroll', function (event) {
+        scrollArea.on('scroll', function (event) {
             if (!noListenScroll) {
-                var item = headers.eq(0), scrollTop = emojisList.offset().top;
+                var item = headers.eq(0), scrollTop = scrollArea.offset().top;
                 headers.each(function (i, e) {
                     if ($(e).offset().top - scrollTop >= 3) {
                         return false;
@@ -156,9 +167,9 @@ function($, blankImg, slice, css_class, trigger, attach, shortnameTo, pasteHtmlA
                     filter.addClass("active");
                 }
                 var headerOffset = emojisList.find('h1[name="' + filter.data('filter') + '"]').offset().top,
-                    scroll = emojisList.scrollTop(),
-                    offsetTop = emojisList.offset().top;
-                emojisList.stop().animate({
+                    scroll = scrollArea.scrollTop(),
+                    offsetTop = scrollArea.offset().top;
+                scrollArea.stop().animate({
                     scrollTop: headerOffset + scroll - offsetTop - 2
                 }, 200, 'swing', function() {
                     noListenScroll = false;
