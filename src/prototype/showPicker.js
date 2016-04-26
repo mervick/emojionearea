@@ -1,7 +1,8 @@
 define([
-    'prototype/var/EmojioneArea'
+    'prototype/var/EmojioneArea',
+    'function/trigger'
 ],
-function(EmojioneArea) {
+function(EmojioneArea, trigger) {
     EmojioneArea.prototype.showPicker = function () {
         var self = this;
         if (self._sh_timer) {
@@ -11,6 +12,7 @@ function(EmojioneArea) {
         self._sh_timer =  window.setTimeout(function() {
             self.button.addClass("active");
         }, 50);
+        trigger(self, "picker.show", [self.picker]);
         return self;
     }
 });
