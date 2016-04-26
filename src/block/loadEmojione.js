@@ -34,8 +34,6 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
 
     emojioneReady(function() {
         emojione.imagePathPNG = cdn_base + "/png/";
-        emojione.imagePathSVG = cdn_base + "/svg/";
-        emojione.imagePathSVGSprites = cdn_base + "/sprites/emojione.sprites.svg";
         uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|("+
             emojione.unicodeRegexp+")", "gi");
     });
