@@ -1,11 +1,5 @@
 define([], function() {
     return {
-        dir               : "ltr",
-        spellcheck        : false,
-        autocomplete      : "off",
-        autocorrect       : "off",
-        autocapitalize    : "off",
-
         placeholder       : null,
         container         : null,
         hideSource        : true,
@@ -14,22 +8,26 @@ define([], function() {
         pickerPosition    : "top", // top | left
         filtersPosition   : "top", // top | bottom
         hidePickerOnBlur  : true,
-        buttonTitle       : null,
+        buttonTitle       : "Use the TAB key to insert emoji faster",
         tones             : true,
+        tonesStyle        : "bullet", // bullet | radio
         inline            : false,
+        saveEmojisAs      : "unicode", // unicode | shortname | image
 
         filters: {
-            smileys_people: {
-                icon: "yum",
-                title: "Smileys & People",
-
-                tones: "santa runner surfer swimmer lifter ear nose point_up_2 point_down point_left point_right punch " +
+            tones: {
+                title: "Diversity",
+                emoji: "santa runner surfer swimmer lifter ear nose point_up_2 point_down point_left point_right punch " +
                 "wave ok_hand thumbsup thumbsdown clap open_hands boy girl man woman cop bride_with_veil person_with_blond_hair " +
                 "man_with_gua_pi_mao man_with_turban older_man grandma baby construction_worker princess angel " +
                 "information_desk_person guardsman dancer nail_care massage haircut muscle spy hand_splayed middle_finger " +
                 "vulcan no_good ok_woman bow raising_hand raised_hands person_frowning person_with_pouting_face pray rowboat " +
-                "bicyclist mountain_bicyclist walking bath metal point_up basketball_player fist raised_hand v writing_hand",
+                "bicyclist mountain_bicyclist walking bath metal" //" point_up basketball_player fist raised_hand v writing_hand"
+            },
 
+            smileys_people: {
+                icon: "yum",
+                title: "Smileys & People",
                 emoji: "grinning grimacing grin joy smiley smile sweat_smile laughing innocent wink blush slight_smile " +
                 "upside_down relaxed yum relieved heart_eyes kissing_heart kissing kissing_smiling_eyes " +
                 "kissing_closed_eyes stuck_out_tongue_winking_eye stuck_out_tongue_closed_eyes stuck_out_tongue " +
@@ -50,7 +48,7 @@ define([], function() {
                 "family_wwb family_wwg family_wwgb family_wwbb family_wwgg family_mmb family_mmg family_mmgb family_mmbb " +
                 "family_mmgg womans_clothes shirt jeans necktie dress bikini kimono lipstick kiss footprints high_heel " +
                 "sandal boot mans_shoe athletic_shoe womans_hat tophat helmet_with_cross mortar_board crown school_satchel " +
-                "pouch purse handbag briefcase eyeglasses dark_sunglasses ring closed_umbrella",
+                "pouch purse handbag briefcase eyeglasses dark_sunglasses ring closed_umbrella"
             },
 
             animals_nature: {
