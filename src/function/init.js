@@ -126,6 +126,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         }
 
         self.setText(source[sourceValFunc]());
+        source[sourceValFunc](self.getText());
         calcButtonPosition.apply(self);
 
         // attach() must be called before any .on() methods !!!
@@ -276,7 +277,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             var html = editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
             // clear input: chrome adds <br> when contenteditable is empty
             if (!html.length || /^<br[^>]*>$/i.test(html)) {
-                self.setText('', false);
+                self.editor.html(self.content = '');
             }
             source[sourceValFunc](self.getText());
         })
