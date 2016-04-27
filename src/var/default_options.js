@@ -11,7 +11,7 @@ define([], function() {
         buttonTitle       : "Use the TAB key to insert emoji faster",
         tones             : true,
         tonesStyle        : "bullet", // bullet | radio | square | checkbox
-        inline            : false,
+        inline            : null, // null - auto
         saveEmojisAs      : "unicode", // unicode | shortname | image
         shortcuts         : true,
         autocomplete      : true,

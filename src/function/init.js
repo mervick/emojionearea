@@ -28,7 +28,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
     return function(self, source, options) {
         //calcElapsedTime('init', function() {
         options = getOptions(options);
-        self.sprite     = options.sprite && emojioneSupportMode < 3;
+        self.sprite = options.sprite && emojioneSupportMode < 3;
+        self.inline = options.inline === null ? source.is("INPUT") : options.inline;
         self.shortnames = options.shortnames;
         self.pickerPosition = options.pickerPosition;
         self.saveEmojisAs = options.saveEmojisAs;
@@ -72,10 +73,6 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                  .addClass(selector('filters-position-' + options.filtersPosition, true))
                  .addClass('hidden')
             );
-
-        if (options.inline) {
-            app.addClass(selector('inline', true));
-        }
 
         $.each(options.filters, function(filter, params) {
             var skin = 0;
@@ -306,7 +303,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         });
 
         if (options.shortcuts) {
-            self.on("@keydown", function(editor, e) {
+            self.on("@keydown", function(_, e) {
                 if (!e.ctrlKey) {
                     if (e.which == 9) {
                         e.preventDefault();
@@ -339,7 +336,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                 editor.textcomplete([
                     {
                         id: 'emojionearea',
-                        match: /\B(:[\-+\w]*)$/,
+                        match: /(:[\-+\w]*)$/,
                         search: function (term, callback) {
                             callback($.map(map, function (emoji) {
                                 return emoji.indexOf(term) === 0 ? emoji : null;
@@ -360,9 +357,20 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             if ($.fn.textcomplete) {
                 autocomplete();
             } else {
-                $.getScript("https://cdn.rawgit.com/yuku-t/jquery-textcomplete/v1.3.4/dist/jquery.textcomplete.js", autocomplete);
+                $.getScript("https://cdn.rawgit.com/yuku-t/jquery-textcomplete/v1.3.4/dist/jquery.textcomplete.js",
+                    autocomplete);
             }
         }
+
+        if (self.inline) {
+            app.addClass(selector('inline', true));
+            self.on("@keydown", function(_, e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                }
+            });
+        }
+
         //}, self.id === 1); // calcElapsedTime()
     };
 });
