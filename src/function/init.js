@@ -31,7 +31,7 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, emojisList, categories, scrollArea,
-            app = div({"class" : css_class + " " + source.attr("class"), role: "application"},
+            app = div({"class" : css_class + " " + (source.attr("class") || ""), role: "application"},
                 editor = self.editor = div('editor').attr({
                     contenteditable: true,
                     placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
@@ -68,6 +68,10 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
                  .addClass('hidden')
             );
 
+        if (options.inline) {
+            app.addClass(selector('inline', true));
+        }
+
         $.each(options.filters, function(filter, params) {
             var skin = 0;
             if (filter !== 'tones') {
@@ -100,7 +104,6 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
         });
 
         options.filters = null;
-        attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
         if (!self.sprite) {
             self.lasyEmoji = emojisList.find(".lazy-emoji");
         }
@@ -122,13 +125,23 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
         self.setText(source[sourceValFunc]());
         calcButtonPosition.apply(self);
 
+        // attach() must be called before any .on() methods !!!
+        // 1) attach() stores events into possibleEvents{},
+        // 2) .on() calls bindEvent() and stores handlers into eventStorage{},
+        // 3) bindEvent() finds events in possibleEvents{} and bind founded via jQuery.on()
+        // 4) attached events via jQuery.on() calls trigger()
+        // 5) trigger() calls handlers stored into eventStorage{}
+
+        attach(self, emojisList.find(".emojibtn"), {click: "emojibtn.click"});
         attach(self, window, {resize: "!resize"});
         attach(self, tones.children(), {click: "tone.click"});
         attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
         attach(self, button, {click: "button.click"});
         attach(self, editor, {paste :"!paste"}, editor);
         attach(self, editor, ["focus", "blur"], function() { return self.stayFocused ? false : editor; });
-        attach(self, [editor, picker], ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"], editor);
+        attach(self, picker, {mousedown: "picker.mousedown", mouseup: "picker.mouseup", click: "picker.click",
+            keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
+        attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
 
         if (isObject(options.events) && !$.isEmptyObject(options.events)) {
@@ -157,6 +170,8 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
                 }
             }
         });
+
+        editor.on("input", function(){ console.log('input');});
 
         self.on("@filter.click", function(filter) {
             var isActive = filter.is(".active");
@@ -250,7 +265,7 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
 
         .on("@!mousedown", function(editor, event) {
-            if (!options.autoHideFilters && !app.is(".focused")) {
+            if (!app.is(".focused")) {
                 editor.focus();
             }
             event.preventDefault();
@@ -286,5 +301,6 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
                 source.blur();
             }
         });
+
     };
 });

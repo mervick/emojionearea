@@ -1,14 +1,16 @@
 define([
     'jquery',
     'var/eventStorage',
+    'function/bindEvent',
     'prototype/var/EmojioneArea'
 ],
-function($, eventStorage, EmojioneArea) {
+function($, eventStorage, bindEvent, EmojioneArea) {
     EmojioneArea.prototype.on = function(events, handler) {
         if (events && $.isFunction(handler)) {
-            var id = this.id;
+            var self = this;
             $.each(events.toLowerCase().split(' '), function(i, event) {
-                (eventStorage[id][event] || (eventStorage[id][event] = [])).push(handler);
+                bindEvent(self, event);
+                (eventStorage[self.id][event] || (eventStorage[self.id][event] = [])).push(handler);
             });
         }
         return this;
