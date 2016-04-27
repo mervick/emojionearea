@@ -81,10 +81,10 @@
     }
 
     &.#{$css-prefix}-inline {
-        height: 34px;
+        height: $inline-height;
 
         > .#{$css-prefix}-editor {
-            height: 32px;
+            height: $inline-height - 2;
             min-height: 20px;
             overflow: hidden;
             white-space: nowrap;
@@ -481,6 +481,26 @@
                 }
             }
         }
+
+        &.#{$css-prefix}-picker-position-bottom {
+            margin-top: 10px;
+            right: -14px;
+            top: $inline-height - 2 + 15px;
+
+            .#{$css-prefix}-wrapper:after {
+                width: 19px;
+                height: 10px;
+                background-position: -2px -100px;
+                top: -10px;
+                right: 20px;
+            }
+
+            &.#{$css-prefix}-filters-position-bottom {
+                .#{$css-prefix}-wrapper:after {
+                    background-position: -2px -90px;
+                }
+            }
+        }
     }
 
     .#{$css-prefix}-button.active + .#{$css-prefix}-picker {
@@ -493,6 +513,10 @@
 
     .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-left {
         margin-right: - $picker-width + 7;
+    }
+
+    .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-bottom {
+        margin-top: - 7px;
     }
 }
 
