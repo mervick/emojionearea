@@ -20,7 +20,7 @@ function(emojione, blankImg, unicodeTo) {
             str = emojione.shortnameToUnicode(str);
         }
         return unicodeTo(str,
-            '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '">' : '" src="{img}">'))
+            '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '">' : 'emoji" src="{img}">'))
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
             .replace(/  /g, '&nbsp;&nbsp;');
     }

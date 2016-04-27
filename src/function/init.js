@@ -2,8 +2,8 @@ define([
     'jquery',
     'var/blankImg',
     'var/slice',
-    'var/emojioneSupportMode',
     'var/css_class',
+    'var/emojioneSupportMode',
     'function/trigger',
     'function/attach',
     'function/shortnameTo',
@@ -19,13 +19,13 @@ define([
     'function/selector',
     'function/div'
 ],
-function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, shortnameTo, pasteHtmlAtCaret,
+function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, shortnameTo, pasteHtmlAtCaret,
          getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
          calcButtonPosition, lazyLoading, selector, div)
 {
     return function(self, source, options) {
         options = getOptions(options);
-        self.sprite     = options.sprite;
+        self.sprite     = options.sprite && emojioneSupportMode < 3;
         self.shortnames = options.shortnames;
         self.pickerPosition = options.pickerPosition;
 
@@ -76,7 +76,7 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
                     "data-filter": filter,
                     title: params.title
                 })
-                .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojione" src="{img}"/>'))
+                .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>'))
                 .appendTo(filters);
             } else if (options.tones) {
                 skin = 5;
@@ -92,8 +92,8 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
                 }
                 items = shortnameTo(items,
                     '<i class="emojibtn" role="button" data-name="{name}"><{0} class="emojione{1}"{2}></i>',
-                    self.sprite, [["i", "img"], ["-{uni}", " lazy-emoji"],
-                        ["></i", ' src="'+blankImg+'" data-src="{img}"/']]).split('|');
+                    self.sprite, [["i", "img"], ["-{uni}", "emoji lazy-emoji"],
+                        ["></i", ' src="'+blankImg+'" data-src="{img}"/']], true).split('|');
                 $('<h1/>').text(params.title).appendTo(category);
                 category.append(items.join(''));
             } while (--skin > 0);
@@ -244,7 +244,7 @@ function($, blankImg, slice, emojioneSupportMode, css_class, trigger, attach, sh
             }
             saveSelection(editor[0]);
             pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"),
-                '<img alt="{alt}" class="emojione{0}" src="{1}"/>', self.sprite, [['-{uni}',''], [blankImg,'{img}']]));
+                '<img alt="{alt}" class="emojione{0}" src="{1}"/>', self.sprite, [['-{uni}','emoji'], [blankImg,'{img}']]));
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)

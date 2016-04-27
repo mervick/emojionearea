@@ -22,7 +22,7 @@ define([], function() {
                 "man_with_gua_pi_mao man_with_turban older_man grandma baby construction_worker princess angel " +
                 "information_desk_person guardsman dancer nail_care massage haircut muscle spy hand_splayed middle_finger " +
                 "vulcan no_good ok_woman bow raising_hand raised_hands person_frowning person_with_pouting_face pray rowboat " +
-                "bicyclist mountain_bicyclist walking bath metal" //" point_up basketball_player fist raised_hand v writing_hand"
+                "bicyclist mountain_bicyclist walking bath metal point_up basketball_player fist raised_hand v writing_hand"
             },
 
             smileys_people: {

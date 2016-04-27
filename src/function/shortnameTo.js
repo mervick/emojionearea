@@ -1,11 +1,11 @@
 define([
     'jquery',
     'var/emojione',
-    'var/emojioneVersion',
+    'var/emojioneSupportMode',
     'function/getTemplate'
 ],
-function($, emojione, emojioneVersion, getTemplate) {
-    return function(str, template, useSprite, replaces) {
+function($, emojione, emojioneSupportMode, getTemplate) {
+    return function(str, template, useSprite, replaces, clear) {
         return str.replace(/:?[\w_\-]+:?/g, function(shortname) {
             shortname = ":" + shortname.replace(/:$/,'').replace(/^:/,'') + ":";
             if ($.isArray(replaces)) {
@@ -14,9 +14,11 @@ function($, emojione, emojioneVersion, getTemplate) {
                 });
             }
             if (shortname in emojione.emojioneList) {
-                return getTemplate(template, emojione.emojioneList[shortname][emojione.emojioneList[shortname].length-1], shortname);
+                var unicode = emojione.emojioneList[shortname];
+                if (emojioneSupportMode > 3) unicode = unicode.unicode;
+                return getTemplate(template, unicode[unicode.length-1], shortname);
             }
-            return shortname;
+            return clear ? '' : shortname;
         });
     };
 });
