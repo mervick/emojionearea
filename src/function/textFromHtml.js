@@ -1,7 +1,8 @@
 define([
     'var/emojione',
+    'function/unicodeTo',
 ],
-function(emojione) {
+function(emojione, unicodeTo) {
     return function(str, self) {
         str = str
             .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
@@ -28,6 +29,14 @@ function(emojione) {
             .replace(/&#x27;/g, "'")
             .replace(/&#x60;/g, '`')
             .replace(/&amp;/g, '&');
-        return self && self.shortnames ? emojione.toShort(str) : str;
+
+        switch (self.saveEmojisAs) {
+            case 'image':
+                str = unicodeTo(str, self.emojiTemplate);
+                break;
+            case 'shortname':
+                str = emojione.toShort(str);
+        }
+        return str;
     }
 });

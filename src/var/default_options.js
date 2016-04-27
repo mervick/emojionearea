@@ -10,9 +10,10 @@ define([], function() {
         hidePickerOnBlur  : true,
         buttonTitle       : "Use the TAB key to insert emoji faster",
         tones             : true,
-        tonesStyle        : "bullet", // bullet | radio
+        tonesStyle        : "bullet", // bullet | radio | square | checkbox
         inline            : false,
         saveEmojisAs      : "unicode", // unicode | shortname | image
+        shortcuts         : true,
 
         filters: {
             tones: {
@@ -135,7 +136,7 @@ define([], function() {
             },
 
             symbols: {
-                icon: "cyclone",
+                icon: "heartpulse",
                 title: "Symbols",
                 emoji: "heart yellow_heart green_heart blue_heart purple_heart broken_heart heart_exclamation two_hearts " +
                 "revolving_hearts heartbeat heartpulse sparkling_heart cupid gift_heart heart_decoration peace cross " +

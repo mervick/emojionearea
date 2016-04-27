@@ -1,9 +1,8 @@
 define([
     'var/emojione',
-    'var/blankImg',
     'function/unicodeTo'
 ],
-function(emojione, blankImg, unicodeTo) {
+function(emojione, unicodeTo) {
     return function(str, self) {
         str = str
             .replace(/&/g, '&amp;')
@@ -19,8 +18,7 @@ function(emojione, blankImg, unicodeTo) {
         if (self.shortnames) {
             str = emojione.shortnameToUnicode(str);
         }
-        return unicodeTo(str,
-            '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '">' : 'emoji" src="{img}">'))
+        return unicodeTo(str, self.emojiTemplate)
             .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
             .replace(/  /g, '&nbsp;&nbsp;');
     }

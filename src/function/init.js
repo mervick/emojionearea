@@ -18,14 +18,14 @@ define([
     'function/lazyLoading',
     'function/selector',
     'function/div',
-    'function/calcElapsedTime', // debug only
+    //'function/calcElapsedTime', // debug only
 ],
 function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, shortnameTo, pasteHtmlAtCaret,
          getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
          calcButtonPosition, lazyLoading, selector, div)
 {
     return function(self, source, options) {
-        calcElapsedTime('init', function() {
+        //calcElapsedTime('init', function() {
         options = getOptions(options);
         self.sprite     = options.sprite && emojioneSupportMode < 3;
         self.shortnames = options.shortnames;
@@ -306,6 +306,22 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
             }
         });
 
-        }, self.id === 1); // calcElapsedTime()
+        if (options.shortcuts) {
+            self.on("@keydown", function(editor, e) {
+                if (!e.ctrlKey) {
+                    if (e.which == 9) {
+                        e.preventDefault();
+                        button.click();
+                    }
+                    else if (e.which == 27) {
+                        e.preventDefault();
+                        if (button.is(".active")) {
+                            self.hidePicker();
+                        }
+                    }
+                }
+            });
+        }
+        //}, self.id === 1); // calcElapsedTime()
     };
 });
