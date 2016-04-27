@@ -26,6 +26,7 @@
         display: block;
         position: relative !important;
         width: 100%;
+        height: auto;
         padding: 0;
         font-size: $font-size;
         border: 0;
@@ -37,10 +38,6 @@
              -o-transition: border-color 0.15s ease-in-out,         box-shadow 0.15s ease-in-out;
         -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
                 transition: border-color 0.15s ease-in-out,         box-shadow 0.15s ease-in-out;
-
-        &:not(.#{$css-prefix}-inline) {
-            height: auto;
-        }
     }
 
     &.focused {
@@ -80,6 +77,25 @@
 
         [class*=emojione-] {
             @extend .emojioneemoji;
+        }
+    }
+
+    &.#{$css-prefix}-inline {
+        height: 34px;
+
+        > .#{$css-prefix}-editor {
+            height: 32px;
+            min-height: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            position: absolute;
+            top: 0;
+            left: 12px;
+            right: 24px;
+            padding: 6px 0;
+        }
+        > .#{$css-prefix}-button {
+            top: 4px;
         }
     }
 
