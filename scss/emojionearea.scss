@@ -1,6 +1,21 @@
 @import "compass/css3";
 @import "variables";
 @import "image";
+@import "text-complete";
+
+.emojioneemoji {
+    font-size: inherit;
+    height: 2ex;
+    width: 2.1ex;
+    min-height: 20px;
+    min-width: 20px;
+    display: inline-block;
+    margin: -.2ex .15em .2ex;
+    line-height: normal;
+    vertical-align: middle;
+    max-width: 100%;
+    top: 0;
+}
 
 .#{$css-prefix} {
     &, & * {
@@ -63,18 +78,8 @@
             @include box-shadow(none);
         }
 
-        [class*=emojione-], .emojioneemoji {
-            font-size: inherit;
-            height: 2ex;
-            width: 2.1ex;
-            min-height: 20px;
-            min-width: 20px;
-            display: inline-block;
-            margin: -.2ex .15em .2ex;
-            line-height: normal;
-            vertical-align: middle;
-            max-width: 100%;
-            top: 0;
+        [class*=emojione-] {
+            @extend .emojioneemoji;
         }
     }
 

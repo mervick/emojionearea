@@ -6,7 +6,7 @@ define([
 ],
 function($, emojione, emojioneSupportMode, getTemplate) {
     return function(str, template, clear) {
-        return str.replace(/:?[\w_\-]+:?/g, function(shortname) {
+        return str.replace(/:?\+?[\w_\-]+:?/g, function(shortname) {
             shortname = ":" + shortname.replace(/:$/,'').replace(/^:/,'') + ":";
             var unicode = emojione.emojioneList[shortname];
             if (unicode) {

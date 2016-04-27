@@ -14,6 +14,8 @@ define([], function() {
         inline            : false,
         saveEmojisAs      : "unicode", // unicode | shortname | image
         shortcuts         : true,
+        autocomplete      : true,
+        autocompleteTones : false,
 
         filters: {
             tones: {

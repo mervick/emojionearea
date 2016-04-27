@@ -1,5 +1,6 @@
 define([
     'jquery',
+    'var/emojione',
     'var/blankImg',
     'var/slice',
     'var/css_class',
@@ -20,8 +21,8 @@ define([
     'function/div',
     //'function/calcElapsedTime', // debug only
 ],
-function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, shortnameTo, pasteHtmlAtCaret,
-         getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
+function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, shortnameTo,
+         pasteHtmlAtCaret, getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
          calcButtonPosition, lazyLoading, selector, div)
 {
     return function(self, source, options) {
@@ -176,8 +177,6 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
             }
         });
 
-        editor.on("input", function(){ console.log('input');});
-
         self.on("@filter.click", function(filter) {
             var isActive = filter.is(".active");
             if (scrollArea.is(".skinnable")) {
@@ -321,6 +320,48 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
                     }
                 }
             });
+        }
+
+        if (options.autocomplete) {
+            function autocomplete() {
+                var events = {};
+                if (options.shortcuts) {
+                    events.onKeydown = function (e, commands) {
+                        if (!e.ctrlKey && e.which == 13) {
+                            return commands.KEY_ENTER;
+                        }
+                    };
+                }
+                var map = $.map(emojione.emojioneList, function (_, emoji) {
+                    return !options.autocompleteTones ? /_tone[12345]/.test(emoji) ? null : emoji : emoji;
+                });
+                map.sort();
+                editor.textcomplete([
+                    {
+                        id: 'emojionearea',
+                        match: /\B(:[\-+\w]*)$/,
+                        search: function (term, callback) {
+                            callback($.map(map, function (emoji) {
+                                return emoji.indexOf(term) === 0 ? emoji : null;
+                            }));
+                        },
+                        template: function (value) {
+                            return shortnameTo(value, self.emojiTemplate) + " " + value.replace(/:/g, '');
+                        },
+                        replace: function (value) {
+                            return shortnameTo(value, self.emojiTemplate);
+                        },
+                        cache: true,
+                        maxCount: 15,
+                        index: 1
+                    }
+                ], events);
+            };
+            if ($.fn.textcomplete) {
+                autocomplete();
+            } else {
+                $.getScript("https://cdn.rawgit.com/yuku-t/jquery-textcomplete/v1.3.4/dist/jquery.textcomplete.js", autocomplete);
+            }
         }
         //}, self.id === 1); // calcElapsedTime()
     };
