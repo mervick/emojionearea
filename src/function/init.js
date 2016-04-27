@@ -17,17 +17,21 @@ define([
     'function/calcButtonPosition',
     'function/lazyLoading',
     'function/selector',
-    'function/div'
+    'function/div',
+    'function/calcElapsedTime', // debug only
 ],
 function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, shortnameTo, pasteHtmlAtCaret,
          getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
          calcButtonPosition, lazyLoading, selector, div)
 {
     return function(self, source, options) {
+        calcElapsedTime('init', function() {
         options = getOptions(options);
         self.sprite     = options.sprite && emojioneSupportMode < 3;
         self.shortnames = options.shortnames;
         self.pickerPosition = options.pickerPosition;
+        self.saveEmojisAs = options.saveEmojisAs;
+        self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, emojisList, categories, scrollArea,
@@ -95,11 +99,12 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
                     items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
                 }
                 items = shortnameTo(items,
-                    '<i class="emojibtn" role="button" data-name="{name}"><{0} class="emojione{1}"{2}></i>',
-                    self.sprite, [["i", "img"], ["-{uni}", "emoji lazy-emoji"],
-                        ["></i", ' src="'+blankImg+'" data-src="{img}"/']], true).split('|');
-                $('<h1/>').text(params.title).appendTo(category);
-                category.append(items.join(''));
+                    self.sprite ?
+                    '<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
+                    '<i class="emojibtn" role="button" data-name="{name}"><img class="emojioneemoji lazy-emoji" data-src="{img}"/></i>',
+                    true).split('|').join('');
+                category.html(items);
+                $('<h1/>').text(params.title).prependTo(category);
             } while (--skin > 0);
         });
 
@@ -258,8 +263,7 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
                 editor.focus();
             }
             saveSelection(editor[0]);
-            pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"),
-                '<img alt="{alt}" class="emojione{0}" src="{1}"/>', self.sprite, [['-{uni}','emoji'], [blankImg,'{img}']]));
+            pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
@@ -302,5 +306,6 @@ function($, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, sh
             }
         });
 
+        }, self.id === 1); // calcElapsedTime()
     };
 });
