@@ -4,26 +4,33 @@ EmojiOne Area is a small jQuery plugin that allows you to transform any html ele
 ability to use Emojione icons. 
 The end result is a secure text/plain in which the image icons will be replaced with their Unicode analogues.
 
+# Version 2.1
 
-![EmojiOne Area](http://mervick.github.io/emojionearea/images/screen.png)
+![EmojiOne Area version 2.1](http://mervick.github.io/emojionearea/images/screen.png)
 
-See a [Demo page](http://mervick.github.io/emojionearea/).
+[See the Live Demo here.](http://mervick.github.io/emojionearea/).
 
-## Installation
+# Version 3.0-alpha
+
+![EmojiOne Area version 3.0](http://mervick.github.io/emojionearea/images/v3.png)
+
+[See the Live Demo here.](https://jsfiddle.net/1v03Lqnu/)
+
+## Installation v2.1
 
 The preferred way to install is via `bower`, `npm` or `Composer`.
 
 Using [Bower](http://bower.io/):
 ```bash
-bower install emojionearea
+bower install emojionearea#2.1.3 
 ```
 Using [npm](https://www.npmjs.com/):
 ```bash
-npm install emojionearea
+npm install emojionearea@2.1.3
 ```
 Using [Composer](https://getcomposer.org/):
 ```bash
-composer require mervick/emojionearea
+composer require mervick/emojionearea "2.1.3"
 ```
 
 ## Usage
