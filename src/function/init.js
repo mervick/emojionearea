@@ -376,6 +376,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             });
         }
 
+        // disabling resize images on Firefox
+        document.execCommand("enableObjectResizing", false, false);
+
         //}, self.id === 1); // calcElapsedTime()
     };
 });
