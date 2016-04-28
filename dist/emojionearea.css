@@ -357,6 +357,7 @@
     /* line 361, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker .emojionearea-scroll-area h1 {
       display: block;
+      font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
       font-size: 13px;
       font-weight: normal;
       color: #b2b2b2;
@@ -364,20 +365,20 @@
       line-height: 20px;
       margin: 0;
       padding: 7px 0 5px 6px; }
-      /* line 371, ../scss/emojionearea.scss */
+      /* line 372, ../scss/emojionearea.scss */
       .emojionearea .emojionearea-picker .emojionearea-scroll-area h1:after, .emojionearea .emojionearea-picker .emojionearea-scroll-area h1:before {
         content: " ";
         display: block;
         clear: both; }
-    /* line 378, ../scss/emojionearea.scss */
+    /* line 379, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-category {
       padding: 0 0 0 7px; }
-      /* line 381, ../scss/emojionearea.scss */
+      /* line 382, ../scss/emojionearea.scss */
       .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-category:after, .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-category:before {
         content: " ";
         display: block;
         clear: both; }
-    /* line 388, ../scss/emojionearea.scss */
+    /* line 389, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker .emojionearea-scroll-area [class*=emojione-] {
       -moz-box-sizing: content-box;
       -webkit-box-sizing: content-box;
@@ -386,7 +387,7 @@
       width: 24px;
       height: 24px;
       top: 0; }
-    /* line 396, ../scss/emojionearea.scss */
+    /* line 397, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojibtn {
       -moz-box-sizing: content-box;
       -webkit-box-sizing: content-box;
@@ -397,24 +398,24 @@
       display: block;
       margin: 1px;
       padding: 3px; }
-      /* line 405, ../scss/emojionearea.scss */
+      /* line 406, ../scss/emojionearea.scss */
       .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojibtn:hover {
         -moz-border-radius: 4px;
         -webkit-border-radius: 4px;
         border-radius: 4px;
         background-color: #e4e4e4;
         cursor: pointer; }
-      /* line 411, ../scss/emojionearea.scss */
+      /* line 412, ../scss/emojionearea.scss */
       .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojibtn i, .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojibtn img {
         float: left;
         display: block;
         width: 24px;
         height: 24px;
         opacity: 1; }
-      /* line 419, ../scss/emojionearea.scss */
+      /* line 420, ../scss/emojionearea.scss */
       .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojibtn img.lazy-emoji {
         opacity: 0; }
-  /* line 426, ../scss/emojionearea.scss */
+  /* line 427, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-picker.emojionearea-filters-position-top .emojionearea-filters {
     top: 0;
     -moz-border-radius-topleft: 5px;
@@ -423,10 +424,10 @@
     -moz-border-radius-topright: 5px;
     -webkit-border-top-right-radius: 5px;
     border-top-right-radius: 5px; }
-  /* line 431, ../scss/emojionearea.scss */
+  /* line 432, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-picker.emojionearea-filters-position-top .emojionearea-scroll-area {
     bottom: 0; }
-  /* line 437, ../scss/emojionearea.scss */
+  /* line 438, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom .emojionearea-filters {
     bottom: 0;
     -moz-border-radius-bottomleft: 5px;
@@ -435,63 +436,63 @@
     -moz-border-radius-bottomright: 5px;
     -webkit-border-bottom-right-radius: 5px;
     border-bottom-right-radius: 5px; }
-  /* line 442, ../scss/emojionearea.scss */
+  /* line 443, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom .emojionearea-scroll-area {
     top: 0; }
-  /* line 447, ../scss/emojionearea.scss */
+  /* line 448, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-picker.emojionearea-picker-position-top {
     margin-top: -246px;
     right: -14px; }
-    /* line 451, ../scss/emojionearea.scss */
+    /* line 452, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker.emojionearea-picker-position-top .emojionearea-wrapper:after {
       width: 19px;
       height: 10px;
       background-position: -2px -49px;
       bottom: -10px;
       right: 20px; }
-    /* line 460, ../scss/emojionearea.scss */
+    /* line 461, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker.emojionearea-picker-position-top.emojionearea-filters-position-bottom .emojionearea-wrapper:after {
       background-position: -2px -80px; }
-  /* line 466, ../scss/emojionearea.scss */
+  /* line 467, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-picker.emojionearea-picker-position-left {
     margin-right: -294px;
     top: -8px; }
-    /* line 470, ../scss/emojionearea.scss */
+    /* line 471, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker.emojionearea-picker-position-left .emojionearea-wrapper:after {
       width: 10px;
       height: 19px;
       background-position: 0px -60px;
       top: 13px;
       left: -10px; }
-    /* line 479, ../scss/emojionearea.scss */
+    /* line 480, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker.emojionearea-picker-position-left.emojionearea-filters-position-bottom .emojionearea-wrapper:after {
       background-position: right -60px; }
-  /* line 485, ../scss/emojionearea.scss */
+  /* line 486, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-picker.emojionearea-picker-position-bottom {
     margin-top: 10px;
     right: -14px;
     top: 47px; }
-    /* line 490, ../scss/emojionearea.scss */
+    /* line 491, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker.emojionearea-picker-position-bottom .emojionearea-wrapper:after {
       width: 19px;
       height: 10px;
       background-position: -2px -100px;
       top: -10px;
       right: 20px; }
-    /* line 499, ../scss/emojionearea.scss */
+    /* line 500, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker.emojionearea-picker-position-bottom.emojionearea-filters-position-bottom .emojionearea-wrapper:after {
       background-position: -2px -90px; }
-/* line 506, ../scss/emojionearea.scss */
+/* line 507, ../scss/emojionearea.scss */
 .emojionearea .emojionearea-button.active + .emojionearea-picker {
   filter: progid:DXImageTransform.Microsoft.Alpha(enabled=false);
   opacity: 1; }
-/* line 510, ../scss/emojionearea.scss */
+/* line 511, ../scss/emojionearea.scss */
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-top {
   margin-top: -229px; }
-/* line 514, ../scss/emojionearea.scss */
+/* line 515, ../scss/emojionearea.scss */
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-left {
   margin-right: -277px; }
-/* line 518, ../scss/emojionearea.scss */
+/* line 519, ../scss/emojionearea.scss */
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-bottom {
   margin-top: -7px; }
 
