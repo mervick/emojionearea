@@ -1,7 +1,7 @@
 {
   "name": "emojionearea",
-  "version": "2.1.2",
-  "description": "Simple jQuery WYSIWYG-like plugin with emojione smiles for use in replies and comments",
+  "version": "3.0.0",
+  "description": "WYSIWYG-like EmojiOne Converter / Picker Plugin for jQuery",
   "main": "js/emojionearea.js",
   "scripts": {
     "build": "npm install && grunt",
@@ -14,7 +14,7 @@
   "keywords": [
     "emoji",
     "emojione",
-    "area",
+    "picker",
     "emojionearea"
   ],
   "author": "Andrey Izman <izmanw@gmail.com>",

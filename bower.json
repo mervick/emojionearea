@@ -1,15 +1,16 @@
 {
   "name": "emojionearea",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "homepage": "https://github.com/mervick/emojionearea",
   "authors": [
     "Andrey Izman <izmanw@gmail.com>"
   ],
-  "description": "Simple jQuery WYSIWYG-like plugin with emojione smiles for use in replies and comments",
+  "description": "WYSIWYG-like EmojiOne Converter / Picker Plugin for jQuery",
   "keywords": [
     "emoji",
     "emojione",
-    "area"
+    "picker",
+    "emojionearea"
   ],
   "license": "MIT",
   "ignore": [

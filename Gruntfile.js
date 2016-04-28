@@ -10,19 +10,19 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         build: {
             all: {
-                dest: "js/emojionearea.js"
+                dest: "dist/emojionearea.js"
             }
         },
         uglify: {
             all: {
                 files: {
-                    "js/emojionearea.min.js": ["js/emojionearea.js"]
+                    "dist/emojionearea.min.js": ["dist/emojionearea.js"]
                 },
                 options: {
                     preserveComments: false,
                     sourceMap: true,
                     ASCIIOnly: true,
-                    sourceMapName: "js/emojionearea.min.map",
+                    sourceMapName: "dist/emojionearea.min.map",
                     report: "min",
                     beautify: {
                         "ascii_only": true
@@ -44,14 +44,14 @@ module.exports = function(grunt) {
                     lineNumbers: true
                 },
                 files: {
-                    'css/emojionearea.css': 'scss/emojionearea.scss'
+                    'dist/emojionearea.css': 'scss/emojionearea.scss'
                 }
             },
         },
         cssmin: {
             target: {
                 files: {
-                    'css/emojionearea.min.css': ['css/emojionearea.css']
+                    'dist/emojionearea.min.css': ['dist/emojionearea.css']
                 },
                 options: {
                     sourceMap: false
