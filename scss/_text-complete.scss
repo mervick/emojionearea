@@ -22,21 +22,37 @@
         padding: 1px 3px;
         border: 0;
 
+        a {
+            text-decoration: none;
+            display: block;
+            height: 100%;
+            line-height: 1.8em;
+            padding: 0 1.54em 0 .615em;
+            color: #4f4f4f;
+        }
+
         &:hover, &.active {
             //background-color: rgb(110, 183, 219);
             //background-color: #337ab7;
             background-color: #e4e4e4;
             //color: #fff;
-            color: #333;
-        }
-
-        a {
-            text-decoration: none;
+            a {
+                color: #333;
+            }
         }
 
         .emojioneemoji {
-            margin-left: 0;
-            margin-right: 5px;
+            font-size: inherit;
+            height: 2ex;
+            width: 2.1ex;
+            min-height: 20px;
+            min-width: 20px;
+            display: inline-block;
+            margin: 0 5px .2ex 0;
+            line-height: normal;
+            vertical-align: middle;
+            max-width: 100%;
+            top: 0;
         }
     }
 }
