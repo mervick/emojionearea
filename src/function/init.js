@@ -74,6 +74,10 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                  .addClass('hidden')
             );
 
+        $.each(options.attributes, function(attr, value) {
+            editor.attr(attr, value);
+        });
+
         $.each(options.filters, function(filter, params) {
             var skin = 0;
             if (filter !== 'tones') {
@@ -321,7 +325,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         }
 
         if (options.autocomplete) {
-            function autocomplete() {
+            var autocomplete = function() {
                 var events = {};
                 if (options.shortcuts) {
                     events.onKeydown = function (e, commands) {

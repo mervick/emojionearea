@@ -1,5 +1,12 @@
 define([], function() {
     return {
+        attributes: {
+            dir               : "ltr",
+            spellcheck        : false,
+            autocomplete      : "off",
+            autocorrect       : "off",
+            autocapitalize    : "off",
+        },
         placeholder       : null,
         container         : null,
         hideSource        : true,
