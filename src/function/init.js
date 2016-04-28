@@ -165,7 +165,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                 if (scrollArea.is(":not(.skinnable")) {
                     var item = categories.eq(0), scrollTop = scrollArea.offset().top;
                     categories.each(function (i, e) {
-                        if ($(e).offset().top - scrollTop >= 3) {
+                        if ($(e).offset().top - scrollTop >= 10) {
                             return false;
                         }
                         item = $(e);

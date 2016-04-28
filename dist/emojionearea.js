@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-28T01:53Z
+ * Date: 2016-04-28T02:39Z
  */
 (function(document, window, $) {
     'use strict';
@@ -657,7 +657,7 @@
                 if (scrollArea.is(":not(.skinnable")) {
                     var item = categories.eq(0), scrollTop = scrollArea.offset().top;
                     categories.each(function (i, e) {
-                        if ($(e).offset().top - scrollTop >= 3) {
+                        if ($(e).offset().top - scrollTop >= 10) {
                             return false;
                         }
                         item = $(e);
