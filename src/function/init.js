@@ -261,6 +261,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             if (!app.is(".focused")) {
                 editor.focus();
             }
+            saveSelection(editor[0]);
             pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
         })
 

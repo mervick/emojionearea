@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-29T11:08Z
+ * Date: 2016-04-29T11:59Z
  */
 (function(document, window, $) {
     'use strict';
@@ -755,6 +755,7 @@
             if (!app.is(".focused")) {
                 editor.focus();
             }
+            saveSelection(editor[0]);
             pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
         })
 
