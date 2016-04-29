@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-28T02:39Z
+ * Date: 2016-04-29T11:08Z
  */
 (function(document, window, $) {
     'use strict';
@@ -513,7 +513,9 @@
             if ($.isFunction(child)) {
                 child = child.call(parent);
             }
-            $(child).appendTo(parent);
+            if (child) {
+                $(child).appendTo(parent);
+            }
         });
         return parent;
     }
@@ -546,17 +548,15 @@
                             emojisList = div('emojis-list'),
                             tones = div('tones',
                                 function() {
-                                    var btns = [];
                                     if (options.tones) {
                                         this.addClass(selector('tones-' + options.tonesStyle, true));
                                         for (var i = 0; i <= 5; i++) {
-                                            btns.push($("<button/>", {
+                                            this.append($("<button/>", {
                                                 "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
                                                 "data-skin": i
                                             }));
                                         }
                                     }
-                                    return btns;
                                 }
                             )
                         )
@@ -755,7 +755,6 @@
             if (!app.is(".focused")) {
                 editor.focus();
             }
-            saveSelection(editor[0]);
             pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
         })
 
@@ -832,7 +831,7 @@
                 map.sort();
                 editor.textcomplete([
                     {
-                        id: 'emojionearea',
+                        id: css_class,
                         match: /(:[\-+\w]*)$/,
                         search: function (term, callback) {
                             callback($.map(map, function (emoji) {
@@ -868,8 +867,10 @@
             });
         }
 
-        // disabling resize images on Firefox
-        document.execCommand("enableObjectResizing", false, false);
+        if (/firefox/i.test(navigator.userAgent)) {
+            // disabling resize images on Firefox
+            document.execCommand("enableObjectResizing", false, false);
+        }
 
         //}, self.id === 1); // calcElapsedTime()
     };

@@ -11,7 +11,9 @@ function($, slice, selector, isObject) {
             if ($.isFunction(child)) {
                 child = child.call(parent);
             }
-            $(child).appendTo(parent);
+            if (child) {
+                $(child).appendTo(parent);
+            }
         });
         return parent;
     }

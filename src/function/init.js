@@ -54,17 +54,15 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                             emojisList = div('emojis-list'),
                             tones = div('tones',
                                 function() {
-                                    var btns = [];
                                     if (options.tones) {
                                         this.addClass(selector('tones-' + options.tonesStyle, true));
                                         for (var i = 0; i <= 5; i++) {
-                                            btns.push($("<button/>", {
+                                            this.append($("<button/>", {
                                                 "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
                                                 "data-skin": i
                                             }));
                                         }
                                     }
-                                    return btns;
                                 }
                             )
                         )
@@ -263,7 +261,6 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             if (!app.is(".focused")) {
                 editor.focus();
             }
-            saveSelection(editor[0]);
             pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
         })
 
@@ -340,7 +337,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                 map.sort();
                 editor.textcomplete([
                     {
-                        id: 'emojionearea',
+                        id: css_class,
                         match: /(:[\-+\w]*)$/,
                         search: function (term, callback) {
                             callback($.map(map, function (emoji) {
@@ -376,8 +373,10 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             });
         }
 
-        // disabling resize images on Firefox
-        document.execCommand("enableObjectResizing", false, false);
+        if (/firefox/i.test(navigator.userAgent)) {
+            // disabling resize images on Firefox
+            document.execCommand("enableObjectResizing", false, false);
+        }
 
         //}, self.id === 1); // calcElapsedTime()
     };
