@@ -57,9 +57,10 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                                     if (options.tones) {
                                         this.addClass(selector('tones-' + options.tonesStyle, true));
                                         for (var i = 0; i <= 5; i++) {
-                                            this.append($("<button/>", {
+                                            this.append($("<i/>", {
                                                 "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                                "data-skin": i
+                                                "data-skin": i,
+                                                role: "button"
                                             }));
                                         }
                                     }
@@ -160,7 +161,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         scrollArea.on('scroll', function () {
             if (!noListenScroll) {
                 lazyLoading.call(self);
-                if (scrollArea.is(":not(.skinnable")) {
+                if (scrollArea.is(":not(.skinnable)")) {
                     var item = categories.eq(0), scrollTop = scrollArea.offset().top;
                     categories.each(function (i, e) {
                         if ($(e).offset().top - scrollTop >= 10) {

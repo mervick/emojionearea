@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-29T11:59Z
+ * Date: 2016-04-29T18:11Z
  */
 (function(document, window, $) {
     'use strict';
@@ -551,9 +551,10 @@
                                     if (options.tones) {
                                         this.addClass(selector('tones-' + options.tonesStyle, true));
                                         for (var i = 0; i <= 5; i++) {
-                                            this.append($("<button/>", {
+                                            this.append($("<i/>", {
                                                 "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                                "data-skin": i
+                                                "data-skin": i,
+                                                role: "button"
                                             }));
                                         }
                                     }
@@ -654,7 +655,7 @@
         scrollArea.on('scroll', function () {
             if (!noListenScroll) {
                 lazyLoading.call(self);
-                if (scrollArea.is(":not(.skinnable")) {
+                if (scrollArea.is(":not(.skinnable)")) {
                     var item = categories.eq(0), scrollTop = scrollArea.offset().top;
                     categories.each(function (i, e) {
                         if ($(e).offset().top - scrollTop >= 10) {
