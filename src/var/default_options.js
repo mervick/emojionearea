@@ -12,7 +12,7 @@ define([], function() {
         hideSource        : true,
         shortnames        : true,
         sprite            : true,
-        pickerPosition    : "top", // top | left
+        pickerPosition    : "top", // top | bottom | right
         filtersPosition   : "top", // top | bottom
         hidePickerOnBlur  : true,
         buttonTitle       : "Use the TAB key to insert emoji faster",

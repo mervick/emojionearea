@@ -457,7 +457,8 @@
             }
         }
 
-        &.#{$css-prefix}-picker-position-left {
+        &.#{$css-prefix}-picker-position-left,
+        &.#{$css-prefix}-picker-position-right {
             margin-right: - $picker-width - 10;
             top: -8px;
 
@@ -505,7 +506,8 @@
         margin-top: - $picker-height + 7;
     }
 
-    .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-left {
+    .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-left,
+    .#{$css-prefix}-button.active + .#{$css-prefix}-picker-position-right {
         margin-right: - $picker-width + 7;
     }
 

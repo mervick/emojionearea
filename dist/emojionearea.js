@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-04-29T18:11Z
+ * Date: 2016-05-06T10:33Z
  */
 (function(document, window, $) {
     'use strict';
@@ -104,7 +104,7 @@
         hideSource        : true,
         shortnames        : true,
         sprite            : true,
-        pickerPosition    : "top", // top | left
+        pickerPosition    : "top", // top | bottom | right
         filtersPosition   : "top", // top | bottom
         hidePickerOnBlur  : true,
         buttonTitle       : "Use the TAB key to insert emoji faster",
