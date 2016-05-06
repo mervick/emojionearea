@@ -4,33 +4,40 @@ EmojiOne Area is a small jQuery plugin that allows you to transform any html ele
 ability to use Emojione icons. 
 The end result is a secure text/plain in which the image icons will be replaced with their Unicode analogues.
 
-# Version 2.1
+### Version 2.1
 
 ![EmojiOne Area version 2.1](http://mervick.github.io/emojionearea/images/screen.png)
 
-[See the Live Demo here.](http://mervick.github.io/emojionearea/).
+[See the Live Demo here.](http://mervick.github.io/emojionearea/)
 
-# Version 3.0-alpha
+### Version 3.0
 
 ![EmojiOne Area version 3.0](http://mervick.github.io/emojionearea/images/v3.png)
 
 [See the Live Demo here.](https://jsfiddle.net/1v03Lqnu/)
 
-## Installation v2.1
+## Installation
 
-The preferred way to install is via `bower`, `npm` or `Composer`.
+The preferred way to install is via [Bower](http://bower.io/), [npm](https://www.npmjs.com/) or [Composer](https://getcomposer.org/).
 
-Using [Bower](http://bower.io/):
+### Install v2.1
+
 ```bash
 bower install emojionearea#2.1.3 
-```
-Using [npm](https://www.npmjs.com/):
-```bash
+# or
 npm install emojionearea@2.1.3
-```
-Using [Composer](https://getcomposer.org/):
-```bash
+# or
 composer require mervick/emojionearea "2.1.3"
+```
+
+### Install v3.0
+
+```bash
+bower install emojionearea#3.0.0 
+# or
+npm install emojionearea@3.0.0
+# or
+composer require mervick/emojionearea "3.0.0"
 ```
 
 ## Usage
@@ -51,7 +58,7 @@ Simple usage:
 </script>
 ```
 
-### Options
+### Options v2.1
 
 Customize emojione version
 ```js
@@ -93,7 +100,7 @@ Default options
   };
 ```
 
-### Api
+### Api v2.1
 ```js
   .on(events, handler);
   // - events
@@ -131,7 +138,7 @@ Default options
   });
 ```
 
-### Events
+### Events v2.1
 
 Two ways to set events, in options:
 ```JS
@@ -270,7 +277,6 @@ or by `.on()` &amp; `.off()` methods:
 ## Requirements
 
 - [jQuery](https://jquery.com/) >= 1.8.2
-- [EmojiOne](https://github.com/Ranks/emojione) >= 1.5.0
 
 ## License
 
