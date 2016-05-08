@@ -10,9 +10,6 @@
         }
     ],
     "minimum-stability": "dev",
-    "require" : {
-        "bower-asset/jquery": ">=1.8.2"
-    },
     "config": {
         "vendor-dir": "vendor",
         "preferred-install": "dist",
