@@ -23,21 +23,21 @@ The preferred way to install is via [Bower](http://bower.io/), [npm](https://www
 ### Install v2.1
 
 ```bash
-bower install emojionearea#2.1.3 
+bower install emojionearea#^2.1.0 
 # or
-npm install emojionearea@2.1.3
+npm install emojionearea@^2.1.0
 # or
-composer require mervick/emojionearea "2.1.3"
+composer require mervick/emojionearea ^2.1.0
 ```
 
 ### Install v3.0
 
 ```bash
-bower install emojionearea#3.0.0 
+bower install emojionearea#^3.0.0 
 # or
-npm install emojionearea@3.0.0
+npm install emojionearea@^3.0.0
 # or
-composer require mervick/emojionearea "3.0.0"
+composer require mervick/emojionearea ^3.0.0
 ```
 
 ## Usage
