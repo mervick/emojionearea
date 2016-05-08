@@ -6,7 +6,7 @@ function() {
             current = parseInt(self.button.css('marginRight'));
         if (current !== offset) {
             self.button.css({marginRight: offset});
-            if (self.pickerPosition === 'top') {
+            if (self.floatingPicker) {
                 self.picker.css({right: parseInt(self.picker.css('right')) - current + offset});
             }
         }

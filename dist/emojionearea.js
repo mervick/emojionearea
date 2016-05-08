@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.0.0
+ * EmojioneArea v3.0.1
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-05-06T10:33Z
+ * Date: 2016-05-08T16:03Z
  */
 (function(document, window, $) {
     'use strict';
@@ -485,7 +485,7 @@
             current = parseInt(self.button.css('marginRight'));
         if (current !== offset) {
             self.button.css({marginRight: offset});
-            if (self.pickerPosition === 'top') {
+            if (self.floatingPicker) {
                 self.picker.css({right: parseInt(self.picker.css('right')) - current + offset});
             }
         }
@@ -525,9 +525,11 @@
         self.sprite = options.sprite && emojioneSupportMode < 3;
         self.inline = options.inline === null ? source.is("INPUT") : options.inline;
         self.shortnames = options.shortnames;
-        self.pickerPosition = options.pickerPosition;
         self.saveEmojisAs = options.saveEmojisAs;
         self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
+
+        var pickerPosition = options.pickerPosition;
+        self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, emojisList, categories, scrollArea,
