@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.0.1
+ * EmojioneArea v3.0.2
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-05-08T16:03Z
+ * Date: 2016-05-17T17:09Z
  */
 (function(document, window, $) {
     'use strict';
@@ -937,6 +937,13 @@
             });
         }
         return this;
+    };
+
+    EmojioneArea.prototype.trigger = function() {
+        var args = slice.call(arguments),
+            call_args = [this].concat(args.slice(0,1));
+        call_args.push(args.slice(1));
+        return trigger.apply(this, call_args);
     };
 
     EmojioneArea.prototype.setText = function (str) {

@@ -3,6 +3,7 @@ define([
     'prototype/var/EmojioneArea',
     'prototype/on',
     'prototype/off',
+    'prototype/trigger',
     'prototype/setText',
     'prototype/getText',
     'prototype/showPicker',
