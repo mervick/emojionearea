@@ -28,6 +28,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
     return function(self, source, options) {
         //calcElapsedTime('init', function() {
         options = getOptions(options);
+        self.triggerEvent  = trigger;
         self.sprite = options.sprite && emojioneSupportMode < 3;
         self.inline = options.inline === null ? source.is("INPUT") : options.inline;
         self.shortnames = options.shortnames;
