@@ -278,8 +278,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             return false;
         })
 
-        .on("@change", function(editor) {
-            var html = editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
+        .on("@change", function() {
+            var html = self.editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
             // clear input: chrome adds <br> when contenteditable is empty
             if (!html.length || /^<br[^>]*>$/i.test(html)) {
                 self.editor.html(self.content = '');
@@ -291,17 +291,17 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             app.addClass("focused");
         })
 
-        .on("@blur", function(editor) {
+        .on("@blur", function() {
             app.removeClass("focused");
 
             if (options.hidePickerOnBlur) {
                 self.hidePicker();
             }
 
-            var content = editor.html();
+            var content = self.editor.html();
             if (self.content !== content) {
                 self.content = content;
-                trigger(self, 'change', [editor]);
+                trigger(self, 'change', [self.editor]);
                 source.blur().trigger("change");
             } else {
                 source.blur();

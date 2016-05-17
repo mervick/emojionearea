@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.0.2
+ * EmojioneArea v3.0.3
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-05-17T17:09Z
+ * Date: 2016-05-17T17:29Z
  */
 (function(document, window, $) {
     'use strict';
@@ -772,8 +772,8 @@
             return false;
         })
 
-        .on("@change", function(editor) {
-            var html = editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
+        .on("@change", function() {
+            var html = self.editor.html().replace(/<\/?(?:div|span|p)[^>]*>/ig, '');
             // clear input: chrome adds <br> when contenteditable is empty
             if (!html.length || /^<br[^>]*>$/i.test(html)) {
                 self.editor.html(self.content = '');
@@ -785,17 +785,17 @@
             app.addClass("focused");
         })
 
-        .on("@blur", function(editor) {
+        .on("@blur", function() {
             app.removeClass("focused");
 
             if (options.hidePickerOnBlur) {
                 self.hidePicker();
             }
 
-            var content = editor.html();
+            var content = self.editor.html();
             if (self.content !== content) {
                 self.content = content;
-                trigger(self, 'change', [editor]);
+                trigger(self, 'change', [self.editor]);
                 source.blur().trigger("change");
             } else {
                 source.blur();
