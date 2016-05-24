@@ -7,6 +7,8 @@ The end result is a secure text/plain in which the image icons will be replaced 
 ### Version 2.1
 
 ![EmojiOne Area version 2.1](http://mervick.github.io/emojionearea/images/screen.png)
+#### Version 2.1 Standalone mode  
+![EmojiOne Area version 2.1 - Standalone mode](http://mervick.github.io/emojionearea/images/standalone.png)
 
 [See the Live Demo here.](http://mervick.github.io/emojionearea/)
 
