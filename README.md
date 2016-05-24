@@ -7,23 +7,21 @@ The end result is a secure text/plain in which the image icons will be replaced 
 
 ![EmojiOne Area](http://mervick.github.io/emojionearea/images/screen.png)
 
+##### Standalone mode
+![EmojiOne Area version 2.1 - Standalone mode](http://mervick.github.io/emojionearea/images/standalone.png)
+
 See a [Demo page](http://mervick.github.io/emojionearea/).
 
 ## Installation
 
-The preferred way to install is via `bower`, `npm` or `Composer`.
+The preferred way to install is via [Bower](http://bower.io/), [npm](https://www.npmjs.com/) or [Composer](https://getcomposer.org/).
 
-Using [Bower](http://bower.io/):
 ```bash
-bower install emojionearea
-```
-Using [npm](https://www.npmjs.com/):
-```bash
-npm install emojionearea
-```
-Using [Composer](https://getcomposer.org/):
-```bash
-composer require mervick/emojionearea
+bower install emojionearea#^2.1.0 
+# or
+npm install emojionearea@^2.1.0
+# or
+composer require mervick/emojionearea ^2.1.0
 ```
 
 ## Usage
@@ -73,6 +71,8 @@ Default options
       useSprite         : true, // use sprite instead of images, is awesome, but not works in old browsers
       shortnames        : false, // if true - will converts emojis to short names,
                                  // by default converts emojis to unicode characters
+                                 
+      standalone        : false, // standalone mode
 
       filters: {
         // customize filters & emoji buttons
