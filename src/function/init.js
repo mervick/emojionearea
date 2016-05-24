@@ -17,13 +17,14 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
          getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml)
 {
     return function(self, source, options) {
+
         options = getOptions(options);
 
-        var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
+        var sourceValFunc = source.is("INPUT") ? "val" : "text",
             app = options.template,
             stayFocused = false,
             container = !!options.container ? $(options.container) : false,
-            editor, filters, tabs, scrollArea, filtersBtns, filtersArrowLeft, filtersArrowRight,
+            editor, filters, tabs, button, scrollArea, filtersBtns, filtersArrowLeft, filtersArrowRight,
             filtersWidth, scrollLeft = 0, scrollAreaWidth = 0, filterWidth,
             resizeHandler = function() {
                 var width = filters.width();
@@ -41,25 +42,44 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
 
         self.sprite = options.useSprite;
         self.shortnames = options.shortnames;
+        self.standalone = options.standalone;
 
-        for (var el = ["editor", "filters", "tabs"], i=0; i<3; i++) {
+        // in standalone mode we're using css for positioning so fix order
+        if (self.standalone) {
+            app = "<button/><filters/><tabs/>";
+        }
+
+        var els = ["filters", "tabs"];
+        if (self.standalone) {
+            els.push("button");
+        } else {
+            els.push("editor");
+        }
+        
+        for (var el = els, i=0; i<3; i++) {
             app = app.replace(new RegExp('<' + el[i] + '/?>' ,'i'), '<div class="emojionearea-' + el[i] + '"></div>');
         }
 
         app = $('<div/>', {"class" : source.attr("class"), role: "application"}).addClass("emojionearea").html(app);
-        editor = self.editor = app.find(".emojionearea-editor")
-            .attr({
-                contenteditable: true,
-                placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
-                tabindex: 0
-            });
-
-        for (var attr = ["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], j=0; j<5; j++) {
-            editor.attr(attr[j], options[attr[j]]);
+        
+        if (self.standalone) {
+            button = self.button = app.find(".emojionearea-button");
+            app.addClass("has-button");
+        } else {
+            editor = self.editor = app.find(".emojionearea-editor")
+                .attr({
+                    contenteditable: true,
+                    placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
+                    tabindex: 0
+                });
+                
+            for (var attr = ["dir", "spellcheck", "autocomplete", "autocorrect", "autocapitalize"], j=0; j<5; j++) {
+                editor.attr(attr[j], options[attr[j]]);
+            }
         }
-
+        
         filters = app.find(".emojionearea-filters");
-        if (options.autoHideFilters) {
+        if (options.autoHideFilters || self.standalone) {
             hide(filters);
         }
 
@@ -94,7 +114,14 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
             source.hide();
         }
 
-        self.setText(source[sourceValFunc]());
+        var initial = source[sourceValFunc]();
+        var placeholder = false;
+        // if there's no initial value try and fetch a placeholder
+        if (!initial && self.standalone) {
+            placeholder = true;
+            initial = source.data("placeholder") || ":smile:";
+        }
+        self.setText(initial, placeholder);
 
         attach(self, [filters, tabs], {mousedown: "area.mousedown"}, editor);
         attach(self, editor, {paste :"editor.paste"}, editor);
@@ -103,6 +130,7 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
         attach(self, filters.find(".emojionearea-filter"), {click: "filter.click"});
         attach(self, filtersArrowLeft,  {click: "arrowLeft.click",  mousedown: "arrowLeft.mousedown",  mouseup: "arrowLeft.mouseup"});
         attach(self, filtersArrowRight, {click: "arrowRight.click", mousedown: "arrowRight.mousedown", mouseup: "arrowRight.mouseup"});
+        attach(self, button, { click: "button.click" });
 
         var mousedownInterval;
         function clearMousedownInterval() {
@@ -237,9 +265,18 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
             })
 
             .on("@emojibtn.click", function(element) {
-                saveSelection(editor[0]);
-                pasteHtmlAtCaret(shortnameTo(element.children().data("name"),
-                    '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">')));
+                var img = shortnameTo(element.children().data("name"),
+                        '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="'+blankImg+'">' : '" src="{img}">'));
+                
+                if (self.standalone) {
+                    self.button.html(img);
+                    self.button.removeClass("placeholder");
+                    app.find(".emojionearea-filter.active").trigger("click");
+                    hide(filters);
+                } else {
+                    saveSelection(editor[0]);
+                    pasteHtmlAtCaret(img);
+                }
             })
 
             .on("@area.mousedown", function(element, event) {
@@ -285,6 +322,21 @@ function($, blankImg, setInterval, clearInterval, trigger, attach, shortnameTo, 
                     source.blur().trigger("change");
                 } else {
                     source.blur();
+                }
+            })
+
+            .on("@button.click", function(element) {
+                if (app.find(".emojionearea-filters").hasClass("ea-hidden")) {
+                    resizeHandler();
+                    resizeHandlerID = setInterval(resizeHandler, 500);
+                    scrollFilters();
+                    show(filters);
+                    app.find(".emojionearea-filter:first").trigger("click");
+                } else {
+                    app.find(".emojionearea-filter.active").trigger("click");
+                    hide(filters);
+                    scrollFilters();
+                    clearInterval(resizeHandlerID);
                 }
             });
 

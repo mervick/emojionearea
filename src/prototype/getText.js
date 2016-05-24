@@ -5,6 +5,7 @@ define([
 ],
 function($, textFromHtml, EmojioneArea) {
     EmojioneArea.prototype.getText = function() {
-        return textFromHtml(this.editor.html(), this);
+        var el = (this.standalone) ? "button" : "editor";
+        return textFromHtml(this[el].html(), this);
     }
 });
