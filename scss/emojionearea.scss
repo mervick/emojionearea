@@ -26,6 +26,15 @@
                 transition: border-color 0.15s ease-in-out,         box-shadow 0.15s ease-in-out;
     }
 
+    &.#{$css-prefix}-standalone {
+        display: inline-block;
+        width: auto;
+        box-shadow: none;
+        .#{$css-prefix}-editor {
+            min-height: 0;
+        }
+    }
+
     &.focused {
         border-color: $border-color-focused;
         outline: 0;

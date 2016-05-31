@@ -23,6 +23,7 @@ define([], function() {
         shortcuts         : true,
         autocomplete      : true,
         autocompleteTones : false,
+        standalone        : false,
 
         filters: {
             tones: {

@@ -32,6 +32,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         self.inline = options.inline === null ? source.is("INPUT") : options.inline;
         self.shortnames = options.shortnames;
         self.saveEmojisAs = options.saveEmojisAs;
+        self.standalone = options.standalone;
         self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
 
         var pickerPosition = options.pickerPosition;
@@ -39,41 +40,44 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, emojisList, categories, scrollArea,
-            app = div({"class" : css_class + " " + (source.attr("class") || ""), role: "application"},
-                editor = self.editor = div('editor').attr({
-                    contenteditable: true,
-                    placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
-                    tabindex: 0
-                }),
-                button = self.button = div('button',
-                    div('button-open'),
-                    div('button-close')
-                ).attr('title', options.buttonTitle),
-                picker = self.picker = div('picker',
-                    div('wrapper',
-                        filters = div('filters'),
-                        scrollArea = div('scroll-area',
-                            emojisList = div('emojis-list'),
-                            tones = div('tones',
-                                function() {
-                                    if (options.tones) {
-                                        this.addClass(selector('tones-' + options.tonesStyle, true));
-                                        for (var i = 0; i <= 5; i++) {
-                                            this.append($("<i/>", {
-                                                "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                                "data-skin": i,
-                                                role: "button"
-                                            }));
-                                        }
+            app = div({
+                "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
+                role: "application"
+            },
+            editor = self.editor = div("editor").attr({
+                contenteditable: (self.standalone) ? false : true,
+                placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
+                tabindex: 0
+            }),
+            button = self.button = div('button',
+                div('button-open'),
+                div('button-close')
+            ).attr('title', options.buttonTitle),
+            picker = self.picker = div('picker',
+                div('wrapper',
+                    filters = div('filters'),
+                    scrollArea = div('scroll-area',
+                        emojisList = div('emojis-list'),
+                        tones = div('tones',
+                            function() {
+                                if (options.tones) {
+                                    this.addClass(selector('tones-' + options.tonesStyle, true));
+                                    for (var i = 0; i <= 5; i++) {
+                                        this.append($("<i/>", {
+                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                            "data-skin": i,
+                                            role: "button"
+                                        }));
                                     }
                                 }
-                            )
+                            }
                         )
                     )
-                ).addClass(selector('picker-position-' + options.pickerPosition, true))
-                 .addClass(selector('filters-position-' + options.filtersPosition, true))
-                 .addClass('hidden')
-            );
+                )
+            ).addClass(selector('picker-position-' + options.pickerPosition, true))
+             .addClass(selector('filters-position-' + options.filtersPosition, true))
+             .addClass('hidden')
+        );
 
         $.each(options.attributes, function(attr, value) {
             editor.attr(attr, value);
@@ -264,8 +268,12 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             if (!app.is(".focused")) {
                 editor.focus();
             }
-            saveSelection(editor[0]);
-            pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+            if (self.standalone) {
+                editor.html(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+            } else {
+                saveSelection(editor[0]);
+                pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+            }
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)

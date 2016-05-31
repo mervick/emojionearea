@@ -96,6 +96,31 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
 &lt;/script&gt;
 </pre>
 
+  <h2>Standalone mode</h2>
+  <div id="standalone">:hear_no_evil:</div>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#standalone").emojioneArea({
+        standalone: true,
+        autocomplete: false
+      });
+    });
+  </script>
+
+<pre class="prettyprint linenums">
+  &lt;div id=&quot;standalone&quot;&gt;&lt;/div&gt;
+
+  &lt;script type=&quot;text/javascript&quot;&gt;
+    $(document).ready(function() {
+      $(&quot;#standalone&quot;).emojioneArea({
+        standalone: true,
+        autocomplete: false,
+      });
+    });
+  &lt;/script&gt;
+</pre>
+
 
   <h2 id="installation"><a href="#installation">Installation</a></h2>
 
