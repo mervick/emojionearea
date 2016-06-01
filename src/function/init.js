@@ -138,6 +138,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         source[sourceValFunc](self.getText());
         calcButtonPosition.apply(self);
 
+        // if in standalone mode and no value is set, initialise with a placeholder
+        if (self.standalone && !self.getText().length) {
+            var placeholder = $(source).data("emoji-placeholder") || options.emojiPlaceholder;
+            self.setText(placeholder);
+            editor.addClass("has-placeholder");
+        }
+
         // attach() must be called before any .on() methods !!!
         // 1) attach() stores events into possibleEvents{},
         // 2) .on() calls bindEvent() and stores handlers into eventStorage{},
@@ -265,11 +272,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         })
 
         .on("@emojibtn.click", function(emojibtn) {
+            editor.removeClass("has-placeholder");
             if (!app.is(".focused")) {
                 editor.focus();
             }
             if (self.standalone) {
                 editor.html(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+                self.trigger("blur");
             } else {
                 saveSelection(editor[0]);
                 pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));

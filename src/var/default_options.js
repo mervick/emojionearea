@@ -8,6 +8,7 @@ define([], function() {
             autocapitalize    : "off",
         },
         placeholder       : null,
+        emojiPlaceholder  : ":smiley:",
         container         : null,
         hideSource        : true,
         shortnames        : true,

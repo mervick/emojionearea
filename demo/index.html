@@ -97,7 +97,8 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
 </pre>
 
   <h2>Standalone mode</h2>
-  <div id="standalone">:hear_no_evil:</div>
+  <p>Allows a single emoji to be picked without a text input, useful for emoji reactions or as an addition to another WYSIWYG editor. Can be initialised with an initial value or a placeholder.</p>
+  <div id="standalone" data-emoji-placeholder=":grimacing:"></div>
 
   <script type="text/javascript">
     $(document).ready(function() {
@@ -109,13 +110,13 @@ Lorem ipsum dolor 😍 sit amet, consectetur 👻 adipiscing elit, 🖐 sed do e
   </script>
 
 <pre class="prettyprint linenums">
-  &lt;div id=&quot;standalone&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;standalone&quot; data-emoji-placeholder=&quot;:smiley:&quot;&gt;&lt;/div&gt;
 
   &lt;script type=&quot;text/javascript&quot;&gt;
     $(document).ready(function() {
       $(&quot;#standalone&quot;).emojioneArea({
         standalone: true,
-        autocomplete: false,
+        autocomplete: false
       });
     });
   &lt;/script&gt;

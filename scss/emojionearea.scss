@@ -31,7 +31,38 @@
         width: auto;
         box-shadow: none;
         .#{$css-prefix}-editor {
-            min-height: 0;
+            min-height: 33px;
+            position: relative;
+            padding: 6px 42px 6px 6px;
+            &::before {
+                content: "";
+                position: absolute;
+                top: 4px;
+                left: 50%;
+                bottom: 4px;
+                border-left: 1px solid lighten($border-color, 10%);
+            }
+            &.has-placeholder {
+                background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAABlBMVEUAAAC/v79T5hyIAAAAAXRSTlMAQObYZgAAABlJREFUeAFjQABGIEDwhr8EIw5ARYmRG7oA0JgAsfKh6nIAAAAASUVORK5CYII=);
+                background-size: 12px auto;
+                background-repeat: no-repeat;
+                background-position: 20px 4px;
+                .emojioneemoji {
+                    opacity: 0.4;
+                }
+            }
+        }
+        .#{$css-prefix}-button {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            width: auto;
+            height: auto;
+            > div {
+                right: 6px;
+                top: 5px;
+            }
         }
     }
 

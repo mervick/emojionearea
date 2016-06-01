@@ -214,7 +214,7 @@ a:hover {
   height: auto;
 }
 
-.main-content .emojionearea:not(.emojionearea-inline) .emojionearea-editor {
+.emojionearea:not(.emojionearea-inline) .emojionearea-editor {
   min-height: 9em;
 }
 
