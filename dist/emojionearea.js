@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-05-31T19:02Z
+ * Date: 2016-06-01T08:13Z
  */
 (function(document, window, $) {
     'use strict';
@@ -100,6 +100,7 @@
             autocapitalize    : "off",
         },
         placeholder       : null,
+        emojiPlaceholder  : ":smiley:",
         container         : null,
         hideSource        : true,
         shortnames        : true,
@@ -633,6 +634,13 @@
         source[sourceValFunc](self.getText());
         calcButtonPosition.apply(self);
 
+        // if in standalone mode and no value is set, initialise with a placeholder
+        if (self.standalone && !self.getText().length) {
+            var placeholder = $(source).data("emoji-placeholder") || options.emojiPlaceholder;
+            self.setText(placeholder);
+            editor.addClass("has-placeholder");
+        }
+
         // attach() must be called before any .on() methods !!!
         // 1) attach() stores events into possibleEvents{},
         // 2) .on() calls bindEvent() and stores handlers into eventStorage{},
@@ -760,11 +768,13 @@
         })
 
         .on("@emojibtn.click", function(emojibtn) {
+            editor.removeClass("has-placeholder");
             if (!app.is(".focused")) {
                 editor.focus();
             }
             if (self.standalone) {
                 editor.html(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+                self.trigger("blur");
             } else {
                 saveSelection(editor[0]);
                 pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
