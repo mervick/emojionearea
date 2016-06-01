@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-05-17T17:29Z
+ * Date: 2016-06-01T08:13Z
  */
 (function(document, window, $) {
     'use strict';
@@ -100,6 +100,7 @@
             autocapitalize    : "off",
         },
         placeholder       : null,
+        emojiPlaceholder  : ":smiley:",
         container         : null,
         hideSource        : true,
         shortnames        : true,
@@ -115,6 +116,7 @@
         shortcuts         : true,
         autocomplete      : true,
         autocompleteTones : false,
+        standalone        : false,
 
         filters: {
             tones: {
@@ -526,6 +528,7 @@
         self.inline = options.inline === null ? source.is("INPUT") : options.inline;
         self.shortnames = options.shortnames;
         self.saveEmojisAs = options.saveEmojisAs;
+        self.standalone = options.standalone;
         self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
 
         var pickerPosition = options.pickerPosition;
@@ -533,41 +536,44 @@
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, emojisList, categories, scrollArea,
-            app = div({"class" : css_class + " " + (source.attr("class") || ""), role: "application"},
-                editor = self.editor = div('editor').attr({
-                    contenteditable: true,
-                    placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
-                    tabindex: 0
-                }),
-                button = self.button = div('button',
-                    div('button-open'),
-                    div('button-close')
-                ).attr('title', options.buttonTitle),
-                picker = self.picker = div('picker',
-                    div('wrapper',
-                        filters = div('filters'),
-                        scrollArea = div('scroll-area',
-                            emojisList = div('emojis-list'),
-                            tones = div('tones',
-                                function() {
-                                    if (options.tones) {
-                                        this.addClass(selector('tones-' + options.tonesStyle, true));
-                                        for (var i = 0; i <= 5; i++) {
-                                            this.append($("<i/>", {
-                                                "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                                "data-skin": i,
-                                                role: "button"
-                                            }));
-                                        }
+            app = div({
+                "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
+                role: "application"
+            },
+            editor = self.editor = div("editor").attr({
+                contenteditable: (self.standalone) ? false : true,
+                placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
+                tabindex: 0
+            }),
+            button = self.button = div('button',
+                div('button-open'),
+                div('button-close')
+            ).attr('title', options.buttonTitle),
+            picker = self.picker = div('picker',
+                div('wrapper',
+                    filters = div('filters'),
+                    scrollArea = div('scroll-area',
+                        emojisList = div('emojis-list'),
+                        tones = div('tones',
+                            function() {
+                                if (options.tones) {
+                                    this.addClass(selector('tones-' + options.tonesStyle, true));
+                                    for (var i = 0; i <= 5; i++) {
+                                        this.append($("<i/>", {
+                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                            "data-skin": i,
+                                            role: "button"
+                                        }));
                                     }
                                 }
-                            )
+                            }
                         )
                     )
-                ).addClass(selector('picker-position-' + options.pickerPosition, true))
-                 .addClass(selector('filters-position-' + options.filtersPosition, true))
-                 .addClass('hidden')
-            );
+                )
+            ).addClass(selector('picker-position-' + options.pickerPosition, true))
+             .addClass(selector('filters-position-' + options.filtersPosition, true))
+             .addClass('hidden')
+        );
 
         $.each(options.attributes, function(attr, value) {
             editor.attr(attr, value);
@@ -627,6 +633,13 @@
         self.setText(source[sourceValFunc]());
         source[sourceValFunc](self.getText());
         calcButtonPosition.apply(self);
+
+        // if in standalone mode and no value is set, initialise with a placeholder
+        if (self.standalone && !self.getText().length) {
+            var placeholder = $(source).data("emoji-placeholder") || options.emojiPlaceholder;
+            self.setText(placeholder);
+            editor.addClass("has-placeholder");
+        }
 
         // attach() must be called before any .on() methods !!!
         // 1) attach() stores events into possibleEvents{},
@@ -755,11 +768,17 @@
         })
 
         .on("@emojibtn.click", function(emojibtn) {
+            editor.removeClass("has-placeholder");
             if (!app.is(".focused")) {
                 editor.focus();
             }
-            saveSelection(editor[0]);
-            pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+            if (self.standalone) {
+                editor.html(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+                self.trigger("blur");
+            } else {
+                saveSelection(editor[0]);
+                pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+            }
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)

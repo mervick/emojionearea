@@ -8,6 +8,7 @@ define([], function() {
             autocapitalize    : "off",
         },
         placeholder       : null,
+        emojiPlaceholder  : ":smiley:",
         container         : null,
         hideSource        : true,
         shortnames        : true,
@@ -23,6 +24,7 @@ define([], function() {
         shortcuts         : true,
         autocomplete      : true,
         autocompleteTones : false,
+        standalone        : false,
 
         filters: {
             tones: {
