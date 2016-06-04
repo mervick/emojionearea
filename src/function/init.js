@@ -164,12 +164,6 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
 
-        if (isObject(options.events) && !$.isEmptyObject(options.events)) {
-            $.each(options.events, function(event, handler) {
-                self.on(event.replace(/_/g, '.'), handler);
-            });
-        }
-
         var noListenScroll = false;
         scrollArea.on('scroll', function () {
             if (!noListenScroll) {
@@ -339,6 +333,12 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                         }
                     }
                 }
+            });
+        }
+
+        if (isObject(options.events) && !$.isEmptyObject(options.events)) {
+            $.each(options.events, function(event, handler) {
+                self.on(event.replace(/_/g, '.'), handler);
             });
         }
 

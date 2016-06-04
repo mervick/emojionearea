@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.0.3
+ * EmojioneArea v3.0.4
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-06-01T08:13Z
+ * Date: 2016-06-04T14:25Z
  */
 (function(document, window, $) {
     'use strict';
@@ -660,12 +660,6 @@
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
 
-        if (isObject(options.events) && !$.isEmptyObject(options.events)) {
-            $.each(options.events, function(event, handler) {
-                self.on(event.replace(/_/g, '.'), handler);
-            });
-        }
-
         var noListenScroll = false;
         scrollArea.on('scroll', function () {
             if (!noListenScroll) {
@@ -835,6 +829,12 @@
                         }
                     }
                 }
+            });
+        }
+
+        if (isObject(options.events) && !$.isEmptyObject(options.events)) {
+            $.each(options.events, function(event, handler) {
+                self.on(event.replace(/_/g, '.'), handler);
             });
         }
 
