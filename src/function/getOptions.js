@@ -20,5 +20,5 @@ function($, getDefaultOptions, isObject) {
             options['filters'] = filters;
         }
         return $.extend({}, default_options, options);
-    }
+    };
 });

@@ -2,8 +2,7 @@ define([
     'var/emojione',
     'var/uniRegexp',
     'var/emojioneSupportMode',
-    'function/getTemplate',
-    'block/loadEmojione'
+    'function/getTemplate'
 ],
 function(emojione, uniRegexp, emojioneSupportMode, getTemplate) {
     return function(str, template) {
