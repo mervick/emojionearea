@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-07-20T08:53Z
+ * Date: 2016-07-21T12:22Z
  */
 (function(document, window, $) {
     'use strict';
@@ -993,6 +993,14 @@
             call_args = [this].concat(args.slice(0,1));
         call_args.push(args.slice(1));
         return trigger.apply(this, call_args);
+    };
+
+    EmojioneArea.prototype.setFocus = function () {
+        var self = this;
+        emojioneReady(function () {
+            self.editor.focus();
+        });
+        return self;
     };
 
     EmojioneArea.prototype.setText = function (str) {

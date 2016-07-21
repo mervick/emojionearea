@@ -5,6 +5,7 @@ define([
 	'prototype/on',
 	'prototype/off',
 	'prototype/trigger',
+	'prototype/setFocus',
 	'prototype/setText',
 	'prototype/getText',
 	'prototype/showPicker',
