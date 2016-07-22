@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-07-21T12:22Z
+ * Date: 2016-07-22T08:02Z
  */
 (function(document, window, $) {
     'use strict';
@@ -136,6 +136,12 @@
 					"information_desk_person guardsman dancer nail_care massage haircut muscle spy hand_splayed middle_finger " +
 					"vulcan no_good ok_woman bow raising_hand raised_hands person_frowning person_with_pouting_face pray rowboat " +
 					"bicyclist mountain_bicyclist walking bath metal point_up basketball_player fist raised_hand v writing_hand"
+				},
+
+				recent: {
+					icon: "clock3",
+					title: "Recent",
+					emoji: ""
 				},
 
 				smileys_people: {
@@ -479,6 +485,65 @@
         });
         return parent;
     }
+    function getRecent () {
+        return localStorage.getItem("recent_emojis") || "";
+    }
+    function updateRecent(self, app, editor) {
+		var clickFunction = function (emojibtn) {
+			if (!app.is(".focused")) {
+				editor.focus();
+			}
+			saveSelection(editor[0]);
+			pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+		}
+
+		var category = self.picker.find(".emojionearea-category[name=recent]");
+		var filter = self.picker.find(".emojionearea-filter-recent");
+		
+		if (category.length) {
+			var emojis = getRecent();
+			if (emojis !== "") {
+				var items = shortnameTo(emojis,
+										self.sprite ?
+										'<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
+										'<i class="emojibtn" role="button" data-name="{name}"><img class="emojioneemoji" src="{img}"/></i>',
+										true).split('|').join('');
+
+				category.find("i").remove();
+				self.off("@recentemojibtn.click");
+
+				$(items).insertAfter(category.find("h1"));
+				attach(self, category.find(".emojibtn"), { click: "recentemojibtn.click" });
+				self.on("@recentemojibtn.click", clickFunction);
+
+				category.show();
+				filter.show();
+			} else {
+				if (filter.hasClass("active")) {
+					filter.removeClass("active").next().addClass("active");
+				} 
+				category.hide();
+				filter.hide();
+			}
+		}
+	};
+    function setRecent(self, emoji, app, editor) {
+
+		var recent = getRecent();
+		var emojis = recent.split("|");
+
+		if (emojis.indexOf(emoji) === -1) {
+			emojis.unshift(emoji);
+		}
+
+		if (emojis.length > 9) {
+			emojis.pop();
+		}
+
+		localStorage.setItem("recent_emojis", emojis.join("|"));
+
+		updateRecent(self, app, editor);
+	};
     function init(self, source, options) {
         //calcElapsedTime('init', function() {
         options = getOptions(options);
@@ -559,6 +624,11 @@
                     category.hide();
                     items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
                 }
+				
+                if (filter === 'recent') {
+                    items = getRecent();
+                }
+				
                 items = shortnameTo(items,
                     self.sprite ?
                     '<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
@@ -617,7 +687,7 @@
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
-
+		
         var noListenScroll = false;
         scrollArea.on('scroll', function () {
             if (!noListenScroll) {
@@ -661,7 +731,10 @@
             });
         })
 
-        .on("@picker.show", lazyLoading)
+        .on("@picker.show", function() {
+			updateRecent(self, app, editor);
+			lazyLoading.call(this);
+		})
 
         .on("@tone.click", function(tone) {
             tones.children().removeClass("active");
@@ -731,6 +804,9 @@
                 saveSelection(editor[0]);
                 pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
             }
+			
+			setRecent(self, emojibtn.data("name"), app, editor);
+
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)

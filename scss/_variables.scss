@@ -14,7 +14,7 @@ $sprite: 'sprite.png';
 
 $picker-border-radius: 5px !default;
 $picker-bg: #fff !default;
-$picker-width: 284px;
+$picker-width: (9 * 32px + 28px);
 $picker-height: 236px;
 
 $filters-bg: #F5F7F9 !default;

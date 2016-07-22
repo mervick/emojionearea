@@ -19,11 +19,13 @@ define([
     'function/lazyLoading',
     'function/selector',
     'function/div',
+	'function/getRecent',
+	'function/setRecent'
     //'function/calcElapsedTime', // debug only
 ],
 function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, shortnameTo,
          pasteHtmlAtCaret, getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
-         calcButtonPosition, lazyLoading, selector, div)
+         calcButtonPosition, lazyLoading, selector, div, getRecent, setRecent)
 {
     return function(self, source, options) {
         //calcElapsedTime('init', function() {
@@ -105,6 +107,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                     category.hide();
                     items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
                 }
+
+                if (filter === 'recent') {
+                    items = getRecent();
+                }
+
                 items = shortnameTo(items,
                     self.sprite ?
                     '<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
@@ -207,7 +214,10 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
             });
         })
 
-        .on("@picker.show", lazyLoading)
+        .on("@picker.show", function() {
+			updateRecent(self, app, editor);
+			lazyLoading.call(this);
+		})
 
         .on("@tone.click", function(tone) {
             tones.children().removeClass("active");
@@ -277,6 +287,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                 saveSelection(editor[0]);
                 pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
             }
+
+			setRecent(self, emojibtn.data("name"), app, editor);
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)

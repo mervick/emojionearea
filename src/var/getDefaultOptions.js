@@ -43,6 +43,12 @@ function($) {
 					"bicyclist mountain_bicyclist walking bath metal point_up basketball_player fist raised_hand v writing_hand"
 				},
 
+				recent: {
+					icon: "clock3",
+					title: "Recent",
+					emoji: ""
+				},
+
 				smileys_people: {
 					icon: "yum",
 					title: "Smileys & People",
