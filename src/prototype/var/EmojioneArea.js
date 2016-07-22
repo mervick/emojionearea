@@ -4,11 +4,12 @@ define([
     'var/possibleEvents',
     'function/emojioneReady',
     'function/init',
-    'block/loadEmojione'
+    'function/loadEmojione'
 ],
-function(unique, eventStorage, possibleEvents, emojioneReady, init) {
+function(unique, eventStorage, possibleEvents, emojioneReady, init, loadEmojione) {
     return function(element, options) {
-        var self = this;
+		var self = this;
+		loadEmojione(options);
         eventStorage[self.id = ++unique] = {};
         possibleEvents[self.id] = {};
         emojioneReady(function() {
