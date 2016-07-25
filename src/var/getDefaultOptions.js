@@ -31,6 +31,7 @@ function($) {
 			standalone        : false,
 			useInternalCDN    : true, // Use the self loading mechanism
 			imageType         : "png", // Default image type used by internal CDN
+			recentEmojis      : true,
 
 			filters: {
 				tones: {
