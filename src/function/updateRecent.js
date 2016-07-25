@@ -27,11 +27,11 @@ function(saveSelection, pasteHtmlAtCaret, shortnameTo, getRecent) {
 										true).split('|').join('');
 
 				category.find("i").remove();
-				self.off("@recentemojibtn.click");
+				self.off("recentemojibtn.click");
 
 				$(items).insertAfter(category.find("h1"));
 				attach(self, category.find(".emojibtn"), { click: "recentemojibtn.click" });
-				self.on("@recentemojibtn.click", clickFunction);
+				self.on("recentemojibtn.click", clickFunction);
 
 				category.show();
 				filter.show();

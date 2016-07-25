@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-07-22T08:02Z
+ * Date: 2016-07-25T09:01Z
  */
 (function(document, window, $) {
     'use strict';
@@ -126,6 +126,7 @@
 			standalone        : false,
 			useInternalCDN    : true, // Use the self loading mechanism
 			imageType         : "png", // Default image type used by internal CDN
+			recentEmojis      : true,
 
 			filters: {
 				tones: {
@@ -510,11 +511,11 @@
 										true).split('|').join('');
 
 				category.find("i").remove();
-				self.off("@recentemojibtn.click");
+				self.off("recentemojibtn.click");
 
 				$(items).insertAfter(category.find("h1"));
 				attach(self, category.find(".emojibtn"), { click: "recentemojibtn.click" });
-				self.on("@recentemojibtn.click", clickFunction);
+				self.on("recentemojibtn.click", clickFunction);
 
 				category.show();
 				filter.show();
@@ -553,6 +554,7 @@
         self.saveEmojisAs = options.saveEmojisAs;
         self.standalone = options.standalone;
         self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
+		self.recentEmojis = options.recentEmojis;
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
@@ -624,11 +626,11 @@
                     category.hide();
                     items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
                 }
-				
-                if (filter === 'recent') {
+
+                if (filter === 'recent' && self.recentEmojis) {
                     items = getRecent();
                 }
-				
+
                 items = shortnameTo(items,
                     self.sprite ?
                     '<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
@@ -687,7 +689,7 @@
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
-		
+
         var noListenScroll = false;
         scrollArea.on('scroll', function () {
             if (!noListenScroll) {
@@ -732,7 +734,18 @@
         })
 
         .on("@picker.show", function() {
-			updateRecent(self, app, editor);
+			if (self.recentEmojis) {
+				updateRecent(self, app, editor);
+			} else {
+				// Hide Recent Emojis
+				var category = self.picker.find(".emojionearea-category[name=recent]");
+				var filter = self.picker.find(".emojionearea-filter-recent");
+				if (filter.hasClass("active")) {
+					filter.removeClass("active").next().addClass("active");
+				} 
+				category.hide();
+				filter.hide();
+			}
 			lazyLoading.call(this);
 		})
 
@@ -804,9 +817,10 @@
                 saveSelection(editor[0]);
                 pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
             }
-			
-			setRecent(self, emojibtn.data("name"), app, editor);
 
+			if (self.recentEmojis) {
+				setRecent(self, emojibtn.data("name"), app, editor);
+			}
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
