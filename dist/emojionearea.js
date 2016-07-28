@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-07-28T10:08Z
+ * Date: 2016-07-28T13:29Z
  */
 (function(document, window, $) {
     'use strict';
@@ -127,6 +127,10 @@
 			useInternalCDN    : true, // Use the self loading mechanism
 			imageType         : "png", // Default image type used by internal CDN
 			recentEmojis      : true,
+			textcomplete: {
+				maxCount      : 15,
+				placement     : null // null - default | top | absleft | absright
+			},
 
 			filters: {
 				tones: {
@@ -888,14 +892,19 @@
 
         if (options.autocomplete) {
             var autocomplete = function() {
-                var events = {};
+                var textcompleteOptions = {
+					maxCount: options.textcomplete.maxCount,
+					placement: options.textcomplete.placement
+				};
+				
                 if (options.shortcuts) {
-                    events.onKeydown = function (e, commands) {
+                    textcompleteOptions.onKeydown = function (e, commands) {
                         if (!e.ctrlKey && e.which == 13) {
                             return commands.KEY_ENTER;
                         }
                     };
                 }
+
                 var map = $.map(emojione.emojioneList, function (_, emoji) {
                     return !options.autocompleteTones ? /_tone[12345]/.test(emoji) ? null : emoji : emoji;
                 });
@@ -916,10 +925,16 @@
                             return shortnameTo(value, self.emojiTemplate);
                         },
                         cache: true,
-                        maxCount: 15,
                         index: 1
-                    }
-                ], events);
+                    }				
+                ], textcompleteOptions);
+				
+				if (options.textcomplete.placement) {
+					// Enable correct positioning for textcomplete 
+					if (editor.data('textComplete').option.appendTo.css("position") == "static") {
+						editor.data('textComplete').option.appendTo.css("position", "relative");
+					}
+				}
             };
             if ($.fn.textcomplete) {
                 autocomplete();

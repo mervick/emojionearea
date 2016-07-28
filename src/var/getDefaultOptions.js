@@ -32,6 +32,10 @@ function($) {
 			useInternalCDN    : true, // Use the self loading mechanism
 			imageType         : "png", // Default image type used by internal CDN
 			recentEmojis      : true,
+			textcomplete: {
+				maxCount      : 15,
+				placement     : null // null - default | top | absleft | absright
+			},
 
 			filters: {
 				tones: {
