@@ -385,7 +385,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                 editor.textcomplete([
                     {
                         id: css_class,
-                        match: /(:[\-+\w]*)$/,
+                        match: /\B(:[\-+\w]*)$/,
                         search: function (term, callback) {
                             callback($.map(map, function (emoji) {
                                 return emoji.indexOf(term) === 0 ? emoji : null;
