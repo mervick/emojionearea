@@ -1,5 +1,10 @@
-define([], function() {
-   return function () {
-        return localStorage.getItem("recent_emojis") || "";
-    }
+define([
+	'function/supportsLocalStorage'
+], function(supportsLocalStorage) {
+	return function () {
+		if (supportsLocalStorage()) {
+			return localStorage.getItem("recent_emojis") || "";
+		}
+		return "";
+	}
 });

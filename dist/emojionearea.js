@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-07-25T09:01Z
+ * Date: 2016-07-29T12:00Z
  */
 (function(document, window, $) {
     'use strict';
@@ -486,9 +486,23 @@
         });
         return parent;
     }
+// see https://github.com/Modernizr/Modernizr/blob/master/feature-detects/storage/localstorage.js
+    function supportsLocalStorage () {
+		var test = 'test';
+		try {
+			localStorage.setItem(test, test);
+			localStorage.removeItem(test);
+			return true;
+		} catch(e) {
+			return false;
+		}
+	}
     function getRecent () {
-        return localStorage.getItem("recent_emojis") || "";
-    }
+		if (supportsLocalStorage()) {
+			return localStorage.getItem("recent_emojis") || "";
+		}
+		return "";
+	}
     function updateRecent(self, app, editor) {
 		var clickFunction = function (emojibtn) {
 			if (!app.is(".focused")) {
@@ -529,21 +543,22 @@
 		}
 	};
     function setRecent(self, emoji, app, editor) {
+		if (supportsLocalStorage()) {
+			var recent = getRecent();
+			var emojis = recent.split("|");
 
-		var recent = getRecent();
-		var emojis = recent.split("|");
+			if (emojis.indexOf(emoji) === -1) {
+				emojis.unshift(emoji);
+			}
 
-		if (emojis.indexOf(emoji) === -1) {
-			emojis.unshift(emoji);
+			if (emojis.length > 9) {
+				emojis.pop();
+			}
+
+			localStorage.setItem("recent_emojis", emojis.join("|"));
+
+			updateRecent(self, app, editor);
 		}
-
-		if (emojis.length > 9) {
-			emojis.pop();
-		}
-
-		localStorage.setItem("recent_emojis", emojis.join("|"));
-
-		updateRecent(self, app, editor);
 	};
     function init(self, source, options) {
         //calcElapsedTime('init', function() {
