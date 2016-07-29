@@ -2,11 +2,14 @@ define([], function() {
     var saveSelection, restoreSelection;
     if (window.getSelection && document.createRange) {
         saveSelection = function(el) {
-            var range = window.getSelection().getRangeAt(0);
-            var preSelectionRange = range.cloneRange();
-            preSelectionRange.selectNodeContents(el);
-            preSelectionRange.setEnd(range.startContainer, range.startOffset);
-            return preSelectionRange.toString().length;
+            var sel = window.getSelection && window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                var range = sel.getRangeAt(0);
+                var preSelectionRange = range.cloneRange();
+                preSelectionRange.selectNodeContents(el);
+                preSelectionRange.setEnd(range.startContainer, range.startOffset);
+                return preSelectionRange.toString().length;
+            }
         };
 
         restoreSelection = function(el, sel) {
