@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-08-02T23:06Z
+ * Date: 2016-08-02T07:54Z
  */
 (function(document, window, $) {
     'use strict';
@@ -127,6 +127,10 @@
 			useInternalCDN    : true, // Use the self loading mechanism
 			imageType         : "png", // Default image type used by internal CDN
 			recentEmojis      : true,
+			textcomplete: {
+				maxCount      : 15,
+				placement     : null // null - default | top | absleft | absright
+			},
 
 			filters: {
 				tones: {
@@ -523,7 +527,7 @@
 
 		var category = self.picker.find(".emojionearea-category[name=recent]");
 		var filter = self.picker.find(".emojionearea-filter-recent");
-		
+
 		if (category.length) {
 			var emojis = getRecent();
 			if (emojis !== "") {
@@ -545,7 +549,7 @@
 			} else {
 				if (filter.hasClass("active")) {
 					filter.removeClass("active").next().addClass("active");
-				} 
+				}
 				category.hide();
 				filter.hide();
 			}
@@ -766,7 +770,7 @@
 				var filter = self.picker.find(".emojionearea-filter-recent");
 				if (filter.hasClass("active")) {
 					filter.removeClass("active").next().addClass("active");
-				} 
+				}
 				category.hide();
 				filter.hide();
 			}
@@ -912,14 +916,19 @@
 
         if (options.autocomplete) {
             var autocomplete = function() {
-                var events = {};
+                var textcompleteOptions = {
+					maxCount: options.textcomplete.maxCount,
+					placement: options.textcomplete.placement
+				};
+
                 if (options.shortcuts) {
-                    events.onKeydown = function (e, commands) {
+                    textcompleteOptions.onKeydown = function (e, commands) {
                         if (!e.ctrlKey && e.which == 13) {
                             return commands.KEY_ENTER;
                         }
                     };
                 }
+
                 var map = $.map(emojione.emojioneList, function (_, emoji) {
                     return !options.autocompleteTones ? /_tone[12345]/.test(emoji) ? null : emoji : emoji;
                 });
@@ -927,7 +936,7 @@
                 editor.textcomplete([
                     {
                         id: css_class,
-                        match: /(:[\-+\w]*)$/,
+                        match: /\B(:[\-+\w]*)$/,
                         search: function (term, callback) {
                             callback($.map(map, function (emoji) {
                                 return emoji.indexOf(term) === 0 ? emoji : null;
@@ -940,10 +949,16 @@
                             return shortnameTo(value, self.emojiTemplate);
                         },
                         cache: true,
-                        maxCount: 15,
                         index: 1
                     }
-                ], events);
+                ], textcompleteOptions);
+
+				if (options.textcomplete.placement) {
+					// Enable correct positioning for textcomplete
+					if (editor.data('textComplete').option.appendTo.css("position") == "static") {
+						editor.data('textComplete').option.appendTo.css("position", "relative");
+					}
+				}
             };
             if ($.fn.textcomplete) {
                 autocomplete();
@@ -970,7 +985,7 @@
         //}, self.id === 1); // calcElapsedTime()
     };
     var emojioneVersion = window.emojioneVersion || '2.1.4';
-    var cdn = { 
+    var cdn = {
 		defaultBase: "https://cdnjs.cloudflare.com/ajax/libs/emojione/",
 		base: null,
 		isLoading: false

@@ -370,14 +370,19 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
 
         if (options.autocomplete) {
             var autocomplete = function() {
-                var events = {};
+                var textcompleteOptions = {
+					maxCount: options.textcomplete.maxCount,
+					placement: options.textcomplete.placement
+				};
+				
                 if (options.shortcuts) {
-                    events.onKeydown = function (e, commands) {
+                    textcompleteOptions.onKeydown = function (e, commands) {
                         if (!e.ctrlKey && e.which == 13) {
                             return commands.KEY_ENTER;
                         }
                     };
                 }
+
                 var map = $.map(emojione.emojioneList, function (_, emoji) {
                     return !options.autocompleteTones ? /_tone[12345]/.test(emoji) ? null : emoji : emoji;
                 });
@@ -385,7 +390,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                 editor.textcomplete([
                     {
                         id: css_class,
-                        match: /(:[\-+\w]*)$/,
+                        match: /\B(:[\-+\w]*)$/,
                         search: function (term, callback) {
                             callback($.map(map, function (emoji) {
                                 return emoji.indexOf(term) === 0 ? emoji : null;
@@ -398,10 +403,16 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                             return shortnameTo(value, self.emojiTemplate);
                         },
                         cache: true,
-                        maxCount: 15,
                         index: 1
-                    }
-                ], events);
+                    }				
+                ], textcompleteOptions);
+				
+				if (options.textcomplete.placement) {
+					// Enable correct positioning for textcomplete 
+					if (editor.data('textComplete').option.appendTo.css("position") == "static") {
+						editor.data('textComplete').option.appendTo.css("position", "relative");
+					}
+				}
             };
             if ($.fn.textcomplete) {
                 autocomplete();
