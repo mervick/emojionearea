@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-07-29T12:00Z
+ * Date: 2016-08-02T23:06Z
  */
 (function(document, window, $) {
     'use strict';
@@ -326,11 +326,14 @@
     var saveSelection, restoreSelection;
     if (window.getSelection && document.createRange) {
         saveSelection = function(el) {
-            var range = window.getSelection().getRangeAt(0);
-            var preSelectionRange = range.cloneRange();
-            preSelectionRange.selectNodeContents(el);
-            preSelectionRange.setEnd(range.startContainer, range.startOffset);
-            return preSelectionRange.toString().length;
+            var sel = window.getSelection && window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                var range = sel.getRangeAt(0);
+                var preSelectionRange = range.cloneRange();
+                preSelectionRange.selectNodeContents(el);
+                preSelectionRange.setEnd(range.startContainer, range.startOffset);
+                return preSelectionRange.toString().length;
+            }
         };
 
         restoreSelection = function(el, sel) {
@@ -505,11 +508,17 @@
 	}
     function updateRecent(self, app, editor) {
 		var clickFunction = function (emojibtn) {
-			if (!app.is(".focused")) {
-				editor.focus();
+			if (self.standalone) {
+				editor.removeClass("has-placeholder");
+				editor.html(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+				self.trigger("blur");
+			} else {
+				if (!app.is(".focused")) {
+					editor.focus();
+				}
+				saveSelection(editor[0]);
+				pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
 			}
-			saveSelection(editor[0]);
-			pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
 		}
 
 		var category = self.picker.find(".emojionearea-category[name=recent]");
