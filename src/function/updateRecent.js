@@ -7,11 +7,17 @@ define([
 function(saveSelection, pasteHtmlAtCaret, shortnameTo, getRecent) {
 	return function(self, app, editor) {
 		var clickFunction = function (emojibtn) {
-			if (!app.is(".focused")) {
-				editor.focus();
+			if (self.standalone) {
+				editor.removeClass("has-placeholder");
+				editor.html(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
+				self.trigger("blur");
+			} else {
+				if (!app.is(".focused")) {
+					editor.focus();
+				}
+				saveSelection(editor[0]);
+				pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
 			}
-			saveSelection(editor[0]);
-			pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
 		}
 
 		var category = self.picker.find(".emojionearea-category[name=recent]");
