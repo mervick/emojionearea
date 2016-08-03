@@ -1,6 +1,6 @@
 {
   "name": "emojionearea",
-  "version": "3.0.4",
+  "version": "3.0.7",
   "description": "WYSIWYG-like EmojiOne Converter / Picker Plugin for jQuery",
   "main": "dist/emojionearea.js",
   "scripts": {
@@ -18,6 +18,10 @@
     "emojionearea"
   ],
   "author": "Andrey Izman <izmanw@gmail.com>",
+  "contributors": [
+    "Klas Lundberg <klas.lundberg@instinct.se>",
+    "Merlin Mason <info@merlinmason.co.uk>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mervick/emojionearea/issues"

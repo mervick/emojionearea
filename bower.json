@@ -2,7 +2,9 @@
   "name": "emojionearea",
   "homepage": "https://github.com/mervick/emojionearea",
   "authors": [
-    "Andrey Izman <izmanw@gmail.com>"
+    "Andrey Izman <izmanw@gmail.com>",
+    "Klas Lundberg <klas.lundberg@instinct.se>",
+    "Merlin Mason <info@merlinmason.co.uk>"
   ],
   "main": "dist/emojionearea.js",
   "dependencies": {
