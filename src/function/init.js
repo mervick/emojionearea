@@ -86,6 +86,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
              .addClass('hidden')
         );
 
+        editor.data(source.data());
+
         $.each(options.attributes, function(attr, value) {
             editor.attr(attr, value);
         });

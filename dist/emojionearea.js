@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.1.0
+ * EmojioneArea v3.1.1
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-04T04:24Z
+ * Date: 2016-09-04T04:33Z
  */
 (function(document, window, $) {
     'use strict';
@@ -616,6 +616,8 @@
              .addClass(selector('filters-position-' + options.filtersPosition, true))
              .addClass('hidden')
         );
+
+        editor.data(source.data());
 
         $.each(options.attributes, function(attr, value) {
             editor.attr(attr, value);
