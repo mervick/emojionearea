@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.1.1
+ * EmojioneArea v3.1.2
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-04T04:33Z
+ * Date: 2016-09-04T04:41Z
  */
 (function(document, window, $) {
     'use strict';
@@ -517,7 +517,7 @@
                 self.recentFilter.show();
 
                 var height2 = self.recentCategory.height();
-                console.log(height, height2, scrollTop);
+
                 if (height !== height2) {
                     self.scrollArea.scrollTop(scrollTop + height2 - height);
                 }

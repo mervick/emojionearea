@@ -27,7 +27,7 @@ function(saveSelection, pasteHtmlAtCaret, shortnameTo, getRecent, attach) {
                 self.recentFilter.show();
 
                 var height2 = self.recentCategory.height();
-                console.log(height, height2, scrollTop);
+
                 if (height !== height2) {
                     self.scrollArea.scrollTop(scrollTop + height2 - height);
                 }
