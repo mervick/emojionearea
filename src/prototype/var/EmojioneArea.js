@@ -8,8 +8,8 @@ define([
 ],
 function(unique, eventStorage, possibleEvents, emojioneReady, init, loadEmojione) {
     return function(element, options) {
-		var self = this;
-		loadEmojione(options);
+        var self = this;
+        loadEmojione(options);
         eventStorage[self.id = ++unique] = {};
         possibleEvents[self.id] = {};
         emojioneReady(function() {

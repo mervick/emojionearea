@@ -4,7 +4,7 @@ define([
     'function/isObject'
 ],
 function($, getDefaultOptions, isObject) {
-	return function(options) {
+    return function(options) {
         var default_options = getDefaultOptions();
         if (options && options['filters']) {
             var filters = default_options.filters;

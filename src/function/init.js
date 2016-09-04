@@ -19,13 +19,15 @@ define([
     'function/lazyLoading',
     'function/selector',
     'function/div',
-	'function/getRecent',
-	'function/setRecent'
+    'function/updateRecent',
+    'function/getRecent',
+    'function/setRecent',
+    'function/supportsLocalStorage'
     //'function/calcElapsedTime', // debug only
 ],
 function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, shortnameTo,
          pasteHtmlAtCaret, getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
-         calcButtonPosition, lazyLoading, selector, div, getRecent, setRecent)
+         calcButtonPosition, lazyLoading, selector, div, updateRecent, getRecent, setRecent, supportsLocalStorage)
 {
     return function(self, source, options) {
         //calcElapsedTime('init', function() {
@@ -36,7 +38,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         self.saveEmojisAs = options.saveEmojisAs;
         self.standalone = options.standalone;
         self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
-		self.recentEmojis = options.recentEmojis;
+        self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>';
+        self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}">' + self.emojiTemplateAlt + '</i>';
+        self.recentEmojis = options.recentEmojis && supportsLocalStorage();
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
@@ -88,13 +92,16 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
 
         $.each(options.filters, function(filter, params) {
             var skin = 0;
+            if (filter === 'recent' && !self.recentEmojis) {
+                return;
+            }
             if (filter !== 'tones') {
                 $("<i/>", {
                     "class": selector("filter", true) + " " + selector("filter-" + filter, true),
                     "data-filter": filter,
                     title: params.title
                 })
-                .wrapInner(shortnameTo(params.icon, self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>'))
+                .wrapInner(shortnameTo(params.icon, self.emojiTemplateAlt))
                 .appendTo(filters);
             } else if (options.tones) {
                 skin = 5;
@@ -109,15 +116,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                     items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
                 }
 
-                if (filter === 'recent' && self.recentEmojis) {
+                if (filter === 'recent') {
                     items = getRecent();
                 }
 
-                items = shortnameTo(items,
-                    self.sprite ?
-                    '<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
-                    '<i class="emojibtn" role="button" data-name="{name}"><img class="emojioneemoji lazy-emoji" data-src="{img}"/></i>',
-                    true).split('|').join('');
+                items = shortnameTo(items, self.emojiBtnTemplate, true).split('|').join('');
                 category.html(items);
                 $('<h1/>').text(params.title).prependTo(category);
             } while (--skin > 0);
@@ -131,6 +134,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         filtersBtns = filters.find(selector("filter"));
         filtersBtns.eq(0).addClass("active");
         categories = emojisList.find(selector("category"));
+
+        self.recentFilter = filtersBtns.filter('[data-filter="recent"]');
+        self.recentCategory = categories.filter("[name=recent]");
+
+        self.scrollArea = scrollArea;
 
         if (options.container) {
             $(options.container).wrapInner(app);
@@ -216,20 +224,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         })
 
         .on("@picker.show", function() {
-			if (self.recentEmojis) {
-				updateRecent(self, app, editor);
-			} else {
-				// Hide Recent Emojis
-				var category = self.picker.find(".emojionearea-category[name=recent]");
-				var filter = self.picker.find(".emojionearea-filter-recent");
-				if (filter.hasClass("active")) {
-					filter.removeClass("active").next().addClass("active");
-				} 
-				category.hide();
-				filter.hide();
-			}
-			lazyLoading.call(this);
-		})
+            if (self.recentEmojis) {
+                updateRecent(self);
+            }
+            lazyLoading.call(this);
+        })
 
         .on("@tone.click", function(tone) {
             tones.children().removeClass("active");
@@ -300,9 +299,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                 pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
             }
 
-			if (self.recentEmojis) {
-				setRecent(self, emojibtn.data("name"), app, editor);
-			}
+            if (self.recentEmojis) {
+                setRecent(self, emojibtn.data("name"));
+            }
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
@@ -371,10 +370,10 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         if (options.autocomplete) {
             var autocomplete = function() {
                 var textcompleteOptions = {
-					maxCount: options.textcomplete.maxCount,
-					placement: options.textcomplete.placement
-				};
-				
+                    maxCount: options.textcomplete.maxCount,
+                    placement: options.textcomplete.placement
+                };
+
                 if (options.shortcuts) {
                     textcompleteOptions.onKeydown = function (e, commands) {
                         if (!e.ctrlKey && e.which == 13) {
@@ -404,15 +403,15 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
                         },
                         cache: true,
                         index: 1
-                    }				
+                    }
                 ], textcompleteOptions);
-				
-				if (options.textcomplete.placement) {
-					// Enable correct positioning for textcomplete 
-					if (editor.data('textComplete').option.appendTo.css("position") == "static") {
-						editor.data('textComplete').option.appendTo.css("position", "relative");
-					}
-				}
+
+                if (options.textcomplete.placement) {
+                    // Enable correct positioning for textcomplete
+                    if (editor.data('textComplete').option.appendTo.css("position") == "static") {
+                        editor.data('textComplete').option.appendTo.css("position", "relative");
+                    }
+                }
             };
             if ($.fn.textcomplete) {
                 autocomplete();

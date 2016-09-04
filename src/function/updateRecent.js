@@ -1,53 +1,44 @@
 define([
-	'function/saveSelection',
-	'function/pasteHtmlAtCaret',
-	'function/shortnameTo',
-	'function/getRecent'
+    'function/saveSelection',
+    'function/pasteHtmlAtCaret',
+    'function/shortnameTo',
+    'function/getRecent',
+    'function/attach'
 ],
-function(saveSelection, pasteHtmlAtCaret, shortnameTo, getRecent) {
-	return function(self, app, editor) {
-		var clickFunction = function (emojibtn) {
-			if (self.standalone) {
-				editor.removeClass("has-placeholder");
-				editor.html(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
-				self.trigger("blur");
-			} else {
-				if (!app.is(".focused")) {
-					editor.focus();
-				}
-				saveSelection(editor[0]);
-				pasteHtmlAtCaret(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
-			}
-		}
+function(saveSelection, pasteHtmlAtCaret, shortnameTo, getRecent, attach) {
+    return function(self) {
+        var emojis = getRecent();
+        if (!self.recent || self.recent !== emojis) {
+            if (emojis.length) {
+                var scrollTop = self.scrollArea.scrollTop(),
+                    height = self.recentCategory.is(":visible") ? self.recentCategory.height() : 0
 
-		var category = self.picker.find(".emojionearea-category[name=recent]");
-		var filter = self.picker.find(".emojionearea-filter-recent");
-		
-		if (category.length) {
-			var emojis = getRecent();
-			if (emojis !== "") {
-				var items = shortnameTo(emojis,
-										self.sprite ?
-										'<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
-										'<i class="emojibtn" role="button" data-name="{name}"><img class="emojioneemoji" src="{img}"/></i>',
-										true).split('|').join('');
+                var items = shortnameTo(emojis, self.emojiBtnTemplate, true).split('|').join('');
+                self.recentCategory.children(".emojibtn").remove();
+                $(items).insertAfter(self.recentCategory.children("h1"));
 
-				category.find("i").remove();
-				self.off("recentemojibtn.click");
 
-				$(items).insertAfter(category.find("h1"));
-				attach(self, category.find(".emojibtn"), { click: "recentemojibtn.click" });
-				self.on("recentemojibtn.click", clickFunction);
+                self.recentCategory.children(".emojibtn").on("click", function() {
+                    self.trigger("emojibtn.click", $(this));
+                });
+                // attach(self, , { click: "emojibtn.click" });
 
-				category.show();
-				filter.show();
-			} else {
-				if (filter.hasClass("active")) {
-					filter.removeClass("active").next().addClass("active");
-				} 
-				category.hide();
-				filter.hide();
-			}
-		}
-	};
+                self.recentCategory.show();
+                self.recentFilter.show();
+
+                var height2 = self.recentCategory.height();
+                console.log(height, height2, scrollTop);
+                if (height !== height2) {
+                    self.scrollArea.scrollTop(scrollTop + height2 - height);
+                }
+            } else {
+                if (self.recentFilter.hasClass("active")) {
+                    self.recentFilter.removeClass("active").next().addClass("active");
+                }
+                self.recentCategory.hide();
+                self.recentFilter.hide();
+            }
+            self.recent = emojis;
+        }
+    };
 });

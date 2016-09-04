@@ -1,25 +1,24 @@
 define([
-	'function/updateRecent',
-	'function/getRecent',
-	'function/supportsLocalStorage'
+    'function/updateRecent',
+    'function/getRecent'
 ],
-function(updateRecent, getRecent, supportsLocalStorage) {
-	return function(self, emoji, app, editor) {
-		if (supportsLocalStorage()) {
-			var recent = getRecent();
-			var emojis = recent.split("|");
+function(updateRecent, getRecent) {
+    return function(self, emoji) {
+        var recent = getRecent();
+        var emojis = recent.split("|");
 
-			if (emojis.indexOf(emoji) === -1) {
-				emojis.unshift(emoji);
-			}
+        var index = emojis.indexOf(emoji);
+        if (index !== -1) {
+            emojis.splice(index, 1);
+        }
+        emojis.unshift(emoji);
 
-			if (emojis.length > 9) {
-				emojis.pop();
-			}
+        if (emojis.length > 9) {
+            emojis.pop();
+        }
 
-			localStorage.setItem("recent_emojis", emojis.join("|"));
+        localStorage.setItem("recent_emojis", emojis.join("|"));
 
-			updateRecent(self, app, editor);
-		}
-	};
+        updateRecent(self);
+    };
 });
