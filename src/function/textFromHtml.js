@@ -1,8 +1,9 @@
 define([
     'var/emojione',
+    'var/invisibleChar',
     'function/unicodeTo',
 ],
-function(emojione, unicodeTo) {
+function(emojione, invisibleChar, unicodeTo) {
     return function(str, self) {
         str = str
             .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
@@ -21,7 +22,7 @@ function(emojione, unicodeTo) {
             .replace(/\n<div>/ig, '\n')
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '')
-            .replace(/&#8291;/g, '')
+            .replace(new RegExp(invisibleChar, 'g'), '')
             .replace(/&nbsp;/g, ' ')
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')

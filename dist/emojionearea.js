@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.1.2
+ * EmojioneArea v3.1.3
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-04T04:41Z
+ * Date: 2016-09-05T18:00Z
  */
 (function(document, window, $) {
     'use strict';
@@ -24,6 +24,7 @@
     var slice = [].slice;
     var css_class = "emojionearea";
     var emojioneSupportMode = 0;
+    var invisibleChar = '&#8203;';
     function trigger(self, event, args) {
         var result = true, j = 1;
         if (event) {
@@ -435,7 +436,7 @@
             .replace(/\n<div>/ig, '\n')
             .replace(/<div>\n/ig, '\n\n')
             .replace(/<(?:[^>]+)?>/g, '')
-            .replace(/&#8291;/g, '')
+            .replace(new RegExp(invisibleChar, 'g'), '')
             .replace(/&nbsp;/g, ' ')
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
@@ -787,7 +788,7 @@
         .on("@!paste", function(editor) {
             self.stayFocused = true;
             // insert invisible character for fix caret position
-            pasteHtmlAtCaret('<span>&#8291;</span>');
+            pasteHtmlAtCaret('<span>' + invisibleChar + '</span>');
 
             var sel = saveSelection(editor[0]),
                 editorScrollTop = editor.scrollTop(),

@@ -5,6 +5,7 @@ define([
     'var/slice',
     'var/css_class',
     'var/emojioneSupportMode',
+    'var/invisibleChar',
     'function/trigger',
     'function/attach',
     'function/shortnameTo',
@@ -25,7 +26,7 @@ define([
     'function/supportsLocalStorage'
     //'function/calcElapsedTime', // debug only
 ],
-function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, attach, shortnameTo,
+function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisibleChar, trigger, attach, shortnameTo,
          pasteHtmlAtCaret, getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
          calcButtonPosition, lazyLoading, selector, div, updateRecent, getRecent, setRecent, supportsLocalStorage)
 {
@@ -256,7 +257,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, trigger, 
         .on("@!paste", function(editor) {
             self.stayFocused = true;
             // insert invisible character for fix caret position
-            pasteHtmlAtCaret('<span>&#8291;</span>');
+            pasteHtmlAtCaret('<span>' + invisibleChar + '</span>');
 
             var sel = saveSelection(editor[0]),
                 editorScrollTop = editor.scrollTop(),
