@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.1.3
+ * EmojioneArea v3.1.4
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-05T18:00Z
+ * Date: 2016-09-07T14:24Z
  */
 (function(document, window, $) {
     'use strict';
@@ -785,26 +785,12 @@
             }
         })
 
-        .on("@!paste", function(editor) {
-            self.stayFocused = true;
-            // insert invisible character for fix caret position
-            pasteHtmlAtCaret('<span>' + invisibleChar + '</span>');
+        .on("@!paste", function(editor, event) {
 
-            var sel = saveSelection(editor[0]),
-                editorScrollTop = editor.scrollTop(),
-                clipboard = $("<div/>", {contenteditable: true})
-                    .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: "20px", overflow: "hidden"})
-                    .appendTo($("BODY"))
-                    .focus();
-
-            window.setTimeout(function() {
+            var pasteText = function(text) {
                 var caretID = "caret-" + (new Date()).getTime();
-                editor.focus();
-                restoreSelection(editor[0], sel);
-                var text = textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self),
-                    html = htmlFromText(text, self);
+                var html = htmlFromText(text, self);
                 pasteHtmlAtCaret(html);
-                clipboard.remove();
                 pasteHtmlAtCaret('<i id="' + caretID +'"></i>');
                 editor.scrollTop(editorScrollTop);
                 var caret = $("#" + caretID),
@@ -817,6 +803,40 @@
                 self.stayFocused = false;
                 calcButtonPosition.apply(self);
                 trigger(self, 'paste', [editor, text, html]);
+            }
+
+            if (event.originalEvent.clipboardData) {
+                var text = event.originalEvent.clipboardData.getData('text/plain');
+                pasteText(text);
+
+                if (event.preventDefault){
+                    event.preventDefault();
+                } else {
+                    event.stop();
+                };
+
+                event.returnValue = false;
+                event.stopPropagation();
+                return false;
+            }
+
+            self.stayFocused = true;
+            // insert invisible character for fix caret position
+            pasteHtmlAtCaret('<span>' + invisibleChar + '</span>');
+
+            var sel = saveSelection(editor[0]),
+                editorScrollTop = editor.scrollTop(),
+                clipboard = $("<div/>", {contenteditable: true})
+                    .css({position: "fixed", left: "-999px", width: "1px", height: "1px", top: "20px", overflow: "hidden"})
+                    .appendTo($("BODY"))
+                    .focus();
+
+            window.setTimeout(function() {
+                editor.focus();
+                restoreSelection(editor[0], sel);
+                var text = textFromHtml(clipboard.html().replace(/\r\n|\n|\r/g, '<br>'), self);
+                clipboard.remove();
+                pasteText(text);
             }, 200);
         })
 
