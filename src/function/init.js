@@ -239,9 +239,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             if (skin) {
                 scrollArea.addClass("skinnable");
                 categories.hide().filter("[data-tone=" + skin + "]").show();
+                if (filtersBtns.eq(0).is('.active[data-filter="recent"]')) {
+                    filtersBtns.eq(0).removeClass("active").next().addClass("active");
+                }
             } else {
                 scrollArea.removeClass("skinnable");
                 categories.hide().filter("[data-tone=0]").show();
+                filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
         })

@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-07T14:24Z
+ * Date: 2016-09-07T18:57Z
  */
 (function(document, window, $) {
     'use strict';
@@ -501,8 +501,13 @@
         var emojis = getRecent();
         if (!self.recent || self.recent !== emojis) {
             if (emojis.length) {
-                var scrollTop = self.scrollArea.scrollTop(),
-                    height = self.recentCategory.is(":visible") ? self.recentCategory.height() : 0
+                var skinnable = self.scrollArea.is(".skinnable"),
+                    scrollTop, height;
+
+                if (!skinnable) {
+                    scrollTop = self.scrollArea.scrollTop();
+                    height = self.recentCategory.is(":visible") ? self.recentCategory.height() : 0;
+                }
 
                 var items = shortnameTo(emojis, self.emojiBtnTemplate, true).split('|').join('');
                 self.recentCategory.children(".emojibtn").remove();
@@ -512,15 +517,17 @@
                 self.recentCategory.children(".emojibtn").on("click", function() {
                     self.trigger("emojibtn.click", $(this));
                 });
-                // attach(self, , { click: "emojibtn.click" });
 
-                self.recentCategory.show();
                 self.recentFilter.show();
 
-                var height2 = self.recentCategory.height();
+                if (!skinnable) {
+                    self.recentCategory.show();
 
-                if (height !== height2) {
-                    self.scrollArea.scrollTop(scrollTop + height2 - height);
+                    var height2 = self.recentCategory.height();
+
+                    if (height !== height2) {
+                        self.scrollArea.scrollTop(scrollTop + height2 - height);
+                    }
                 }
             } else {
                 if (self.recentFilter.hasClass("active")) {
@@ -770,9 +777,13 @@
             if (skin) {
                 scrollArea.addClass("skinnable");
                 categories.hide().filter("[data-tone=" + skin + "]").show();
+                if (filtersBtns.eq(0).is('.active[data-filter="recent"]')) {
+                    filtersBtns.eq(0).removeClass("active").next().addClass("active");
+                }
             } else {
                 scrollArea.removeClass("skinnable");
                 categories.hide().filter("[data-tone=0]").show();
+                filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
         })
