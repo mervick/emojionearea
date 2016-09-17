@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.1.4
+ * EmojioneArea v3.1.5
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-07T18:57Z
+ * Date: 2016-09-17T18:41Z
  */
 (function(document, window, $) {
     'use strict';
@@ -661,7 +661,12 @@
                     items = getRecent();
                 }
 
-                items = shortnameTo(items, self.emojiBtnTemplate, true).split('|').join('');
+                items = shortnameTo(items,
+                    self.sprite ?
+                        '<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
+                        '<i class="emojibtn" role="button" data-name="{name}"><img class="emojioneemoji lazy-emoji" data-src="{img}"/></i>',
+                    true).split('|').join('');
+
                 category.html(items);
                 $('<h1/>').text(params.title).prependTo(category);
             } while (--skin > 0);

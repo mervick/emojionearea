@@ -123,7 +123,12 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     items = getRecent();
                 }
 
-                items = shortnameTo(items, self.emojiBtnTemplate, true).split('|').join('');
+                items = shortnameTo(items,
+                    self.sprite ?
+                        '<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
+                        '<i class="emojibtn" role="button" data-name="{name}"><img class="emojioneemoji lazy-emoji" data-src="{img}"/></i>',
+                    true).split('|').join('');
+
                 category.html(items);
                 $('<h1/>').text(params.title).prependTo(category);
             } while (--skin > 0);
