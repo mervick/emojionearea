@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     "use strict";
 
     var livereload = {
@@ -59,11 +59,20 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            all: {
+            sass: {
                 files: [
                     'scss/**/*.scss'
                 ],
                 tasks: ['sass'],
+                options: {
+                    livereload: livereload
+                }
+            },
+            js: {
+                files: [
+                    'src/**/*.js'
+                ],
+                tasks: ['build'],
                 options: {
                     livereload: livereload
                 }
