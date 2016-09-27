@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-17T18:41Z
+ * Date: 2016-09-27T09:32Z
  */
 (function(document, window, $) {
     'use strict';
@@ -978,8 +978,8 @@
 
                 if (options.textcomplete.placement) {
                     // Enable correct positioning for textcomplete
-                    if (editor.data('textComplete').option.appendTo.css("position") == "static") {
-                        editor.data('textComplete').option.appendTo.css("position", "relative");
+                    if ($(editor.data('textComplete').option.appendTo).css("position") == "static") {
+                        $(editor.data('textComplete').option.appendTo).css("position", "relative");
                     }
                 }
             };
