@@ -440,8 +440,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
                 if (options.textcomplete.placement) {
                     // Enable correct positioning for textcomplete
-                    if (editor.data('textComplete').option.appendTo.css("position") == "static") {
-                        editor.data('textComplete').option.appendTo.css("position", "relative");
+                    if ($(editor.data('textComplete').option.appendTo).css("position") == "static") {
+                        $(editor.data('textComplete').option.appendTo).css("position", "relative");
                     }
                 }
             };
