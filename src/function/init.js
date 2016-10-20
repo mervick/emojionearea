@@ -55,7 +55,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             editor = self.editor = div("editor").attr({
                 contenteditable: (self.standalone) ? false : true,
                 placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
-                tabindex: 0
+                tabindex: 0,
+                spellcheck, true
             }),
             button = self.button = div('button',
                 div('button-open'),
