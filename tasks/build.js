@@ -21,7 +21,7 @@ module.exports = function( grunt ) {
             name: pkg.name,
 
             paths: {
-                jquery : 'https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min'
+                jquery : 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min'
             },
 
             // We have multiple minify steps
