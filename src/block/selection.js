@@ -4,57 +4,29 @@ define([], function() {
         saveSelection = function(el) {
             var sel = window.getSelection && window.getSelection();
             if (sel && sel.rangeCount > 0) {
-                var range = sel.getRangeAt(0);
-                var preSelectionRange = range.cloneRange();
-                preSelectionRange.selectNodeContents(el);
-                preSelectionRange.setEnd(range.startContainer, range.startOffset);
-                return preSelectionRange.toString().length;
+                return sel.getRangeAt(0);
             }
         };
 
         restoreSelection = function(el, sel) {
-            var charIndex = 0, range = document.createRange();
-            range.setStart(el, 0);
-            range.collapse(true);
-            var nodeStack = [el], node, foundStart = false, stop = false;
-
-            while (!stop && (node = nodeStack.pop())) {
-                if (node.nodeType == 3) {
-                    var nextCharIndex = charIndex + node.length;
-                    if (!foundStart && sel >= charIndex && sel <= nextCharIndex) {
-                        range.setStart(node, sel - charIndex);
-                        range.setEnd(node, sel - charIndex);
-                        stop = true;
-                    }
-                    charIndex = nextCharIndex;
-                } else {
-                    var i = node.childNodes.length;
-                    while (i--) {
-                        nodeStack.push(node.childNodes[i]);
-                    }
-                }
-            }
-
+            var range = document.createRange();
+            range.setStart(sel.startContainer, sel.startOffset);
+            range.setEnd(sel.endContainer, sel.endOffset)
+            
             sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
         }
     } else if (document.selection && document.body.createTextRange) {
         saveSelection = function(el) {
-            var selectedTextRange = document.selection.createRange(),
-                preSelectionTextRange = document.body.createTextRange();
-            preSelectionTextRange.moveToElementText(el);
-            preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
-            var start = preSelectionTextRange.text.length;
-            return start + selectedTextRange.text.length;
+            return document.selection.createRange();
         };
 
         restoreSelection = function(el, sel) {
             var textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
-            textRange.collapse(true);
-            textRange.moveEnd("character", sel);
-            textRange.moveStart("character", sel);
+            textRange.setStart(sel.startContanier, sel.startOffset);
+            textRange.setEnd(sel.endContainer, sel.endOffset);
             textRange.select();
         };
     }

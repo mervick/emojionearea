@@ -40,14 +40,14 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         self.standalone = options.standalone;
         self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
         self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>';
-        self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}">' + self.emojiTemplateAlt + '</i>';
+        self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}">' + self.emojiTemplateAlt + '</i>';
         self.recentEmojis = options.recentEmojis && supportsLocalStorage();
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, emojisList, categories, scrollArea,
+            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, scrollArea,
             app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -64,28 +64,40 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             picker = self.picker = div('picker',
                 div('wrapper',
                     filters = div('filters'),
-                    scrollArea = div('scroll-area',
-                        emojisList = div('emojis-list'),
-                        tones = div('tones',
-                            function() {
-                                if (options.tones) {
-                                    this.addClass(selector('tones-' + options.tonesStyle, true));
-                                    for (var i = 0; i <= 5; i++) {
-                                        this.append($("<i/>", {
-                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                            "data-skin": i,
-                                            role: "button"
-                                        }));
-                                    }
+                    search = div('search',
+                        function() {
+                            self.search = $("<input/>", {
+                                "placeholder": "SEARCH",
+                                "type": "text",
+                                "class": "search"
+                            });
+                            this.append(self.search);
+                        }
+                    ),
+                    tones = div('tones',
+                        function() {
+                            if (options.tones) {
+                                this.addClass(selector('tones-' + options.tonesStyle, true));
+                                for (var i = 0; i <= 5; i++) {
+                                    this.append($("<i/>", {
+                                        "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                        "data-skin": i,
+                                        role: "button"
+                                    }));
                                 }
                             }
-                        )
+                        }
+                    ),
+                    scrollArea = div('scroll-area',
+                        emojisList = div('emojis-list')
                     )
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
              .addClass(selector('filters-position-' + options.filtersPosition, true))
              .addClass('hidden')
         );
+
+        self.searchSel = null;
 
         editor.data(source.data());
 
@@ -125,8 +137,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
                 items = shortnameTo(items,
                     self.sprite ?
-                        '<i class="emojibtn" role="button" data-name="{name}"><i class="emojione-{uni}"></i></i>' :
-                        '<i class="emojibtn" role="button" data-name="{name}"><img class="emojioneemoji lazy-emoji" data-src="{img}"/></i>',
+                        '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}"><i class="emojione-{uni}"></i></i>' :
+                        '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}"><img class="emojioneemoji lazy-emoji" data-src="{img}"/></i>',
                     true).split('|').join('');
 
                 category.html(items);
@@ -182,11 +194,12 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
         attach(self, button, {click: "button.click"});
         attach(self, editor, {paste :"!paste"}, editor);
-        attach(self, editor, ["focus", "blur"], function() { return self.stayFocused ? false : editor; });
+        attach(self, editor, ["focus", "blur"], function() { return self.stayFocused ? false : editor } );
         attach(self, picker, {mousedown: "picker.mousedown", mouseup: "picker.mouseup", click: "picker.click",
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
+        attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
 
         var noListenScroll = false;
         scrollArea.on('scroll', function () {
@@ -260,6 +273,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 self.hidePicker();
             } else {
                 self.showPicker();
+                self.searchSel = null;
             }
         })
 
@@ -320,9 +334,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
         .on("@emojibtn.click", function(emojibtn) {
             editor.removeClass("has-placeholder");
-            if (!app.is(".focused")) {
+
+            if (self.searchSel !== null) {
                 editor.focus();
+                restoreSelection(editor[0], self.searchSel);
+                self.searchSel = null;
             }
+
             if (self.standalone) {
                 editor.html(shortnameTo(emojibtn.data("name"), self.emojiTemplate));
                 self.trigger("blur");
@@ -334,15 +352,26 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             if (self.recentEmojis) {
                 setRecent(self, emojibtn.data("name"));
             }
+            
+            self.search.val('');
+            self.trigger('search.keypress');
         })
 
         .on("@!resize @keyup @emojibtn.click", calcButtonPosition)
 
         .on("@!mousedown", function(editor, event) {
-            if (!app.is(".focused")) {
-                editor.focus();
+            if ($(event.target).hasClass('search')) {
+                // Allow search clicks
+                self.stayFocused = true;
+                if (self.searchSel == null) {
+                    self.searchSel = saveSelection(editor[0]);
+                }
+            } else {
+                if (!app.is(".focused")) {
+                    editor.focus();
+                }
+                event.preventDefault();
             }
-            event.preventDefault();
             return false;
         })
 
@@ -374,6 +403,52 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             } else {
                 source.blur();
             }
+
+            self.search.val('');
+            self.trigger('search.keypress');
+        })
+
+        .on("@search.focus", function() {
+            self.stayFocused = true;
+            self.search.addClass("focused");
+        })
+
+        .on("@search.keypress", function() {
+            var filterBtns = picker.find(".emojionearea-filter");
+
+            var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
+            if (term !== "") {
+                categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').each(function() {
+                    var $category = $(this);
+                    var $matched = $category.find('.emojibtn[data-name*="' + term + '"]');
+                    if ($matched.length === 0) {
+                        $category.hide();
+                        filterBtns.filter('[data-filter="' + $category.attr('name') + '"]').hide();
+                    } else {
+                        var $notMatched = $category.find('.emojibtn:not([data-name*="' + term + '"])')
+                        $notMatched.hide();
+                        
+                        $matched.show();
+                        $category.show();
+                        filterBtns.filter('[data-filter="' + $category.attr('name') + '"]').show();
+                    }
+                });
+                if (!noListenScroll) {
+                    scrollArea.trigger('scroll');
+                } else {
+                    lazyLoading.call(self);
+                }
+            } else {
+                categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
+                $('.emojibtn', categories).show();
+                filterBtns.show();
+            }
+        })
+
+        .on("@search.blur", function() {
+            self.stayFocused = false;
+            self.search.removeClass("focused");
+            self.trigger("blur");
         });
 
         if (options.shortcuts) {

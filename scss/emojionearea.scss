@@ -3,6 +3,22 @@
 @import "image";
 @import "text-complete";
 
+.#{$css-prefix}-text {
+    [class*=emojione-], .emojioneemoji {
+        font-size: inherit;
+        height: 2ex;
+        width: 2.1ex;
+        min-height: 20px;
+        min-width: 20px;
+        display: inline-block;
+        margin: -.2ex .15em .2ex;
+        line-height: normal;
+        vertical-align: middle;
+        max-width: 100%;
+        top: 0;
+    }
+}
+
 .#{$css-prefix} {
     &, & * {
         @include box-sizing(border-box);
@@ -183,14 +199,22 @@
             }
         }
 
-        .#{$css-prefix}-filters {
+        .#{$css-prefix}-filters, .#{$css-prefix}-search {
             width: 100%;
             position: absolute;
+            z-index: $z-index + 5;
+        }
+
+        .#{$css-prefix}-search {
+            padding: 5px 0 0 10px;
+            height: $search-height;
+        }
+
+        .#{$css-prefix}-filters {
             background: #F5F7F9;
             padding: 0 0 0 7px;
             height: $filters-height;
-            z-index: $z-index + 5;
-
+            
             .#{$css-prefix}-filter {
                 display: block;
                 float: left;
@@ -223,8 +247,125 @@
             }
         }
 
+        .#{$css-prefix}-tones {
+            position: absolute;
+            top: $filters-height + 6px;
+            right: 10px;
+            height: 22px;
+            z-index: $z-index + 5;
+
+            > .btn-tone {
+                display: inline-block;
+                padding: 0;
+                border: 0;
+                vertical-align: middle;
+                outline: none;
+                background: transparent;
+                cursor: pointer;
+                position: relative;
+
+                &.btn-tone-0 {
+                    &, &:after {
+                        background-color: #ffcf3e;
+                    }
+                }
+                &.btn-tone-1 {
+                    &, &:after {
+                        background-color: #fae3c5;
+                    }
+                }
+                &.btn-tone-2 {
+                    &, &:after {
+                        background-color: #e2cfa5;
+                    }
+                }
+                &.btn-tone-3 {
+                    &, &:after {
+                        background-color: #daa478;
+                    }
+                }
+                &.btn-tone-4 {
+                    &, &:after {
+                        background-color: #a78058;
+                    }
+                }
+                &.btn-tone-5 {
+                    &, &:after {
+                        background-color: #5e4d43;
+                    }
+                }
+            }
+
+            &.#{$css-prefix}-tones-bullet,
+            &.#{$css-prefix}-tones-square {
+                > .btn-tone {
+                    width: 20px;
+                    height: 20px;
+                    margin: 0;
+                    background-color: transparent;
+                    &:after {
+                        content: "";
+                        position: absolute;
+                        display: block;
+                        top: 4px;
+                        left: 4px;
+                        width: 12px;
+                        height: 12px;
+                    }
+                    &.active:after {
+                        top: 0;
+                        left: 0;
+                        width: 20px;
+                        height: 20px;
+
+                    }
+                }
+            }
+
+            &.#{$css-prefix}-tones-radio,
+            &.#{$css-prefix}-tones-checkbox{
+                > .btn-tone {
+                    width: 16px;
+                    height: 16px;
+                    margin: 0px 2px;
+                    &.active {
+                        &:after {
+                            content: "";
+                            position: absolute;
+                            display: block;
+                            background-color: transparent;
+                            border: 2px solid #fff;
+                            width: 8px;
+                            height: 8px;
+                            top: 2px;
+                            left: 2px;
+                            box-sizing: initial;
+                        }
+                    }
+                }
+            }
+
+            &.#{$css-prefix}-tones-bullet,
+            &.#{$css-prefix}-tones-radio {
+                > .btn-tone {
+                    &, &:after {
+                        @include border-radius(100%);
+                    }
+                }
+            }
+
+            &.#{$css-prefix}-tones-square,
+            &.#{$css-prefix}-tones-checkbox {
+                > .btn-tone {
+                    &, &:after {
+                        @include border-radius(1px);
+                    }
+                }
+            }
+        }
+
         .#{$css-prefix}-scroll-area {
-            height: $picker-height - $filters-height;
+            height: $picker-height - $filters-height - $search-height;
             overflow: auto;
             overflow-x: hidden;
             width: 100%;
@@ -233,123 +374,6 @@
 
             .#{$css-prefix}-emojis-list {
                 z-index: 1;
-            }
-
-            .#{$css-prefix}-tones {
-                position: absolute;
-                top: 6px;
-                right: 10px;
-                //width: 130px;
-                height: 22px;
-                z-index: 2;
-
-                > .btn-tone {
-                    display: inline-block;
-                    padding: 0;
-                    border: 0;
-                    vertical-align: middle;
-                    outline: none;
-                    background: transparent;
-                    cursor: pointer;
-                    position: relative;
-
-                    &.btn-tone-0 {
-                        &, &:after {
-                            background-color: #ffcf3e;
-                        }
-                    }
-                    &.btn-tone-1 {
-                        &, &:after {
-                            background-color: #fae3c5;
-                        }
-                    }
-                    &.btn-tone-2 {
-                        &, &:after {
-                            background-color: #e2cfa5;
-                        }
-                    }
-                    &.btn-tone-3 {
-                        &, &:after {
-                            background-color: #daa478;
-                        }
-                    }
-                    &.btn-tone-4 {
-                        &, &:after {
-                            background-color: #a78058;
-                        }
-                    }
-                    &.btn-tone-5 {
-                        &, &:after {
-                            background-color: #5e4d43;
-                        }
-                    }
-                }
-
-                &.#{$css-prefix}-tones-bullet,
-                &.#{$css-prefix}-tones-square {
-                    > .btn-tone {
-                        width: 20px;
-                        height: 20px;
-                        margin: 0;
-                        background-color: transparent;
-                        &:after {
-                            content: "";
-                            position: absolute;
-                            display: block;
-                            top: 4px;
-                            left: 4px;
-                            width: 12px;
-                            height: 12px;
-                        }
-                        &.active:after {
-                            top: 0;
-                            left: 0;
-                            width: 20px;
-                            height: 20px;
-
-                        }
-                    }
-                }
-
-                &.#{$css-prefix}-tones-radio,
-                &.#{$css-prefix}-tones-checkbox{
-                    > .btn-tone {
-                        width: 16px;
-                        height: 16px;
-                        margin: 0px 2px;
-                        &.active {
-                            &:after {
-                                content: "";
-                                position: absolute;
-                                display: block;
-                                background-color: transparent;
-                                border: 2px solid #fff;
-                                width: 8px;
-                                height: 8px;
-                                top: 2px;
-                                left: 2px;
-                            }
-                        }
-                    }
-                }
-
-                &.#{$css-prefix}-tones-bullet,
-                &.#{$css-prefix}-tones-radio {
-                    > .btn-tone {
-                        &, &:after {
-                            @include border-radius(100%);
-                        }
-                    }
-                }
-
-                &.#{$css-prefix}-tones-square,
-                &.#{$css-prefix}-tones-checkbox {
-                    > .btn-tone {
-                        &, &:after {
-                            @include border-radius(1px);
-                        }
-                    }
-                }
             }
 
             h1 {
@@ -422,6 +446,9 @@
                 @include border-top-left-radius($picker-border-radius);
                 @include border-top-right-radius($picker-border-radius);
             }
+            .#{$css-prefix}-search {
+                top: $filters-height;
+            }
             .#{$css-prefix}-scroll-area {
                 bottom: 0;
             }
@@ -432,6 +459,9 @@
                 bottom: 0;
                 @include border-bottom-left-radius($picker-border-radius);
                 @include border-bottom-right-radius($picker-border-radius);
+            }
+            .#{$css-prefix}-search {
+                bottom: $filters-height;
             }
             .#{$css-prefix}-scroll-area {
                 top: 0;
