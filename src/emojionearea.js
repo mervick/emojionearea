@@ -13,7 +13,9 @@ define([
     'prototype/setText',
     'prototype/getText',
     'prototype/showPicker',
-    'prototype/hidePicker'
+    'prototype/hidePicker',
+	'prototype/enable',
+	'prototype/disable'
 ],
 function($, EmojioneArea, getDefaultOptions, htmlFromText, blankImg, emojioneSupportMode, loadEmojione) {
     $.fn.emojioneArea = function(options) {

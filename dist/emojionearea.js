@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.1.7
+ * EmojioneArea v3.1.8
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-01-20T14:56Z
+ * Date: 2017-02-27T16:01Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -25,6 +25,10 @@ document = window.document || {};
 }( function ( $ ) {
     "use strict";
 
+// @CODE
+// build.js inserts compiled code here
+
+}, window ) );
     var unique = 0;
     var eventStorage = {};
     var possibleEvents = {};
@@ -1269,6 +1273,25 @@ document = window.document || {};
         return self;
     }
 
+    EmojioneArea.prototype.enable = function () {
+        var self = this;
+        emojioneReady(function () {
+            self.editor.prop('contenteditable', true);
+            self.button.show();
+        });
+        return self;
+    }
+
+    EmojioneArea.prototype.disable = function () {
+        var self = this;
+        emojioneReady(function () {
+            self.editor.prop('contenteditable', false);
+			self.hidePicker();
+            self.button.hide();
+        });
+        return self;
+    }
+
     $.fn.emojioneArea = function(options) {
         return this.each(function() {
             if (!!this.emojioneArea) return this.emojioneArea;
@@ -1298,5 +1321,3 @@ document = window.document || {};
 
         return this;
     };
-
-}, window ) );
