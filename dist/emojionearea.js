@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-09-27T09:32Z
+ * Date: 2016-12-23T16:57Z
  */
 (function(document, window, $) {
     'use strict';
@@ -1024,7 +1024,8 @@
             if (version === "?v=2.1.2") return '2.1.2';
             if (version === "?v=2.1.3") return '2.1.3';
             if (version === "?v=2.1.4") return '2.1.4';
-            return '2.1.4';
+            if (version === "?v=2.2.7") return '2.2.7';
+            return '2.2.7';
         }
 
         function getSupportMode(version) {
@@ -1036,6 +1037,7 @@
                 case '2.1.2': return 3;
                 case '2.1.3':
                 case '2.1.4':
+                case '2.2.7':
                 default: return 4;
             }
         }
