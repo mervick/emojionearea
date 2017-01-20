@@ -235,7 +235,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             if (self.recentEmojis) {
                 updateRecent(self);
             }
-            lazyLoading.call(this);
+            lazyLoading.call(self);
         })
 
         .on("@tone.click", function(tone) {
