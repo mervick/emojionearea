@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2016-12-23T16:57Z
+ * Date: 2017-01-20T14:56Z
  */
 (function(document, window, $) {
     'use strict';
@@ -773,7 +773,7 @@
             if (self.recentEmojis) {
                 updateRecent(self);
             }
-            lazyLoading.call(this);
+            lazyLoading.call(self);
         })
 
         .on("@tone.click", function(tone) {
