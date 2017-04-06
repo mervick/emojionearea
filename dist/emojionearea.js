@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-02-27T16:01Z
+ * Date: 2017-03-06T21:02Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -25,10 +25,6 @@ document = window.document || {};
 }( function ( $ ) {
     "use strict";
 
-// @CODE
-// build.js inserts compiled code here
-
-}, window ) );
     var unique = 0;
     var eventStorage = {};
     var possibleEvents = {};
@@ -1321,3 +1317,5 @@ document = window.document || {};
 
         return this;
     };
+
+}, window ) );
