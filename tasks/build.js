@@ -11,17 +11,17 @@ module.exports = function( grunt ) {
         requirejs = require( "requirejs" ),
         pkg = require( "../package.json" ),
         srcFolder = __dirname + "/../src/",
-        rdefineEnd = /\n\}\s*?\);[^}\w]*$/,
+        rdefineEnd = /\r?\n\}\s*?\);[^}\w]*$/,
         read = function( fileName ) {
             return grunt.file.read( srcFolder + fileName );
         },
-        wrapper = read( "wrapper.js" ).split( /\/\/ \@CODE\n\/\/[^\n]+\n/ ),
+        wrapper = read( "wrapper.js" ).split( /\/\/ \@CODE\r?\n\/\/[^\n]+\n/ ),
         config = {
             baseUrl: "src",
             name: pkg.name,
 
             paths: {
-                jquery : 'https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min'
+                jquery : 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min'
             },
 
             // We have multiple minify steps
@@ -36,7 +36,7 @@ module.exports = function( grunt ) {
             // Avoid breaking semicolons inserted by r.js
             skipSemiColonInsertion: true,
             wrap: {
-                start: wrapper[ 0 ].replace( /\/\*jshint .* \*\/\n/, "" ),
+                start: wrapper[ 0 ].replace( /\/\*jshint .* \*\/\r?\n/, "" ),
                 end: wrapper[ 1 ]
             },
             rawText: {},
@@ -70,7 +70,7 @@ module.exports = function( grunt ) {
 
             // Remove empty definitions
             contents = contents
-                .replace( /define\(\[[^\]]*\]\)[\W\n]+$/, "" );
+                .replace( /define\(\[[^\]]*\]\)[\W\r\n]+$/, "" );
 
         } else {
             contents = contents
@@ -89,11 +89,11 @@ module.exports = function( grunt ) {
             // or a single line directly after a // BuildExclude comment
             contents = contents
                 .replace( /\/\*\s*ExcludeStart\s*\*\/[\w\W]*?\/\*\s*ExcludeEnd\s*\*\//ig, "" )
-                .replace( /\/\/\s*BuildExclude\n\r?[\w\W]*?\n\r?/ig, "" );
+                .replace( /\/\/\s*BuildExclude\r?\n\r?[\w\W]*?\r?\n\r?/ig, "" );
 
             // Remove empty definitions
             contents = contents
-                .replace( /define\(\[[^\]]*\]\)[\W\n]+$/, "" );
+                .replace( /define\(\[[^\]]*\]\)[\W\r\n]+$/, "" );
         }
 
         // AMD Name
