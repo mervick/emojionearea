@@ -275,6 +275,16 @@ or by `.on()` &amp; `.off()` methods:
   // unset eventHandler1
   el[0].emojioneArea.off("click", eventHandler1);
 ```
+## Building
+
+For making changes and build project (scss/js):
+```
+npm update
+node node_modules/grunt-cli/bin/grunt
+```
+
+PRs welcome.
+
 
 ## Requirements
 
