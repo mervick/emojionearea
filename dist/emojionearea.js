@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-09-06T13:22Z
+ * Date: 2017-09-06T17:05Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1190,6 +1190,7 @@ document = window.document || {};
             }
             if (getSupportMode(emojioneVersion) > 4) {
                 uniRegexp = emojione.regUnicode;
+                emojione.imageType = options.imageType || "png";
             } else {
                 uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(" + emojione.unicodeRegexp + ")", "gi");
             }

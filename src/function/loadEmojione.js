@@ -111,6 +111,7 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
             }
             if (getSupportMode(emojioneVersion) > 4) {
                 uniRegexp = emojione.regUnicode;
+                emojione.imageType = options.imageType || "png";
             } else {
                 uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(" + emojione.unicodeRegexp + ")", "gi");
             }
