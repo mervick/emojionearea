@@ -13,7 +13,7 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
 
         function detectVersion(emojione) {
             var version;
-            if(emojione.cacheBustParam) {
+            if (emojione.cacheBustParam) {
                 version = emojione.cacheBustParam;
                 if (!isObject(emojione['jsEscapeMap'])) return '1.5.2';
                 if (version === "?v=1.2.4") return '2.0.0';
@@ -25,9 +25,7 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
                 if (version === "?v=2.2.7") return '2.2.7';
                 return '2.2.7';    
             } else {
-                version = emojione.emojiVersion;
-                if (version === "3.1") return '3.1.0';
-                return '3.1.0'
+                return emojione.emojiVersion;
             }
             
         }
@@ -42,67 +40,59 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
                 case '2.1.3':
                 case '2.1.4':
                 case '2.2.7': return 4;
-                case '3.1.0': return 5;
-                default: return 4;
+                case '3.0.1': 
+                case '3.0.2': 
+                case '3.0.3': 
+                case '3.0': return 5;
+                case '3.1.0':                
+                case '3.1.1':                
+                case '3.1.2':                
+                case '3.1':                
+                default: return 6;
             }
-        }
-
-        function loadEmojione3Lib() {
-            $.getScript(cdn.defaultBase3 + "@" + emojioneVersion.substring(0,emojioneVersion.lastIndexOf(".")) + "/lib/js/emojione.min.js", function () {
-                emojione = window.emojione;
-                emojioneVersion = detectVersion(emojione);
-                emojioneSupportMode = getSupportMode(emojioneVersion);
-                cdn.base = cdn.defaultBase3 + "-assets@" + emojioneVersion;
-                if (options.sprite) {
-                    var sprite = cdn.base + "/sprites/emojione.sprites-" + emojione.emojiSize + ".css";
-                    if (document.createStyleSheet) {
-                        document.createStyleSheet(sprite);
-                    } else {
-                        $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
-                    }
-                }
-                while (readyCallbacks.length) {
-                    readyCallbacks.shift().call();
-                }
-                cdn.isLoading = false;
-            });
-        }
-
-        function loadEmojione2Lib() {
-             $.getScript(cdn.defaultBase + "/" + emojioneVersion + "/lib/js/emojione.min.js", function () {
-                emojione = window.emojione;
-                emojioneVersion = detectVersion(emojione);
-                emojioneSupportMode = getSupportMode(emojioneVersion);
-                cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
-                if (options.sprite) {
-                    var sprite = cdn.base + "/sprites/emojione.sprites.css";
-                    if (document.createStyleSheet) {
-                        document.createStyleSheet(sprite);
-                    } else {
-                        $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
-                    }
-                }
-                while (readyCallbacks.length) {
-                    readyCallbacks.shift().call();
-                }
-                cdn.isLoading = false;
-            });
         }
 
         options = getOptions(options);
         if (!cdn.isLoading) {
             if (!emojione || getSupportMode(detectVersion(emojione)) < 2) {
                 cdn.isLoading = true;
-                if(getSupportMode(emojioneVersion) > 4) {
-                    loadEmojione3Lib();
+                var emojioneJsCdnUrlBase;
+                if (getSupportMode(emojioneVersion) > 5) {
+                    emojioneJsCdnUrlBase = cdn.defaultBase3 + "npm/emojione@" + emojioneVersion;
+                } else if (getSupportMode(emojioneVersion) > 4) {
+                    emojioneJsCdnUrlBase = cdn.defaultBase3 + "emojione/" + emojioneVersion;
                 } else {
-                    loadEmojione2Lib();
+                    emojioneJsCdnUrlBase = cdn.defaultBase + "/" + emojioneVersion;
                 }
+                $.getScript(emojioneJsCdnUrlBase + "/lib/js/emojione.min.js", function () {
+                    emojione = window.emojione;
+                    emojioneVersion = detectVersion(emojione);
+                    emojioneSupportMode = getSupportMode(emojioneVersion);
+                    var sprite;
+                    if (emojioneSupportMode > 4) {
+                        cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
+                        sprite = cdn.base + "/sprites/emojione-sprite-" + emojione.emojiSize + ".css";
+                    } else {
+                        cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
+                        sprite = cdn.base + "/sprites/emojione.sprites.css";
+                    }
+                    if (options.sprite) {
+                        if (document.createStyleSheet) {
+                            document.createStyleSheet(sprite);
+                        } else {
+                            $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
+                        }
+                    }
+                    while (readyCallbacks.length) {
+                        readyCallbacks.shift().call();
+                    }
+                    cdn.isLoading = false;
+                });
             } else {
                 emojioneVersion = detectVersion(emojione);
                 emojioneSupportMode = getSupportMode(emojioneVersion);
-                if(emojioneSupportMode > 4) {
-                    cdn.base = cdn.defaultBase3 + "-assets@" + emojioneVersion;
+                if (emojioneSupportMode > 4) {
+                    cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
                 } else {
                     cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
                 }
@@ -111,17 +101,16 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
 
         emojioneReady(function() {
             var emojiSize = "";
-
             if (options.useInternalCDN) {
-                if(emojioneSupportMode > 4) emojiSize = emojione.emojiSize + "/";
+                if (emojioneSupportMode > 4) emojiSize = emojione.emojiSize + "/";
                 
                 emojione.imagePathPNG = cdn.base + "/png/" + emojiSize;
                 emojione.imagePathSVG = cdn.base + "/svg/" + emojiSize;
                 emojione.imagePathSVGSprites = cdn.base + "/sprites/emojione.sprites.svg";
                 emojione.imageType = options.imageType;
             }
-            if(getSupportMode(emojioneVersion) > 4) {
-                uniRegexp = new RegExp("(" + emojione.regUnicode + ")", "gi");
+            if (getSupportMode(emojioneVersion) > 4) {
+                uniRegexp = emojione.regUnicode;
             } else {
                 uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(" + emojione.unicodeRegexp + ")", "gi");
             }
