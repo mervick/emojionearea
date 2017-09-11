@@ -86,7 +86,7 @@ Default options
       hideSource        : true, // hide source element after binding
       autoHideFilters   : false, // auto hide filters panel
 
-      useSprite         : true, // use sprite instead of images, is awesome, but not works in old browsers
+      sprite         : true, // use sprite instead of images, is awesome, but not works in old browsers
       shortnames        : false, // if true - will converts emojis to short names,
                                  // by default converts emojis to unicode characters
 

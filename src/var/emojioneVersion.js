@@ -1,3 +1,3 @@
 define([], function() {
-    return window.emojioneVersion || '2.1.4';
+    return window.emojioneVersion || '2.2.7';
 });

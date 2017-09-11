@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.1.8
+ * EmojioneArea v3.2.0
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-03-06T21:02Z
+ * Date: 2017-09-06T17:05Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -88,8 +88,13 @@ document = window.document || {};
             shortname = ":" + shortname.replace(/:$/,'').replace(/^:/,'') + ":";
             var unicode = emojione.emojioneList[shortname];
             if (unicode) {
-                if (emojioneSupportMode > 3) unicode = unicode.unicode;
-                return getTemplate(template, unicode[unicode.length-1], shortname);
+                if (emojioneSupportMode > 4) {
+                    unicode = unicode.uc_base;
+                    return getTemplate(template, unicode, shortname);
+                } else {
+                    if (emojioneSupportMode > 3) unicode = unicode.unicode;
+                    return getTemplate(template, unicode[unicode.length-1], shortname);
+                } 
             }
             return clear ? '' : shortname;
         });
@@ -1076,25 +1081,32 @@ document = window.document || {};
 
         //}, self.id === 1); // calcElapsedTime()
     };
-    var emojioneVersion = window.emojioneVersion || '2.1.4';
+    var emojioneVersion = window.emojioneVersion || '2.2.7';
     var cdn = { 
         defaultBase: "https://cdnjs.cloudflare.com/ajax/libs/emojione/",
+        defaultBase3: "https://cdn.jsdelivr.net/",
         base: null,
         isLoading: false
     };
     function loadEmojione(options) {
 
         function detectVersion(emojione) {
-            var version = emojione.cacheBustParam;
-            if (!isObject(emojione['jsEscapeMap'])) return '1.5.2';
-            if (version === "?v=1.2.4") return '2.0.0';
-            if (version === "?v=2.0.1") return '2.1.0'; // v2.0.1 || v2.1.0
-            if (version === "?v=2.1.1") return '2.1.1';
-            if (version === "?v=2.1.2") return '2.1.2';
-            if (version === "?v=2.1.3") return '2.1.3';
-            if (version === "?v=2.1.4") return '2.1.4';
-            if (version === "?v=2.2.7") return '2.2.7';
-            return '2.2.7';
+            var version;
+            if (emojione.cacheBustParam) {
+                version = emojione.cacheBustParam;
+                if (!isObject(emojione['jsEscapeMap'])) return '1.5.2';
+                if (version === "?v=1.2.4") return '2.0.0';
+                if (version === "?v=2.0.1") return '2.1.0'; // v2.0.1 || v2.1.0
+                if (version === "?v=2.1.1") return '2.1.1';
+                if (version === "?v=2.1.2") return '2.1.2';
+                if (version === "?v=2.1.3") return '2.1.3';
+                if (version === "?v=2.1.4") return '2.1.4';
+                if (version === "?v=2.2.7") return '2.2.7';
+                return '2.2.7';    
+            } else {
+                return emojione.emojiVersion;
+            }
+            
         }
 
         function getSupportMode(version) {
@@ -1106,22 +1118,44 @@ document = window.document || {};
                 case '2.1.2': return 3;
                 case '2.1.3':
                 case '2.1.4':
-                case '2.2.7':
-                default: return 4;
+                case '2.2.7': return 4;
+                case '3.0.1': 
+                case '3.0.2': 
+                case '3.0.3': 
+                case '3.0': return 5;
+                case '3.1.0':                
+                case '3.1.1':                
+                case '3.1.2':                
+                case '3.1':                
+                default: return 6;
             }
         }
-        options = getOptions(options);
 
+        options = getOptions(options);
         if (!cdn.isLoading) {
             if (!emojione || getSupportMode(detectVersion(emojione)) < 2) {
                 cdn.isLoading = true;
-                $.getScript(cdn.defaultBase + emojioneVersion + "/lib/js/emojione.min.js", function () {
+                var emojioneJsCdnUrlBase;
+                if (getSupportMode(emojioneVersion) > 5) {
+                    emojioneJsCdnUrlBase = cdn.defaultBase3 + "npm/emojione@" + emojioneVersion;
+                } else if (getSupportMode(emojioneVersion) > 4) {
+                    emojioneJsCdnUrlBase = cdn.defaultBase3 + "emojione/" + emojioneVersion;
+                } else {
+                    emojioneJsCdnUrlBase = cdn.defaultBase + "/" + emojioneVersion;
+                }
+                $.getScript(emojioneJsCdnUrlBase + "/lib/js/emojione.min.js", function () {
                     emojione = window.emojione;
                     emojioneVersion = detectVersion(emojione);
                     emojioneSupportMode = getSupportMode(emojioneVersion);
-                    cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
+                    var sprite;
+                    if (emojioneSupportMode > 4) {
+                        cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
+                        sprite = cdn.base + "/sprites/emojione-sprite-" + emojione.emojiSize + ".css";
+                    } else {
+                        cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
+                        sprite = cdn.base + "/sprites/emojione.sprites.css";
+                    }
                     if (options.sprite) {
-                        var sprite = cdn.base + "/sprites/emojione.sprites.css";
                         if (document.createStyleSheet) {
                             document.createStyleSheet(sprite);
                         } else {
@@ -1136,19 +1170,30 @@ document = window.document || {};
             } else {
                 emojioneVersion = detectVersion(emojione);
                 emojioneSupportMode = getSupportMode(emojioneVersion);
-                cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
+                if (emojioneSupportMode > 4) {
+                    cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
+                } else {
+                    cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
+                }
             }
         }
 
         emojioneReady(function() {
+            var emojiSize = "";
             if (options.useInternalCDN) {
-                emojione.imagePathPNG = cdn.base + "/png/";
-                emojione.imagePathSVG = cdn.base + "/svg/";
+                if (emojioneSupportMode > 4) emojiSize = emojione.emojiSize + "/";
+                
+                emojione.imagePathPNG = cdn.base + "/png/" + emojiSize;
+                emojione.imagePathSVG = cdn.base + "/svg/" + emojiSize;
                 emojione.imagePathSVGSprites = cdn.base + "/sprites/emojione.sprites.svg";
                 emojione.imageType = options.imageType;
             }
-
-            uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(" + emojione.unicodeRegexp + ")", "gi");
+            if (getSupportMode(emojioneVersion) > 4) {
+                uniRegexp = emojione.regUnicode;
+                emojione.imageType = options.imageType || "png";
+            } else {
+                uniRegexp = new RegExp("<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(" + emojione.unicodeRegexp + ")", "gi");
+            }
         });
     };
     var EmojioneArea = function(element, options) {
