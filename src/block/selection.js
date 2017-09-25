@@ -12,7 +12,7 @@ define([], function() {
             var range = document.createRange();
             range.setStart(sel.startContainer, sel.startOffset);
             range.setEnd(sel.endContainer, sel.endOffset)
-            
+
             sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);

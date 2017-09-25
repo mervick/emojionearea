@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-09-06T17:05Z
+ * Date: 2017-09-25T10:29Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -76,10 +76,17 @@ document = window.document || {};
         if (shortname) {
             friendlyName = shortname.substr(1, shortname.length - 2).replace(/_/g, ' ').replace(/\w\S*/g, function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
         }
+        var fname = '';
+        if (emojioneSupportMode > 4) {
+            fname = unicode.uc_base;
+            unicode = unicode.uc_output.toUpperCase();
+        } else {
+            fname = unicode;
+        }
         return template
             .replace('{name}', shortname || '')
             .replace('{friendlyName}', friendlyName)
-            .replace('{img}', imagePath + (emojioneSupportMode < 2 ? unicode.toUpperCase() : unicode) + '.' + imageType)
+            .replace('{img}', imagePath + (emojioneSupportMode < 2 ? fname.toUpperCase() : fname) + '.' + imageType)
             .replace('{uni}', unicode)
             .replace('{alt}', emojione.convert(unicode));
     };
@@ -89,12 +96,11 @@ document = window.document || {};
             var unicode = emojione.emojioneList[shortname];
             if (unicode) {
                 if (emojioneSupportMode > 4) {
-                    unicode = unicode.uc_base;
                     return getTemplate(template, unicode, shortname);
                 } else {
                     if (emojioneSupportMode > 3) unicode = unicode.unicode;
                     return getTemplate(template, unicode[unicode.length-1], shortname);
-                } 
+                }
             }
             return clear ? '' : shortname;
         });
@@ -368,7 +374,7 @@ document = window.document || {};
             var range = document.createRange();
             range.setStart(sel.startContainer, sel.startOffset);
             range.setEnd(sel.endContainer, sel.endOffset)
-            
+
             sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
@@ -889,7 +895,7 @@ document = window.document || {};
             if (self.recentEmojis) {
                 setRecent(self, emojibtn.data("name"));
             }
-            
+
             self.search.val('');
             self.trigger('search.keypress');
         })
@@ -964,7 +970,7 @@ document = window.document || {};
                     } else {
                         var $notMatched = $category.find('.emojibtn:not([data-name*="' + term + '"])')
                         $notMatched.hide();
-                        
+
                         $matched.show();
                         $category.show();
                         filterBtns.filter('[data-filter="' + $category.attr('name') + '"]').show();
@@ -1082,7 +1088,7 @@ document = window.document || {};
         //}, self.id === 1); // calcElapsedTime()
     };
     var emojioneVersion = window.emojioneVersion || '2.2.7';
-    var cdn = { 
+    var cdn = {
         defaultBase: "https://cdnjs.cloudflare.com/ajax/libs/emojione/",
         defaultBase3: "https://cdn.jsdelivr.net/",
         base: null,
@@ -1102,11 +1108,11 @@ document = window.document || {};
                 if (version === "?v=2.1.3") return '2.1.3';
                 if (version === "?v=2.1.4") return '2.1.4';
                 if (version === "?v=2.2.7") return '2.2.7';
-                return '2.2.7';    
+                return '2.2.7';
             } else {
                 return emojione.emojiVersion;
             }
-            
+
         }
 
         function getSupportMode(version) {
@@ -1119,14 +1125,14 @@ document = window.document || {};
                 case '2.1.3':
                 case '2.1.4':
                 case '2.2.7': return 4;
-                case '3.0.1': 
-                case '3.0.2': 
-                case '3.0.3': 
+                case '3.0.1':
+                case '3.0.2':
+                case '3.0.3':
                 case '3.0': return 5;
-                case '3.1.0':                
-                case '3.1.1':                
-                case '3.1.2':                
-                case '3.1':                
+                case '3.1.0':
+                case '3.1.1':
+                case '3.1.2':
+                case '3.1':
                 default: return 6;
             }
         }
@@ -1182,7 +1188,7 @@ document = window.document || {};
             var emojiSize = "";
             if (options.useInternalCDN) {
                 if (emojioneSupportMode > 4) emojiSize = emojione.emojiSize + "/";
-                
+
                 emojione.imagePathPNG = cdn.base + "/png/" + emojiSize;
                 emojione.imagePathSVG = cdn.base + "/svg/" + emojiSize;
                 emojione.imagePathSVGSprites = cdn.base + "/sprites/emojione.sprites.svg";

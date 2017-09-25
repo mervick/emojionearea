@@ -23,11 +23,11 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
                 if (version === "?v=2.1.3") return '2.1.3';
                 if (version === "?v=2.1.4") return '2.1.4';
                 if (version === "?v=2.2.7") return '2.2.7';
-                return '2.2.7';    
+                return '2.2.7';
             } else {
                 return emojione.emojiVersion;
             }
-            
+
         }
 
         function getSupportMode(version) {
@@ -40,14 +40,14 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
                 case '2.1.3':
                 case '2.1.4':
                 case '2.2.7': return 4;
-                case '3.0.1': 
-                case '3.0.2': 
-                case '3.0.3': 
+                case '3.0.1':
+                case '3.0.2':
+                case '3.0.3':
                 case '3.0': return 5;
-                case '3.1.0':                
-                case '3.1.1':                
-                case '3.1.2':                
-                case '3.1':                
+                case '3.1.0':
+                case '3.1.1':
+                case '3.1.2':
+                case '3.1':
                 default: return 6;
             }
         }
@@ -103,7 +103,7 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
             var emojiSize = "";
             if (options.useInternalCDN) {
                 if (emojioneSupportMode > 4) emojiSize = emojione.emojiSize + "/";
-                
+
                 emojione.imagePathPNG = cdn.base + "/png/" + emojiSize;
                 emojione.imagePathSVG = cdn.base + "/svg/" + emojiSize;
                 emojione.imagePathSVGSprites = cdn.base + "/sprites/emojione.sprites.svg";
