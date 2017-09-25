@@ -8,7 +8,7 @@ function($, emojioneReady, EmojioneArea) {
         var self = this;
         emojioneReady(function () {
             self.editor.prop('contenteditable', false);
-			self.hidePicker();
+            self.hidePicker();
             self.button.hide();
         });
         return self;
