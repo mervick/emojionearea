@@ -352,7 +352,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             if (self.recentEmojis) {
                 setRecent(self, emojibtn.data("name"));
             }
-            
+
             self.search.val('');
             self.trigger('search.keypress');
         })
@@ -427,7 +427,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     } else {
                         var $notMatched = $category.find('.emojibtn:not([data-name*="' + term + '"])')
                         $notMatched.hide();
-                        
+
                         $matched.show();
                         $category.show();
                         filterBtns.filter('[data-filter="' + $category.attr('name') + '"]').show();

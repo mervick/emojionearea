@@ -11,12 +11,11 @@ function($, emojione, emojioneSupportMode, getTemplate) {
             var unicode = emojione.emojioneList[shortname];
             if (unicode) {
                 if (emojioneSupportMode > 4) {
-                    unicode = unicode.uc_base;
                     return getTemplate(template, unicode, shortname);
                 } else {
                     if (emojioneSupportMode > 3) unicode = unicode.unicode;
                     return getTemplate(template, unicode[unicode.length-1], shortname);
-                } 
+                }
             }
             return clear ? '' : shortname;
         });

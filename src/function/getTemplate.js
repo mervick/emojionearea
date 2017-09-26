@@ -14,10 +14,17 @@ function(emojione, emojioneSupportMode) {
         if (shortname) {
             friendlyName = shortname.substr(1, shortname.length - 2).replace(/_/g, ' ').replace(/\w\S*/g, function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
         }
+        var fname = '';
+        if (unicode.uc_base && emojioneSupportMode > 4) {
+            fname = unicode.uc_base;
+            unicode = unicode.uc_output.toUpperCase();
+        } else {
+            fname = unicode;
+        }
         return template
             .replace('{name}', shortname || '')
             .replace('{friendlyName}', friendlyName)
-            .replace('{img}', imagePath + (emojioneSupportMode < 2 ? unicode.toUpperCase() : unicode) + '.' + imageType)
+            .replace('{img}', imagePath + (emojioneSupportMode < 2 ? fname.toUpperCase() : fname) + '.' + imageType)
             .replace('{uni}', unicode)
             .replace('{alt}', emojione.convert(unicode));
     };
