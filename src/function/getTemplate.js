@@ -15,7 +15,7 @@ function(emojione, emojioneSupportMode) {
             friendlyName = shortname.substr(1, shortname.length - 2).replace(/_/g, ' ').replace(/\w\S*/g, function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
         }
         var fname = '';
-        if (emojioneSupportMode > 4) {
+        if (unicode.uc_base && emojioneSupportMode > 4) {
             fname = unicode.uc_base;
             unicode = unicode.uc_output.toUpperCase();
         } else {
