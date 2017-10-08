@@ -542,6 +542,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             document.execCommand("enableObjectResizing", false, false);
         }
 
+        self.trigger("onLoad", editor);
         //}, self.id === 1); // calcElapsedTime()
     };
 });
