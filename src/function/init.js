@@ -54,7 +54,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             },
             editor = self.editor = div("editor").attr({
                 contenteditable: (self.standalone) ? false : true,
-                placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
+                placeholder: options.placeholder || source.data("placeholder") || source.attr("placeholder") || "",
                 tabindex: 0
             }),
             button = self.button = div('button',
@@ -194,7 +194,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
         attach(self, button, {click: "button.click"});
         attach(self, editor, {paste :"!paste"}, editor);
-        attach(self, editor, ["focus", "blur"], function() { return self.stayFocused ? false : editor } );
+        attach(self, editor, ["focus", "blur"], function() { return self.stayFocused ? false : editor; } );
         attach(self, picker, {mousedown: "picker.mousedown", mouseup: "picker.mouseup", click: "picker.click",
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
@@ -295,7 +295,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 self.stayFocused = false;
                 calcButtonPosition.apply(self);
                 trigger(self, 'paste', [editor, text, html]);
-            }
+            };
 
             if (event.originalEvent.clipboardData) {
                 var text = event.originalEvent.clipboardData.getData('text/plain');
@@ -305,7 +305,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     event.preventDefault();
                 } else {
                     event.stop();
-                };
+                }
 
                 event.returnValue = false;
                 event.stopPropagation();
@@ -363,7 +363,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             if ($(event.target).hasClass('search')) {
                 // Allow search clicks
                 self.stayFocused = true;
-                if (self.searchSel == null) {
+                if (self.searchSel === null) {
                     self.searchSel = saveSelection(editor[0]);
                 }
             } else {
@@ -425,7 +425,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         $category.hide();
                         filterBtns.filter('[data-filter="' + $category.attr('name') + '"]').hide();
                     } else {
-                        var $notMatched = $category.find('.emojibtn:not([data-name*="' + term + '"])')
+                        var $notMatched = $category.find('.emojibtn:not([data-name*="' + term + '"])');
                         $notMatched.hide();
 
                         $matched.show();
@@ -542,6 +542,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             document.execCommand("enableObjectResizing", false, false);
         }
 
+        self.trigger("onLoad", editor);
         //}, self.id === 1); // calcElapsedTime()
     };
 });
