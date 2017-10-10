@@ -93,7 +93,7 @@ Default options
       sprite            : true, // use sprite instead of images, is awesome, but not works in old browsers
       shortnames        : false, // if true - will converts emojis to short names,
                                  // by default converts emojis to unicode characters
-      standalone        : false, // whether to use standlaone emokjipicker (for EmojiOneArea 2.1 only)
+      standalone        : false, // whether to use standlaone EmojiOneArea picker (for EmojiOneArea 2.1 only)
       useInternalCDN    : true, 
       recentEmojis      : true, // whether to show recently select Emoji's in picker
       
