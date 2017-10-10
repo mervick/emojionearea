@@ -303,44 +303,45 @@ PRs welcome.
 ## FAQ / Troubleshooting
 
 #### EmojiOne icons are appearing larger than expected
-
 Most likely caused by including some scripts in the wrong order (or perhaps not at all!)
 Include jQuery, then EmojiOne, then EmojiOneArea scripts
 
 #### Can I use EmojiOneArea to just display Emoji icons in a div?
-
 EmojiOneArea is intended to be a text editor which supports EmojiOne. 
 If you just want to display Emoji icons, the EmojiOne library already provides everything you need. 
 
 #### Can I add extra buttons into EmojiOneArea, alongside the existing emoji picker icon?
-
-This is not currently supported, but is being looked at (see 
+This is not fully supported, but you could respond to the jQuery onLoad event which EmojiOneArea fires once its initialised, and insert your buttons into the DOM at this point
+see https://github.com/mervick/emojionearea/issues/152
 
 #### Firefox is not positioning the input caret correctly in EmojiOneArea
+This appears to be a long standing FireFox bug, apparently related to contenteditable, the placeholder attribute, and the pseudo :before or :after classes
+https://bugzilla.mozilla.org/show_bug.cgi?id=1020973
 
-This appears to be a long standing FireFox bug, related to contenteditable, the placeholder attribute, and the psuedo :before or :after classes
-There are various workarounds such as passing or changing placeholder
-See #86
+There are various workarounds such as changing placeholder, or adding some padding 
+See https://github.com/mervick/emojionearea/issues/86
 
 #### Can I modify the position of EmojiOneArea picker?
-
-You can use the pickerPosition option which allows you to control where the picker appears in relation to the source input.
-For more control, you could use translate CSS
+You can use the `pickerPosition` option which provides basic control of where the picker appears, in relation to the source input.
+For more control, you could apply translate CSS to the picker 
 
 ## Known Issues
 
 #### Internet Explorer focus issues
-IE 11 causes EmojiOneArea to hide (and trigger blur event) when the emoji picker scrollbar is clicked (See #127) 
+IE 11 causes EmojiOneArea to hide (and trigger blur event) when the emoji picker scrollbar is clicked
+There is no current fix for this, although there are a few crude workarounds
+See https://github.com/mervick/emojionearea/issues/127
 
-#### EmojiOneAea positioning 
+#### EmojiOneArea positioning 
 There are known issues with positioning the EmojiOneArea picker. 
 It does not currently ensure the picker is entirely visible on small screen devices, or positioned properly when it is invoked from the bottom of a page (it could be clipped) 
+See https://github.com/mervick/emojionearea/issues/131
 
 #### Browser loads the textcomplete.js from CDN, everytime an EmojiOneArea is instantiated
-
 You can avoid this by explicitly including the textcomplete script into your document. 
 If it already exists, EmojiOneArea will use the preloaded script instead of attempting to load it from CDN for each instance
 You can also avoid this by disabling autocomplate entirely by setting the autocomplete option to false
+
 
 
 ## Requirements
