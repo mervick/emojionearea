@@ -19,7 +19,7 @@ The end result is a secure text/plain in which the image icons will be replaced 
 
 [See Version 2.1 Live Demo here.](http://mervick.github.io/emojionearea/)
 
-[See Version 2.1 Documentation here.](https://github.com/mervick/emojionearea/doc/README_v2.1.md)
+[See Version 2.1 Documentation here.](https://github.com/mervick/emojionearea/blob/master/doc/README_v2.1.md)
 
 ## Installation
 
