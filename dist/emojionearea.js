@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-10-27T12:34Z
+ * Date: 2017-10-27T12:52Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1233,7 +1233,7 @@ document = window.document || {};
 
             var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
             if (term !== "") {
-                categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').each(function() {
+                categories.filter('[data-tone="' + (options.tones ? tones.find("i.active").data("skin") : 0) + '"]:not([name="recent"])').each(function() {
                     var $category = $(this);
                     var $matched = $category.find('.emojibtn[data-name*="' + term + '"]');
                     if ($matched.length === 0) {
