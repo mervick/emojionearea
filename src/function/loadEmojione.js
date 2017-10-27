@@ -6,52 +6,11 @@ define([
     'var/emojioneSupportMode',
     'var/cdn',
     'function/emojioneReady',
-    'function/isObject'
+    'function/detectVersion',
+    'function/getSupportMode'
 ],
-function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMode, cdn, emojioneReady, isObject) {
+function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMode, cdn, emojioneReady, detectVersion, getSupportMode) {
     return function(options) {
-
-        function detectVersion(emojione) {
-            var version;
-            if (emojione.cacheBustParam) {
-                version = emojione.cacheBustParam;
-                if (!isObject(emojione['jsEscapeMap'])) return '1.5.2';
-                if (version === "?v=1.2.4") return '2.0.0';
-                if (version === "?v=2.0.1") return '2.1.0'; // v2.0.1 || v2.1.0
-                if (version === "?v=2.1.1") return '2.1.1';
-                if (version === "?v=2.1.2") return '2.1.2';
-                if (version === "?v=2.1.3") return '2.1.3';
-                if (version === "?v=2.1.4") return '2.1.4';
-                if (version === "?v=2.2.7") return '2.2.7';
-                return '2.2.7';
-            } else {
-                return emojione.emojiVersion;
-            }
-
-        }
-
-        function getSupportMode(version) {
-            switch (version) {
-                case '1.5.2': return 0;
-                case '2.0.0': return 1;
-                case '2.1.0':
-                case '2.1.1': return 2;
-                case '2.1.2': return 3;
-                case '2.1.3':
-                case '2.1.4':
-                case '2.2.7': return 4;
-                case '3.0.1':
-                case '3.0.2':
-                case '3.0.3':
-                case '3.0': return 5;
-                case '3.1.0':
-                case '3.1.1':
-                case '3.1.2':
-                case '3.1':
-                default: return 6;
-            }
-        }
-
         options = getOptions(options);
         if (!cdn.isLoading) {
             if (!emojione || getSupportMode(detectVersion(emojione)) < 2) {
