@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-09-26T15:20Z
+ * Date: 2017-10-27T12:28Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -597,7 +597,7 @@ document = window.document || {};
             },
             editor = self.editor = div("editor").attr({
                 contenteditable: (self.standalone) ? false : true,
-                placeholder: options["placeholder"] || source.data("placeholder") || source.attr("placeholder") || "",
+                placeholder: options.placeholder || source.data("placeholder") || source.attr("placeholder") || "",
                 tabindex: 0
             }),
             button = self.button = div('button',
@@ -737,7 +737,7 @@ document = window.document || {};
         attach(self, [picker, button], {mousedown: "!mousedown"}, editor);
         attach(self, button, {click: "button.click"});
         attach(self, editor, {paste :"!paste"}, editor);
-        attach(self, editor, ["focus", "blur"], function() { return self.stayFocused ? false : editor } );
+        attach(self, editor, ["focus", "blur"], function() { return self.stayFocused ? false : editor; } );
         attach(self, picker, {mousedown: "picker.mousedown", mouseup: "picker.mouseup", click: "picker.click",
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
@@ -838,7 +838,7 @@ document = window.document || {};
                 self.stayFocused = false;
                 calcButtonPosition.apply(self);
                 trigger(self, 'paste', [editor, text, html]);
-            }
+            };
 
             if (event.originalEvent.clipboardData) {
                 var text = event.originalEvent.clipboardData.getData('text/plain');
@@ -848,7 +848,7 @@ document = window.document || {};
                     event.preventDefault();
                 } else {
                     event.stop();
-                };
+                }
 
                 event.returnValue = false;
                 event.stopPropagation();
@@ -906,7 +906,7 @@ document = window.document || {};
             if ($(event.target).hasClass('search')) {
                 // Allow search clicks
                 self.stayFocused = true;
-                if (self.searchSel == null) {
+                if (self.searchSel === null) {
                     self.searchSel = saveSelection(editor[0]);
                 }
             } else {
@@ -961,14 +961,14 @@ document = window.document || {};
 
             var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
             if (term !== "") {
-                categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').each(function() {
+                categories.filter('[data-tone="' + (options.tones ? tones.find("i.active").data("skin") : 0) + '"]:not([name="recent"])').each(function() {
                     var $category = $(this);
                     var $matched = $category.find('.emojibtn[data-name*="' + term + '"]');
                     if ($matched.length === 0) {
                         $category.hide();
                         filterBtns.filter('[data-filter="' + $category.attr('name') + '"]').hide();
                     } else {
-                        var $notMatched = $category.find('.emojibtn:not([data-name*="' + term + '"])')
+                        var $notMatched = $category.find('.emojibtn:not([data-name*="' + term + '"])');
                         $notMatched.hide();
 
                         $matched.show();
@@ -1085,6 +1085,7 @@ document = window.document || {};
             document.execCommand("enableObjectResizing", false, false);
         }
 
+        self.trigger("onLoad", editor);
         //}, self.id === 1); // calcElapsedTime()
     };
     var emojioneVersion = window.emojioneVersion || '2.2.7';
