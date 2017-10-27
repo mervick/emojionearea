@@ -418,7 +418,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
             var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
             if (term !== "") {
-                categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').each(function() {
+                categories.filter('[data-tone="' + (options.tones ? tones.find("i.active").data("skin") : 0) + '"]:not([name="recent"])').each(function() {
                     var $category = $(this);
                     var $matched = $category.find('.emojibtn[data-name*="' + term + '"]');
                     if ($matched.length === 0) {
