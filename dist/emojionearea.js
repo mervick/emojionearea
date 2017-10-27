@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-10-26T15:38Z
+ * Date: 2017-10-27T08:04Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -131,7 +131,50 @@ document = window.document || {};
             document.selection.createRange().pasteHTML(html);
         }
     }
+    function isObject(variable) {
+        return typeof variable === 'object';
+    };
+    function detectVersion(emojione) {
+        var version;
+        if (emojione.cacheBustParam) {
+            version = emojione.cacheBustParam;
+            if (!isObject(emojione['jsEscapeMap'])) return '1.5.2';
+            if (version === "?v=1.2.4") return '2.0.0';
+            if (version === "?v=2.0.1") return '2.1.0'; // v2.0.1 || v2.1.0
+            if (version === "?v=2.1.1") return '2.1.1';
+            if (version === "?v=2.1.2") return '2.1.2';
+            if (version === "?v=2.1.3") return '2.1.3';
+            if (version === "?v=2.1.4") return '2.1.4';
+            if (version === "?v=2.2.7") return '2.2.7';
+            return '2.2.7';
+        } else {
+            return emojione.emojiVersion;
+        }
+    };
+    function getSupportMode(version) {
+        switch (version) {
+            case '1.5.2': return 0;
+            case '2.0.0': return 1;
+            case '2.1.0':
+            case '2.1.1': return 2;
+            case '2.1.2': return 3;
+            case '2.1.3':
+            case '2.1.4':
+            case '2.2.7': return 4;
+            case '3.0.1':
+            case '3.0.2':
+            case '3.0.3':
+            case '3.0': return 5;
+            case '3.1.0':
+            case '3.1.1':
+            case '3.1.2':
+            case '3.1':
+            default: return 6;
+        }
+    };
     var getDefaultOptions = function () {
+        console.log('#####hmmm2');
+        console.log('getDefaultOptions');
         var defaultOptions = {
             attributes: {
                 dir               : "ltr",
@@ -167,7 +210,10 @@ document = window.document || {};
             }
         };
 
-        if (emojioneSupportMode > 4) {
+        console.log('#####TEST');
+        console.log(getSupportMode(detectVersion(emojione)));
+
+        if (getSupportMode(detectVersion(emojione)) > 4) {
             defaultOptions.filters = {
                 tones: {
                     title: "Diversity",
@@ -569,9 +615,6 @@ document = window.document || {};
         };
 
         return $.fn.emojioneArea && $.fn.emojioneArea.defaults ? $.fn.emojioneArea.defaults : defaultOptions
-    };
-    function isObject(variable) {
-        return typeof variable === 'object';
     };
     function getOptions(options) {
         var default_options = getDefaultOptions();
@@ -1326,48 +1369,6 @@ document = window.document || {};
         isLoading: false
     };
     function loadEmojione(options) {
-
-        function detectVersion(emojione) {
-            var version;
-            if (emojione.cacheBustParam) {
-                version = emojione.cacheBustParam;
-                if (!isObject(emojione['jsEscapeMap'])) return '1.5.2';
-                if (version === "?v=1.2.4") return '2.0.0';
-                if (version === "?v=2.0.1") return '2.1.0'; // v2.0.1 || v2.1.0
-                if (version === "?v=2.1.1") return '2.1.1';
-                if (version === "?v=2.1.2") return '2.1.2';
-                if (version === "?v=2.1.3") return '2.1.3';
-                if (version === "?v=2.1.4") return '2.1.4';
-                if (version === "?v=2.2.7") return '2.2.7';
-                return '2.2.7';
-            } else {
-                return emojione.emojiVersion;
-            }
-
-        }
-
-        function getSupportMode(version) {
-            switch (version) {
-                case '1.5.2': return 0;
-                case '2.0.0': return 1;
-                case '2.1.0':
-                case '2.1.1': return 2;
-                case '2.1.2': return 3;
-                case '2.1.3':
-                case '2.1.4':
-                case '2.2.7': return 4;
-                case '3.0.1':
-                case '3.0.2':
-                case '3.0.3':
-                case '3.0': return 5;
-                case '3.1.0':
-                case '3.1.1':
-                case '3.1.2':
-                case '3.1':
-                default: return 6;
-            }
-        }
-
         options = getOptions(options);
         if (!cdn.isLoading) {
             if (!emojione || getSupportMode(detectVersion(emojione)) < 2) {
@@ -1384,6 +1385,7 @@ document = window.document || {};
                     emojione = window.emojione;
                     emojioneVersion = detectVersion(emojione);
                     emojioneSupportMode = getSupportMode(emojioneVersion);
+                    options = getOptions(options);
                     var sprite;
                     if (emojioneSupportMode > 4) {
                         cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;

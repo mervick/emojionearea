@@ -1,8 +1,10 @@
 define([
     'jquery',
-    'var/emojioneSupportMode'
+    'var/emojione',
+    'function/detectVersion',
+    'function/getSupportMode'
 ],
-function($, emojioneSupportMode) {
+function($, emojione, detectVersion, getSupportMode) {
     return function () {
         var defaultOptions = {
             attributes: {
@@ -39,7 +41,7 @@ function($, emojioneSupportMode) {
             }
         };
 
-        if (emojioneSupportMode > 4) {
+        if (getSupportMode(detectVersion(emojione)) > 4) {
             defaultOptions.filters = {
                 tones: {
                     title: "Diversity",
