@@ -6,6 +6,10 @@ define([
 ],
 function($, emojione, detectVersion, getSupportMode) {
     return function () {
+        if ($.fn.emojioneArea && $.fn.emojioneArea.defaults) {
+            return $.fn.emojioneArea.defaults;
+        }
+
         var defaultOptions = {
             attributes: {
                 dir               : "ltr",
@@ -442,6 +446,6 @@ function($, emojione, detectVersion, getSupportMode) {
             };
         };
 
-        return $.fn.emojioneArea && $.fn.emojioneArea.defaults ? $.fn.emojioneArea.defaults : defaultOptions
+        return defaultOptions;
     };
 });

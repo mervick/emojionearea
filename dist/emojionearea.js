@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-10-27T12:30Z
+ * Date: 2017-10-27T12:34Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -173,6 +173,10 @@ document = window.document || {};
         }
     };
     var getDefaultOptions = function () {
+        if ($.fn.emojioneArea && $.fn.emojioneArea.defaults) {
+            return $.fn.emojioneArea.defaults;
+        }
+
         var defaultOptions = {
             attributes: {
                 dir               : "ltr",
@@ -609,7 +613,7 @@ document = window.document || {};
             };
         };
 
-        return $.fn.emojioneArea && $.fn.emojioneArea.defaults ? $.fn.emojioneArea.defaults : defaultOptions
+        return defaultOptions;
     };
     function getOptions(options) {
         var default_options = getDefaultOptions();
