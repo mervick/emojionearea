@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-10-27T08:04Z
+ * Date: 2017-10-27T12:30Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -173,8 +173,6 @@ document = window.document || {};
         }
     };
     var getDefaultOptions = function () {
-        console.log('#####hmmm2');
-        console.log('getDefaultOptions');
         var defaultOptions = {
             attributes: {
                 dir               : "ltr",
@@ -209,9 +207,6 @@ document = window.document || {};
                 placement     : null // null - default | top | absleft | absright
             }
         };
-
-        console.log('#####TEST');
-        console.log(getSupportMode(detectVersion(emojione)));
 
         if (getSupportMode(detectVersion(emojione)) > 4) {
             defaultOptions.filters = {
@@ -1385,7 +1380,6 @@ document = window.document || {};
                     emojione = window.emojione;
                     emojioneVersion = detectVersion(emojione);
                     emojioneSupportMode = getSupportMode(emojioneVersion);
-                    options = getOptions(options);
                     var sprite;
                     if (emojioneSupportMode > 4) {
                         cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
