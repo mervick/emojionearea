@@ -1,10 +1,10 @@
 {
   "name": "emojionearea",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "WYSIWYG-like EmojiOne Converter / Picker Plugin for jQuery",
   "main": "dist/emojionearea.js",
   "scripts": {
-    "build": "npm install && grunt",
+    "build": "node_modules/.bin/grunt",
     "test": "echo 'Error: no test specified' && exit 1"
   },
   "repository": {
@@ -40,8 +40,5 @@
     "grunt-contrib-uglify": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "requirejs": "^2.1.22"
-  },
-  "scripts": {
-    "build": "node_modules/.bin/grunt"
   }
 }
