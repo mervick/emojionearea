@@ -4,7 +4,7 @@
   "description": "WYSIWYG-like EmojiOne Converter / Picker Plugin for jQuery",
   "main": "dist/emojionearea.js",
   "scripts": {
-    "build": "node_modules/.bin/grunt",
+    "build": "npm install && grunt",
     "test": "echo 'Error: no test specified' && exit 1"
   },
   "repository": {
