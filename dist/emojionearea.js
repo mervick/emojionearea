@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-10-27T12:52Z
+ * Date: 2017-10-30T11:01Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -131,6 +131,7 @@ document = window.document || {};
             document.selection.createRange().pasteHTML(html);
         }
     }
+    var emojioneVersion = window.emojioneVersion || '2.2.7';
     function isObject(variable) {
         return typeof variable === 'object';
     };
@@ -212,7 +213,9 @@ document = window.document || {};
             }
         };
 
-        if (getSupportMode(detectVersion(emojione)) > 4) {
+        var supportMode = !emojione ? getSupportMode(emojioneVersion) : getSupportMode(detectVersion(emojione));
+
+        if (supportMode > 4) {
             defaultOptions.filters = {
                 tones: {
                     title: "Diversity",
@@ -1360,7 +1363,6 @@ document = window.document || {};
         self.trigger("onLoad", editor);
         //}, self.id === 1); // calcElapsedTime()
     };
-    var emojioneVersion = window.emojioneVersion || '2.2.7';
     var cdn = {
         defaultBase: "https://cdnjs.cloudflare.com/ajax/libs/emojione/",
         defaultBase3: "https://cdn.jsdelivr.net/",
