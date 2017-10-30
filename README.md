@@ -1,10 +1,10 @@
 # EmojiOne Area
 
-EmojiOne Area is a small jQuery plugin that allows you to transform any html element into simple WYSIWYG editor with 
-ability to use Emojione icons. 
+EmojiOne Area is a small jQuery plugin that allows you to transform any html element into simple WYSIWYG editor with
+ability to use Emojione icons.
 The end result is a secure text/plain in which the image icons will be replaced with their Unicode analogues.
 
-### Version 3.x 
+### Version 3.x
 
 ![EmojiOne Area version 3.0.0](http://mervick.github.io/emojionearea/images/v3.png)
 
@@ -28,7 +28,7 @@ The preferred way to install is via [Bower](http://bower.io/), [npm](https://www
 ### Install
 
 ```bash
-bower install emojionearea#^3.0.0 
+bower install emojionearea#^3.0.0
 # or
 npm install emojionearea@^3.0.0
 # or
@@ -53,7 +53,7 @@ Simple usage:
 </script>
 ```
 
-### Options 
+### Options
 
 Customize emojione version
 ```js
@@ -84,9 +84,9 @@ Default options
       shortnames        : false, // if true - will converts emojis to short names,
                                  // by default converts emojis to unicode characters
       standalone        : false, // whether to use standalone EmojiOneArea picker (for EmojiOneArea 2.1 only)
-      useInternalCDN    : true, 
+      useInternalCDN    : true,
       recentEmojis      : true, // whether to show recently select Emoji's in picker
-      
+
       textcomplete: {
         maxCount: 15,           // max amount of items to show in autocomplete drop-down list
         placement: null,        // placement of autocomplete dropdown list [ null (default) | top | absleft | absright ]
@@ -104,7 +104,7 @@ Default options
   };
 ```
 
-### Api 
+### Api
 ```js
   .on(events, handler);
   // - events
@@ -284,7 +284,7 @@ Building EmojiOneArea requires grunt, compass, and sass to be available
 For making changes and build project (scss/js):
 ```
 npm update
-node node_modules/grunt-cli/bin/grunt
+npm run build
 ```
 
 PRs welcome.
@@ -297,8 +297,8 @@ Most likely caused by including some scripts in the wrong order (or perhaps not 
 Include jQuery, then EmojiOne, then EmojiOneArea scripts
 
 #### Can I use EmojiOneArea to just display Emoji icons in a div?
-EmojiOneArea is intended to be a text editor which supports EmojiOne. 
-If you just want to display Emoji icons, the EmojiOne library already provides everything you need. 
+EmojiOneArea is intended to be a text editor which supports EmojiOne.
+If you just want to display Emoji icons, the EmojiOne library already provides everything you need.
 
 #### Can I add extra buttons into EmojiOneArea, alongside the existing emoji picker icon?
 This is not fully supported, but you could respond to the jQuery onLoad event which EmojiOneArea fires once its initialised, and insert your buttons into the DOM at this point
@@ -308,12 +308,12 @@ see https://github.com/mervick/emojionearea/issues/152
 This appears to be a long standing FireFox bug, apparently related to contenteditable, the placeholder attribute, and the pseudo :before or :after classes
 https://bugzilla.mozilla.org/show_bug.cgi?id=1020973
 
-There are various workarounds such as changing placeholder, or adding some padding 
+There are various workarounds such as changing placeholder, or adding some padding
 See https://github.com/mervick/emojionearea/issues/86
 
 #### Can I modify the position of EmojiOneArea picker?
 You can use the `pickerPosition` option which provides basic control of where the picker appears, in relation to the source input.
-For more control, you could apply translate CSS to the picker 
+For more control, you could apply translate CSS to the picker
 
 ## Known Issues
 
@@ -322,13 +322,13 @@ IE 11 causes EmojiOneArea to hide (and trigger blur event) when the emoji picker
 There is no current fix for this, although there are a few crude workarounds
 See https://github.com/mervick/emojionearea/issues/127
 
-#### EmojiOneArea positioning 
-There are known issues with positioning the EmojiOneArea picker. 
-It does not currently ensure the picker is entirely visible on small screen devices, or positioned properly when it is invoked from the bottom of a page (it could be clipped) 
+#### EmojiOneArea positioning
+There are known issues with positioning the EmojiOneArea picker.
+It does not currently ensure the picker is entirely visible on small screen devices, or positioned properly when it is invoked from the bottom of a page (it could be clipped)
 See https://github.com/mervick/emojionearea/issues/131
 
 #### Browser loads the textcomplete.js from CDN, everytime an EmojiOneArea is instantiated
-You can avoid this by explicitly including the textcomplete script into your document. 
+You can avoid this by explicitly including the textcomplete script into your document.
 If it already exists, EmojiOneArea will use the preloaded script instead of attempting to load it from CDN for each instance
 You can also avoid this by disabling autocomplate entirely by setting the autocomplete option to false
 

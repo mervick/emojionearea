@@ -40,5 +40,8 @@
     "grunt-contrib-uglify": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "requirejs": "^2.1.22"
+  },
+  "scripts": {
+    "build": "node_modules/.bin/grunt"
   }
 }
