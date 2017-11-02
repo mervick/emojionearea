@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-10-30T16:01Z
+ * Date: 2017-11-02T12:36Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -923,6 +923,8 @@ document = window.document || {};
             editor.attr(attr, value);
         });
 
+        div('category').attr({"data-tone": 0}).appendTo(emojisList);
+
         $.each(options.filters, function(filter, params) {
             var skin = 0;
             if (filter === 'recent' && !self.recentEmojis) {
@@ -942,7 +944,20 @@ document = window.document || {};
                 return;
             }
             do {
-                var category = div('category').attr({name: filter, "data-tone": skin}).appendTo(emojisList),
+                var parentEl;
+                var categoryAttributes = {
+                    name: filter,
+                    "data-tone": skin
+                }
+
+                if (skin === 0) {
+                    parentEl = emojisList.children('[data-tone="0"]');
+                    categoryAttributes["data-sub-category"] = true;
+                } else {
+                    parentEl = emojisList;
+                }
+
+                var category = div('category').attr(categoryAttributes).appendTo(parentEl),
                     items = params.emoji.replace(/[\s,;]+/g, '|');
                 if (skin > 0) {
                     category.hide();
@@ -1074,13 +1089,13 @@ document = window.document || {};
             var skin = tone.addClass("active").data("skin");
             if (skin) {
                 scrollArea.addClass("skinnable");
-                categories.hide().filter("[data-tone=" + skin + "]").show();
+                categories.filter(":not([data-sub-category])").hide().filter("[data-tone=" + skin + "]").show();
                 if (filtersBtns.eq(0).is('.active[data-filter="recent"]')) {
                     filtersBtns.eq(0).removeClass("active").next().addClass("active");
                 }
             } else {
                 scrollArea.removeClass("skinnable");
-                categories.hide().filter("[data-tone=0]").show();
+                categories.filter(":not([data-sub-category])").hide().filter("[data-tone=0]").show();
                 filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
@@ -1233,22 +1248,40 @@ document = window.document || {};
 
         .on("@search.keypress", function() {
             var filterBtns = picker.find(".emojionearea-filter");
+            var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
 
             var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
             if (term !== "") {
-                categories.filter('[data-tone="' + (options.tones ? tones.find("i.active").data("skin") : 0) + '"]:not([name="recent"])').each(function() {
-                    var $category = $(this);
-                    var $matched = $category.find('.emojibtn[data-name*="' + term + '"]');
-                    if ($matched.length === 0) {
-                        $category.hide();
-                        filterBtns.filter('[data-filter="' + $category.attr('name') + '"]').hide();
-                    } else {
-                        var $notMatched = $category.find('.emojibtn:not([data-name*="' + term + '"])');
-                        $notMatched.hide();
+                categories.filter(':not([data-sub-category])').each(function() {
+                    var matchEmojis = function(category, activeTone) {
+                        var $matched = category.find('.emojibtn[data-name*="' + term + '"]');
+                        if ($matched.length === 0) {
+                            if (category.data('tone') === activeTone) {
+                                category.hide();
+                            }
+                            filterBtns.filter('[data-filter="' + category.attr('name') + '"]').hide();
+                        } else {
+                            var $notMatched = category.find('.emojibtn:not([data-name*="' + term + '"])');
+                            $notMatched.hide();
 
-                        $matched.show();
-                        $category.show();
-                        filterBtns.filter('[data-filter="' + $category.attr('name') + '"]').show();
+                            $matched.show();
+
+                            if (category.data('tone') === activeTone) {
+                                category.show();
+                            }
+
+                            filterBtns.filter('[data-filter="' + category.attr('name') + '"]').show();
+                        }
+                    }
+
+                    var $category = $(this);
+                    matchEmojis($category, activeTone);
+
+                    // If tone 0 category, show/hide matches for tone 0 no matter the active tone
+                    if ($category.data('tone') === 0) {
+                        $category.children(selector("category") + ':not([name="recent"])').each(function() {
+                            matchEmojis($(this), 0);
+                        })
                     }
                 });
                 if (!noListenScroll) {
