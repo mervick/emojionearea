@@ -281,6 +281,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
+            self.trigger('search.keypress');
         })
 
         .on("@button.click", function(button) {
@@ -475,6 +476,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                 $('.emojibtn', categories).show();
                 filterBtns.show();
+                lazyLoading.call(self);
             }
         })
 
