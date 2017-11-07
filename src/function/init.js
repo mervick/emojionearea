@@ -281,6 +281,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
+            self.trigger('search.keypress');
         })
 
         .on("@button.click", function(button) {
