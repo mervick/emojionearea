@@ -476,6 +476,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                 $('.emojibtn', categories).show();
                 filterBtns.show();
+                lazyLoading.call(self);
             }
         })
 
