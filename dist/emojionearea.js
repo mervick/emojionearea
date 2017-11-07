@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.2.1
+ * EmojioneArea v3.2.2
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-11-02T12:36Z
+ * Date: 2017-11-07T09:39Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1099,6 +1099,7 @@ document = window.document || {};
                 filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
+            self.trigger('search.keypress');
         })
 
         .on("@button.click", function(button) {
@@ -1293,6 +1294,7 @@ document = window.document || {};
                 categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                 $('.emojibtn', categories).show();
                 filterBtns.show();
+                lazyLoading.call(self);
             }
         })
 
