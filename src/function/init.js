@@ -157,7 +157,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     true).split('|').join('');
 
                 category.html(items);
-                $('<h1/>').text(params.title).prependTo(category);
+                $('<div class="emojionearea-category-title"/>').text(params.title).prependTo(category);
             } while (--skin > 0);
         });
 

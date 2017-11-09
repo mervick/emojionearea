@@ -19,7 +19,7 @@ function(saveSelection, pasteHtmlAtCaret, shortnameTo, getRecent) {
 
                 var items = shortnameTo(emojis, self.emojiBtnTemplate, true).split('|').join('');
                 self.recentCategory.children(".emojibtn").remove();
-                $(items).insertAfter(self.recentCategory.children("h1"));
+                $(items).insertAfter(self.recentCategory.children(".emojionearea-category-title"));
 
 
                 self.recentCategory.children(".emojibtn").on("click", function() {
