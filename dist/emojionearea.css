@@ -393,7 +393,7 @@
     .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-emojis-list {
       z-index: 1; }
     /* line 379, ../scss/emojionearea.scss */
-    .emojionearea .emojionearea-picker .emojionearea-scroll-area h1 {
+    .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-category-title {
       display: block;
       font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
       font-size: 13px;
@@ -404,7 +404,7 @@
       margin: 0;
       padding: 7px 0 5px 6px; }
       /* line 390, ../scss/emojionearea.scss */
-      .emojionearea .emojionearea-picker .emojionearea-scroll-area h1:after, .emojionearea .emojionearea-picker .emojionearea-scroll-area h1:before {
+      .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-category-title:after, .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-category-title:before {
         content: " ";
         display: block;
         clear: both; }

@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-11-07T09:39Z
+ * Date: 2017-11-09T12:42Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -791,7 +791,7 @@ document = window.document || {};
 
                 var items = shortnameTo(emojis, self.emojiBtnTemplate, true).split('|').join('');
                 self.recentCategory.children(".emojibtn").remove();
-                $(items).insertAfter(self.recentCategory.children("h1"));
+                $(items).insertAfter(self.recentCategory.children(".emojionearea-category-title"));
 
 
                 self.recentCategory.children(".emojibtn").on("click", function() {
@@ -975,7 +975,7 @@ document = window.document || {};
                     true).split('|').join('');
 
                 category.html(items);
-                $('<h1/>').text(params.title).prependTo(category);
+                $('<div class="emojionearea-category-title"/>').text(params.title).prependTo(category);
             } while (--skin > 0);
         });
 
