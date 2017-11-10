@@ -5,15 +5,19 @@ define([
     'function/getRecent'
 ],
 function(saveSelection, pasteHtmlAtCaret, shortnameTo, getRecent) {
-    return function(self) {
+    return function(self, show) {
         var emojis = getRecent();
-        if (!self.recent || self.recent !== emojis) {
+        if (!self.recent || self.recent !== emojis || show) {
             if (emojis.length) {
                 var skinnable = self.scrollArea.is(".skinnable"),
                     scrollTop, height;
 
                 if (!skinnable) {
                     scrollTop = self.scrollArea.scrollTop();
+                    if (show) {
+                        console.log(show);
+                        self.recentCategory.show();
+                    }
                     height = self.recentCategory.is(":visible") ? self.recentCategory.height() : 0;
                 }
 

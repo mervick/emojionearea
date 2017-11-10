@@ -369,7 +369,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 setRecent(self, emojibtn.data("name"));
             }
 
-            self.search.val('');
+            // self.search.val('').trigger("change");
             self.trigger('search.keypress');
         })
 
@@ -420,7 +420,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 source.blur();
             }
 
-            self.search.val('');
+            self.search.val('').trigger('keyup');
             self.trigger('search.keypress');
         })
 
@@ -434,7 +434,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
 
             var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
-            if (term !== "") {
+
+            if (term && term.length) {
+                if (self.recentFilter.hasClass("active")) {
+                    self.recentFilter.removeClass("active").next().addClass("active");
+                }
+                self.recentCategory.hide();
+                self.recentFilter.hide();
                 categories.filter(':not([data-sub-category])').each(function() {
                     var matchEmojis = function(category, activeTone) {
                         var $matched = category.find('.emojibtn[data-name*="' + term + '"]');
@@ -473,6 +479,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     lazyLoading.call(self);
                 }
             } else {
+                updateRecent(self, true);
                 categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                 $('.emojibtn', categories).show();
                 filterBtns.show();
