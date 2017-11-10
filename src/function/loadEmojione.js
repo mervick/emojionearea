@@ -23,29 +23,35 @@ function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMo
                 } else {
                     emojioneJsCdnUrlBase = cdn.defaultBase + "/" + emojioneVersion;
                 }
-                $.getScript(emojioneJsCdnUrlBase + "/lib/js/emojione.min.js", function () {
-                    emojione = window.emojione;
-                    emojioneVersion = detectVersion(emojione);
-                    emojioneSupportMode = getSupportMode(emojioneVersion);
-                    var sprite;
-                    if (emojioneSupportMode > 4) {
-                        cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
-                        sprite = cdn.base + "/sprites/emojione-sprite-" + emojione.emojiSize + ".css";
-                    } else {
-                        cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
-                        sprite = cdn.base + "/sprites/emojione.sprites.css";
-                    }
-                    if (options.sprite) {
-                        if (document.createStyleSheet) {
-                            document.createStyleSheet(sprite);
+
+                $.ajax({
+                    url: emojioneJsCdnUrlBase + "/lib/js/emojione.min.js",
+                    dataType: "script",
+                    cache: true,
+                    success: function () {
+                        emojione = window.emojione;
+                        emojioneVersion = detectVersion(emojione);
+                        emojioneSupportMode = getSupportMode(emojioneVersion);
+                        var sprite;
+                        if (emojioneSupportMode > 4) {
+                            cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
+                            sprite = cdn.base + "/sprites/emojione-sprite-" + emojione.emojiSize + ".css";
                         } else {
-                            $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
+                            cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
+                            sprite = cdn.base + "/sprites/emojione.sprites.css";
                         }
+                        if (options.sprite) {
+                            if (document.createStyleSheet) {
+                                document.createStyleSheet(sprite);
+                            } else {
+                                $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
+                            }
+                        }
+                        while (readyCallbacks.length) {
+                            readyCallbacks.shift().call();
+                        }
+                        cdn.isLoading = false;
                     }
-                    while (readyCallbacks.length) {
-                        readyCallbacks.shift().call();
-                    }
-                    cdn.isLoading = false;
                 });
             } else {
                 emojioneVersion = detectVersion(emojione);
