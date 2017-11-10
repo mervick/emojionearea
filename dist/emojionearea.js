@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.2.4
+ * EmojioneArea v3.2.5
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-11-10T04:07Z
+ * Date: 2017-11-10T05:28Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -43,20 +43,20 @@ document = window.document || {};
     var emojioneSupportMode = 0;
     var invisibleChar = '&#8203;';
     function trigger(self, event, args) {
-		var result = true, j = 1;
-		if (event) {
-			event = event.toLowerCase();
-			do {
-				var _event = j==1 ? '@' + event : event;
-				if (eventStorage[self.id][_event] && eventStorage[self.id][_event].length) {
-					$.each(eventStorage[self.id][_event], function (i, fn) {
-						return result = fn.apply(self, args|| []) !== false;
-					});
-				}
-			} while (result && !!j--);
-		}
-		return result;
-	}
+        var result = true, j = 1;
+        if (event) {
+            event = event.toLowerCase();
+            do {
+                var _event = j==1 ? '@' + event : event;
+                if (eventStorage[self.id][_event] && eventStorage[self.id][_event].length) {
+                    $.each(eventStorage[self.id][_event], function (i, fn) {
+                        return result = fn.apply(self, args|| []) !== false;
+                    });
+                }
+            } while (result && !!j--);
+        }
+        return result;
+    }
     function attach(self, element, events, target) {
 		target = target || function (event, callerEvent) { return $(callerEvent.currentTarget) };
 		$.each(events, function(event, link) {
@@ -872,6 +872,11 @@ document = window.document || {};
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
+        self.source = source;
+
+        if (source.is(":disabled") || source.is(".disabled")) {
+            self.disable();
+        }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, scrollArea,
@@ -892,7 +897,7 @@ document = window.document || {};
                 div('wrapper',
                     filters = div('filters'),
                     search = div('search',
-                        options.search ? 
+                        options.search ?
                         function() {
                             self.search = $("<input/>", {
                                 "placeholder": "SEARCH",
@@ -1042,7 +1047,7 @@ document = window.document || {};
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
-        
+
         if (options.search) {
             attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
         }
@@ -1264,13 +1269,13 @@ document = window.document || {};
                 self.stayFocused = true;
                 self.search.addClass("focused");
             })
-    
+
             .on("@search.keypress", function() {
                 var filterBtns = picker.find(".emojionearea-filter");
                 var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-    
+
                 var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
-    
+
                 if (term && term.length) {
                     if (self.recentFilter.hasClass("active")) {
                         self.recentFilter.removeClass("active").next().addClass("active");
@@ -1288,20 +1293,20 @@ document = window.document || {};
                             } else {
                                 var $notMatched = category.find('.emojibtn:not([data-name*="' + term + '"])');
                                 $notMatched.hide();
-    
+
                                 $matched.show();
-    
+
                                 if (category.data('tone') === activeTone) {
                                     category.show();
                                 }
-    
+
                                 filterBtns.filter('[data-filter="' + category.attr('name') + '"]').show();
                             }
                         }
-    
+
                         var $category = $(this);
                         matchEmojis($category, activeTone);
-    
+
                         // If tone 0 category, show/hide matches for tone 0 no matter the active tone
                         if ($category.data('tone') === 0) {
                             $category.children(selector("category") + ':not([name="recent"])').each(function() {
@@ -1322,7 +1327,7 @@ document = window.document || {};
                     lazyLoading.call(self);
                 }
             })
-    
+
             .on("@search.blur", function() {
                 self.stayFocused = false;
                 self.search.removeClass("focused");
@@ -1399,14 +1404,27 @@ document = window.document || {};
                     }
                 }
             };
+
+            var initAutocomplete = function() {
+                if (self.disabled) {
+                    var enable = function () {
+                        self.off('enabled', enable);
+                        autocomplete();
+                    };
+                    self.on('enabled', enable);
+                } else {
+                    autocomplete();
+                }
+            }
+
             if ($.fn.textcomplete) {
-                autocomplete();
+                initAutocomplete();
             } else {
                 $.ajax({
                     url: "https://cdn.rawgit.com/yuku-t/jquery-textcomplete/v1.3.4/dist/jquery.textcomplete.js",
                     dataType: "script",
                     cache: true,
-                    success: autocomplete
+                    success: initAutocomplete
                 });
             }
         }
@@ -1425,7 +1443,9 @@ document = window.document || {};
             document.execCommand("enableObjectResizing", false, false);
         }
 
+        self.isReady = true;
         self.trigger("onLoad", editor);
+        self.trigger("ready", editor);
         //}, self.id === 1); // calcElapsedTime()
     };
     var cdn = {
@@ -1537,16 +1557,16 @@ document = window.document || {};
 		}
 	}
 
-	EmojioneArea.prototype.on = function(events, handler) {
-		if (events && $.isFunction(handler)) {
-			var self = this;
-			$.each(events.toLowerCase().split(' '), function(i, event) {
-				bindEvent(self, event);
-				(eventStorage[self.id][event] || (eventStorage[self.id][event] = [])).push(handler);
-			});
-		}
-		return this;
-	};
+    EmojioneArea.prototype.on = function(events, handler) {
+        if (events && $.isFunction(handler)) {
+            var self = this;
+            $.each(events.toLowerCase().split(' '), function(i, event) {
+                bindEvent(self, event);
+                (eventStorage[self.id][event] || (eventStorage[self.id][event] = [])).push(handler);
+            });
+        }
+        return this;
+    };
 
 	EmojioneArea.prototype.off = function(events, handler) {
 		if (events) {
@@ -1575,13 +1595,13 @@ document = window.document || {};
 		return trigger.apply(this, call_args);
 	};
 
-	EmojioneArea.prototype.setFocus = function () {
-		var self = this;
-		emojioneReady(function () {
-			self.editor.focus();
-		});
-		return self;
-	};
+    EmojioneArea.prototype.setFocus = function () {
+        var self = this;
+        emojioneReady(function () {
+            self.editor.focus();
+        });
+        return self;
+    };
 
 	EmojioneArea.prototype.setText = function (str) {
 		var self = this;
@@ -1626,20 +1646,30 @@ document = window.document || {};
 
     EmojioneArea.prototype.enable = function () {
         var self = this;
-        emojioneReady(function () {
+        var next = function () {
+            self.disabled = false;
             self.editor.prop('contenteditable', true);
             self.button.show();
-        });
+            var editor = self[(self.standalone) ? "button" : "editor"];
+            editor.parent().removeClass('emojionearea-disable');
+            trigger(self, 'enabled', [editor]);
+        };
+        self.isReady ? next() : self.on("ready", next);
         return self;
     }
 
     EmojioneArea.prototype.disable = function () {
         var self = this;
-        emojioneReady(function () {
+        self.disabled = true;
+        var next = function () {
             self.editor.prop('contenteditable', false);
             self.hidePicker();
             self.button.hide();
-        });
+            var editor = self[(self.standalone) ? "button" : "editor"];
+            editor.parent().addClass('emojionearea-disable');
+            trigger(self, 'disabled', [editor]);
+        };
+        self.isReady ? next() : self.on("ready", next);
         return self;
     }
 
