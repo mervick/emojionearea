@@ -21,6 +21,7 @@ function($, emojione, emojioneVersion, detectVersion, getSupportMode) {
             },
             placeholder       : null,
             emojiPlaceholder  : ":smiley:",
+            searchPlaceholder : "SEARCH",
             container         : null,
             hideSource        : true,
             shortnames        : true,

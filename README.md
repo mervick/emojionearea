@@ -104,6 +104,19 @@ $(".emojionearea").emojioneArea({
 });
 ```
 
+#### `searchPlaceholder`
+
+The search placeholder
+
+**type**: `string`  
+**default**: `'SEARCH'`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    searchPlaceholder: "Search"
+});
+
 #### `useInternalCDN`
 
 Whether to use the loading mechanism to load EmojiOne from CDN
