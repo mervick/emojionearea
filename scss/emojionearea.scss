@@ -473,6 +473,10 @@
             .#{$css-prefix}-search {
                 bottom: $filters-height;
             }
+            .#{$css-prefix}-tones {
+                top: initial;
+                bottom: $filters-height + 13px;
+            }
             .#{$css-prefix}-scroll-area {
                 top: 0;
             }
