@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.2.3
+ * EmojioneArea v3.2.4
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-11-10T03:09Z
+ * Date: 2017-11-10T04:07Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -186,6 +186,7 @@ document = window.document || {};
                 autocorrect       : "off",
                 autocapitalize    : "off",
             },
+            search            : true,
             placeholder       : null,
             emojiPlaceholder  : ":smiley:",
             searchPlaceholder : "SEARCH",
@@ -700,41 +701,45 @@ document = window.document || {};
 			.replace(/  /g, '&nbsp;&nbsp;');
 	}
     function textFromHtml(str, self) {
-		str = str
-			.replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
-			.replace(/\n|\r/g, '')
-			.replace(/<br[^>]*>/ig, '\n')
-			.replace(/(?:<(?:div|p|ol|ul|li|pre|code|object)[^>]*>)+/ig, '<div>')
-			.replace(/(?:<\/(?:div|p|ol|ul|li|pre|code|object)>)+/ig, '</div>')
-			.replace(/\n<div><\/div>/ig, '\n')
-			.replace(/<div><\/div>\n/ig, '\n')
-			.replace(/(?:<div>)+<\/div>/ig, '\n')
-			.replace(/([^\n])<\/div><div>/ig, '$1\n')
-			.replace(/(?:<\/div>)+/ig, '</div>')
-			.replace(/([^\n])<\/div>([^\n])/ig, '$1\n$2')
-			.replace(/<\/div>/ig, '')
-			.replace(/([^\n])<div>/ig, '$1\n')
-			.replace(/\n<div>/ig, '\n')
-			.replace(/<div>\n/ig, '\n\n')
-			.replace(/<(?:[^>]+)?>/g, '')
-			.replace(new RegExp(invisibleChar, 'g'), '')
-			.replace(/&nbsp;/g, ' ')
-			.replace(/&lt;/g, '<')
-			.replace(/&gt;/g, '>')
-			.replace(/&quot;/g, '"')
-			.replace(/&#x27;/g, "'")
-			.replace(/&#x60;/g, '`')
-			.replace(/&amp;/g, '&');
+        str = str
+            .replace(/&#10;/g, '\n')
+            .replace(/&#09;/g, '\t')
+            .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
+            .replace(/\n|\r/g, '')
+            .replace(/<br[^>]*>/ig, '\n')
+            .replace(/(?:<(?:div|p|ol|ul|li|pre|code|object)[^>]*>)+/ig, '<div>')
+            .replace(/(?:<\/(?:div|p|ol|ul|li|pre|code|object)>)+/ig, '</div>')
+            .replace(/\n<div><\/div>/ig, '\n')
+            .replace(/<div><\/div>\n/ig, '\n')
+            .replace(/(?:<div>)+<\/div>/ig, '\n')
+            .replace(/([^\n])<\/div><div>/ig, '$1\n')
+            .replace(/(?:<\/div>)+/ig, '</div>')
+            .replace(/([^\n])<\/div>([^\n])/ig, '$1\n$2')
+            .replace(/<\/div>/ig, '')
+            .replace(/([^\n])<div>/ig, '$1\n')
+            .replace(/\n<div>/ig, '\n')
+            .replace(/<div>\n/ig, '\n\n')
+            .replace(/<(?:[^>]+)?>/g, '')
+            .replace(new RegExp(invisibleChar, 'g'), '')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#x27;/g, "'")
+            .replace(/&#x60;/g, '`')
+            .replace(/&#60;/g, '<')
+            .replace(/&#62;/g, '>')
+            .replace(/&amp;/g, '&');
 
-		switch (self.saveEmojisAs) {
-			case 'image':
-				str = unicodeTo(str, self.emojiTemplate);
-				break;
-			case 'shortname':
-				str = emojione.toShort(str);
-		}
-		return str;
-	}
+        switch (self.saveEmojisAs) {
+            case 'image':
+                str = unicodeTo(str, self.emojiTemplate);
+                break;
+            case 'shortname':
+                str = emojione.toShort(str);
+        }
+        return str;
+    }
     function calcButtonPosition() {
 		var self = this,
 			offset = self.editor[0].offsetWidth - self.editor[0].clientWidth,
@@ -788,7 +793,6 @@ document = window.document || {};
                 if (!skinnable) {
                     scrollTop = self.scrollArea.scrollTop();
                     if (show) {
-                        console.log(show);
                         self.recentCategory.show();
                     }
                     height = self.recentCategory.is(":visible") ? self.recentCategory.height() : 0;
@@ -888,6 +892,7 @@ document = window.document || {};
                 div('wrapper',
                     filters = div('filters'),
                     search = div('search',
+                        options.search ? 
                         function() {
                             self.search = $("<input/>", {
                                 "placeholder": "SEARCH",
@@ -895,7 +900,7 @@ document = window.document || {};
                                 "class": "search"
                             });
                             this.append(self.search);
-                        }
+                        } : null
                     ),
                     tones = div('tones',
                         function() {
@@ -1037,7 +1042,10 @@ document = window.document || {};
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
-        attach(self, self.search, {keyup: "search.keypress", change: "search.keypress", focus: "search.focus", blur: "search.blur"});
+        
+        if (options.search) {
+            attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
+        }
 
         var noListenScroll = false;
         scrollArea.on('scroll', function () {
@@ -1104,7 +1112,9 @@ document = window.document || {};
                 filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
-            self.trigger('search.keypress');
+            if (options.search) {
+                self.trigger('search.keypress');
+            }
         })
 
         .on("@button.click", function(button) {
@@ -1238,80 +1248,87 @@ document = window.document || {};
             if (self.content !== content) {
                 self.content = content;
                 trigger(self, 'change', [self.editor]);
-                source.blur().trigger("keyup");
+                source.blur().trigger("change");
             } else {
                 source.blur();
             }
 
-            self.search.val('').trigger('change');
-            self.trigger('search.keypress');
-        })
+            if (options.search) {
+                self.search.val('').trigger('keyup');
+                self.trigger('search.keypress');
+            }
+        });
 
-        .on("@search.focus", function() {
-            self.stayFocused = true;
-            self.search.addClass("focused");
-        })
-
-        .on("@search.keypress", function() {
-            var filterBtns = picker.find(".emojionearea-filter");
-            var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-
-            var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
-
-            if (term && term.length) {
-                self.recentCategory.hide();
-                categories.filter(':not([data-sub-category])').each(function() {
-                    var matchEmojis = function(category, activeTone) {
-                        var $matched = category.find('.emojibtn[data-name*="' + term + '"]');
-                        if ($matched.length === 0) {
-                            if (category.data('tone') === activeTone) {
-                                category.hide();
+        if (options.search) {
+            self.on("@search.focus", function() {
+                self.stayFocused = true;
+                self.search.addClass("focused");
+            })
+    
+            .on("@search.keypress", function() {
+                var filterBtns = picker.find(".emojionearea-filter");
+                var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
+    
+                var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
+    
+                if (term && term.length) {
+                    if (self.recentFilter.hasClass("active")) {
+                        self.recentFilter.removeClass("active").next().addClass("active");
+                    }
+                    self.recentCategory.hide();
+                    self.recentFilter.hide();
+                    categories.filter(':not([data-sub-category])').each(function() {
+                        var matchEmojis = function(category, activeTone) {
+                            var $matched = category.find('.emojibtn[data-name*="' + term + '"]');
+                            if ($matched.length === 0) {
+                                if (category.data('tone') === activeTone) {
+                                    category.hide();
+                                }
+                                filterBtns.filter('[data-filter="' + category.attr('name') + '"]').hide();
+                            } else {
+                                var $notMatched = category.find('.emojibtn:not([data-name*="' + term + '"])');
+                                $notMatched.hide();
+    
+                                $matched.show();
+    
+                                if (category.data('tone') === activeTone) {
+                                    category.show();
+                                }
+    
+                                filterBtns.filter('[data-filter="' + category.attr('name') + '"]').show();
                             }
-                            filterBtns.filter('[data-filter="' + category.attr('name') + '"]').hide();
-                        } else {
-                            var $notMatched = category.find('.emojibtn:not([data-name*="' + term + '"])');
-                            $notMatched.hide();
-
-                            $matched.show();
-
-                            if (category.data('tone') === activeTone) {
-                                category.show();
-                            }
-
-                            filterBtns.filter('[data-filter="' + category.attr('name') + '"]').show();
                         }
+    
+                        var $category = $(this);
+                        matchEmojis($category, activeTone);
+    
+                        // If tone 0 category, show/hide matches for tone 0 no matter the active tone
+                        if ($category.data('tone') === 0) {
+                            $category.children(selector("category") + ':not([name="recent"])').each(function() {
+                                matchEmojis($(this), 0);
+                            })
+                        }
+                    });
+                    if (!noListenScroll) {
+                        scrollArea.trigger('scroll');
+                    } else {
+                        lazyLoading.call(self);
                     }
-
-                    var $category = $(this);
-                    matchEmojis($category, activeTone);
-
-                    // If tone 0 category, show/hide matches for tone 0 no matter the active tone
-                    if ($category.data('tone') === 0) {
-                        $category.children(selector("category") + ':not([name="recent"])').each(function() {
-                            matchEmojis($(this), 0);
-                        })
-                    }
-                });
-                if (!noListenScroll) {
-                    scrollArea.trigger('scroll');
                 } else {
+                    updateRecent(self, true);
+                    categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
+                    $('.emojibtn', categories).show();
+                    filterBtns.show();
                     lazyLoading.call(self);
                 }
-            } else {
-                console.log('updateRecent');
-                updateRecent(self, true);
-                categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
-                $('.emojibtn', categories).show();
-                filterBtns.show();
-                lazyLoading.call(self);
-            }
-        })
-
-        .on("@search.blur", function() {
-            self.stayFocused = false;
-            self.search.removeClass("focused");
-            self.trigger("blur");
-        });
+            })
+    
+            .on("@search.blur", function() {
+                self.stayFocused = false;
+                self.search.removeClass("focused");
+                self.trigger("blur");
+            });
+        }
 
         if (options.shortcuts) {
             self.on("@keydown", function(_, e) {
@@ -1385,8 +1402,12 @@ document = window.document || {};
             if ($.fn.textcomplete) {
                 autocomplete();
             } else {
-                $.getScript("https://cdn.rawgit.com/yuku-t/jquery-textcomplete/v1.3.4/dist/jquery.textcomplete.js",
-                    autocomplete);
+                $.ajax({
+                    url: "https://cdn.rawgit.com/yuku-t/jquery-textcomplete/v1.3.4/dist/jquery.textcomplete.js",
+                    dataType: "script",
+                    cache: true,
+                    success: autocomplete
+                });
             }
         }
 
@@ -1426,29 +1447,35 @@ document = window.document || {};
                 } else {
                     emojioneJsCdnUrlBase = cdn.defaultBase + "/" + emojioneVersion;
                 }
-                $.getScript(emojioneJsCdnUrlBase + "/lib/js/emojione.min.js", function () {
-                    emojione = window.emojione;
-                    emojioneVersion = detectVersion(emojione);
-                    emojioneSupportMode = getSupportMode(emojioneVersion);
-                    var sprite;
-                    if (emojioneSupportMode > 4) {
-                        cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
-                        sprite = cdn.base + "/sprites/emojione-sprite-" + emojione.emojiSize + ".css";
-                    } else {
-                        cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
-                        sprite = cdn.base + "/sprites/emojione.sprites.css";
-                    }
-                    if (options.sprite) {
-                        if (document.createStyleSheet) {
-                            document.createStyleSheet(sprite);
+
+                $.ajax({
+                    url: emojioneJsCdnUrlBase + "/lib/js/emojione.min.js",
+                    dataType: "script",
+                    cache: true,
+                    success: function () {
+                        emojione = window.emojione;
+                        emojioneVersion = detectVersion(emojione);
+                        emojioneSupportMode = getSupportMode(emojioneVersion);
+                        var sprite;
+                        if (emojioneSupportMode > 4) {
+                            cdn.base = cdn.defaultBase3 + "emojione/assets/" + emojioneVersion;
+                            sprite = cdn.base + "/sprites/emojione-sprite-" + emojione.emojiSize + ".css";
                         } else {
-                            $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
+                            cdn.base = cdn.defaultBase + emojioneVersion + "/assets";
+                            sprite = cdn.base + "/sprites/emojione.sprites.css";
                         }
+                        if (options.sprite) {
+                            if (document.createStyleSheet) {
+                                document.createStyleSheet(sprite);
+                            } else {
+                                $('<link/>', {rel: 'stylesheet', href: sprite}).appendTo('head');
+                            }
+                        }
+                        while (readyCallbacks.length) {
+                            readyCallbacks.shift().call();
+                        }
+                        cdn.isLoading = false;
                     }
-                    while (readyCallbacks.length) {
-                        readyCallbacks.shift().call();
-                    }
-                    cdn.isLoading = false;
                 });
             } else {
                 emojioneVersion = detectVersion(emojione);
