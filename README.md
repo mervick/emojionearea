@@ -498,7 +498,7 @@ $(".emojionearea").emojioneArea({
 
 ## Api
 
-#### Methods
+### Methods
 ```js
   .on(events, handler);
   // - events
@@ -536,7 +536,7 @@ $(".emojionearea").emojioneArea({
   });
 ```
 
-#### Events
+### Events
 
 Two ways to set events, in options:
 ```JS
