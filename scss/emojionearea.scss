@@ -206,15 +206,21 @@
         }
 
         .#{$css-prefix}-search {
-            padding: 5px 0 0 10px;
+            padding: 5px 0 0 8px;
             height: $search-height;
+            width: $search-width;
+            > input {
+                outline: none;
+                width: $search-width;
+                min-width: $search-width;
+            }
         }
 
         .#{$css-prefix}-filters {
             background: #F5F7F9;
             padding: 0 0 0 7px;
             height: $filters-height;
-            
+
             .#{$css-prefix}-filter {
                 display: block;
                 float: left;
@@ -376,7 +382,7 @@
                 z-index: 1;
             }
 
-            .emojionearea-category-title {
+            .#{$css-prefix}-category-title {
                 display: block;
                 font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
                 font-size: 13px;
@@ -396,6 +402,10 @@
 
             .#{$css-prefix}-category {
                 padding: 0 0 0 7px;
+
+                > .#{$css-prefix}-category {
+                    padding: 0!important;
+                }
 
                 &:after, &:before {
                     content: " ";
