@@ -1,31 +1,20 @@
 # EmojiOne Area
 
 EmojiOne Area is a small jQuery plugin that allows you to transform any html element into simple WYSIWYG editor with
-ability to use Emojione icons.
-The end result is a secure text/plain in which the image icons will be replaced with their Unicode analogues.
+ability to use Emojione icons.  
+The end result is a secure text/plain in which the image icons will be replaced with their Unicode analogues.  
 
-### Version 3.x
+### Preview version 3.x
 
 ![EmojiOne Area version 3.0.0](http://mervick.github.io/emojionearea/images/v3.png)
 
-[See the Live Demo here.](https://jsfiddle.net/1v03Lqnu/)
+[See the Live Demo here](https://jsfiddle.net/1v03Lqnu/)
 
-### Version 2.1 (Legacy)
-
-![EmojiOne Area version 2.1](http://mervick.github.io/emojionearea/images/screen.png)
-
-#### Version 2.1 (Legacy) - Standalone mode
-![EmojiOne Area version 2.1 - Standalone mode](http://mervick.github.io/emojionearea/images/standalone.png)
-
-[See Version 2.1 Live Demo here.](http://mervick.github.io/emojionearea/)
-
-[See Version 2.1 Documentation here.](https://github.com/mervick/emojionearea/blob/master/doc/README_v2.1.md)
+[Version 2.x](https://github.com/mervick/emojionearea/tree/version2)
 
 ## Installation
 
-The preferred way to install is via [Bower](http://bower.io/), [npm](https://www.npmjs.com/) or [Composer](https://getcomposer.org/).
-
-### Install
+The preferred way to install is via [bower](http://bower.io/), [npm](https://www.npmjs.com/) or [composer](https://getcomposer.org/).
 
 ```bash
 bower install emojionearea#^3.0.0
@@ -37,7 +26,7 @@ composer require mervick/emojionearea ^3.0.0
 
 ## Usage
 
-Add the following lines to `head`:
+Add the following lines to the `head`:
 ```html
 <link rel="stylesheet" href="file/to/path/css/emojionearea.min.css">
 <script type="text/javascript" src="file/to/path/js/emojionearea.min.js"></script>
@@ -53,55 +42,458 @@ Simple usage:
 </script>
 ```
 
-### Options
+EmojioneArea uses awesome [Emojione](https://github.com/emojione/emojione) emojis.  
+So when `emojionearea.js` loads, it's require to `emojione.js` loaded too, but if it not loaded in the page then EmojioneArea loads it from CDN.  
+For avoiding this behavior you can add `emojione.js` and `emojione.css` into your page.
 
-Customize emojione version
+
+### Customize emojione version
+
+By changing value below you can change emojione version which will be loaded from CDN
 ```js
-window.emojioneVersion = "2.1.1";
+window.emojioneVersion = "3.1.2";
 ```
 
-Default options
+### Options
+
+##### `standalone`
+
+Standalone mode
+
+**type**: `boolean`  
+**default**: `false`  
+
+Example:  
 ```js
-  var default_options = {
-      dir               : "ltr", // direction http://www.w3schools.com/tags/att_global_dir.asp
-      spellcheck        : false, // spellcheck http://www.w3schools.com/tags/att_global_spellcheck.asp
-      autocomplete      : "off", // autocomplete http://www.w3schools.com/tags/att_input_autocomplete.asp
-      autocorrect       : "off", // autocorrect https://davidwalsh.name/disable-autocorrect
-      autocapitalize    : "off", // autocapitalize http://www.w3schools.com/tags/att_input_autocomplete.asp
+$(".emojionearea").emojioneArea({
+    standalone: true
+});
+```
 
-      buttonTitle       : "Use the TAB key to insert emoji faster", // title of emojionearea smiley button
-      placeholder       : null, // placeholder
-      pickerPosition:   : "top", // position of picker in relation to input [ top | bottom | right ]
-      container         : null, // by default, emojionearea container created directly under source,
-                                // in this option you can specify custom {jQuery|selector} container
-      tones             : true, // whether to show the skin tone buttons in Emoji picker
-      tonesStyle        : "bullet" // style of skin tones selector [ bullet | radio | square | checkbox ]
+Preview:  
 
-      hideSource        : true,  // hide source element after binding
-      autoHideFilters   : false, // auto hide filters panel
+![EmojiOneArea - Standalone mode](http://mervick.github.io/emojionearea/images/standalone_v3.png)
 
-      sprite            : true, // use sprite instead of images, is awesome, but not works in old browsers
-      shortnames        : false, // if true - will converts emojis to short names,
-                                 // by default converts emojis to unicode characters
-      standalone        : false, // whether to use standalone EmojiOneArea picker (for EmojiOneArea 2.1 only)
-      useInternalCDN    : true,
-      recentEmojis      : true, // whether to show recently select Emoji's in picker
+#### `emojiPlaceholder`
 
-      textcomplete: {
-        maxCount: 15,           // max amount of items to show in autocomplete drop-down list
-        placement: null,        // placement of autocomplete dropdown list [ null (default) | top | absleft | absright ]
-      },
+The placeholder (default emoji) of the button in the standalone mode.
+Works only with standalone mode
 
-      filters: {
-        // customize filters & emoji buttons
-        // see in source file href="https://raw.githubusercontent.com/mervick/emojionearea/master/src/var/default_options.js
-      },
+**type**: `string`  
+**default**: `':smiley:'`  
+**accepts values**: [any emojione shortname]
 
-      events: {
-        // events handlers
-        // see below
-      }
-  };
+Example:  
+```js
+$(".emojionearea").emojioneArea({
+    emojiPlaceholder: ":smile_cat:"
+});
+```
+
+#### `placeholder`
+
+The placeholder of the editor
+
+**type**: `string`  
+**default**: [uses placeholder attribute from the source input]  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    placeholder: "Type something here"
+});
+```
+
+#### `useInternalCDN`
+
+Whether to use the loading mechanism to load EmojiOne from CDN
+
+**type**: `boolean`  
+**default**: `true`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    useInternalCDN: true
+});
+```
+
+#### `buttonTitle`
+
+The title of the emoji button (hint on the hover)
+
+**type**: `string`  
+**default**: `"Use the TAB key to insert emoji faster"`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    buttonTitle: "Use the TAB key to insert emoji faster"
+});
+```
+
+#### `recentEmojis`
+
+Whether to show recently selected emojis in the picker
+
+**type**: `boolean`  
+**default**: `true`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    recentEmojis: false
+});
+```
+
+#### `pickerPosition`
+
+The position of the emojis picker in the relation to the editor
+
+**type**: `string`  
+**default**: `'top'`  
+**accepts values**: `'top' | 'right' | 'bottom'`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    pickerPosition: "bottom"
+});
+```
+
+#### `filtersPosition`
+
+The position of the filters header in the emojis picker 
+
+**type**: `string`  
+**default**: `'top'`  
+**accepts values**: `'top' | 'bottom'`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    filtersPosition: "top"
+});
+```
+
+#### `hidePickerOnBlur`
+
+Whether to hide picker when blur event triggers
+
+**type**: `boolean`  
+**default**: `true`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    hidePickerOnBlur: false
+});
+```
+
+#### `container`
+
+The container of the plugin.  
+
+By default, emojionearea container created directly under the source.  
+In this option you can specify custom `jQuery|selector` container.
+
+**type**: `jQuery|selector`  
+**default**: `null`  
+
+Examples:
+```html
+<input type="text" id="emojionearea1" />
+<input type="text" id="emojionearea2" />
+<!-- ... -->
+<div id="container1"></div> <!-- #emojionearea2 plugin will use this container -->
+<div id="container2"></div> <!-- #emojionearea1 plugin will use this container -->
+<script>
+    $("#emojionearea1").emojioneArea({
+        container: "#container2" // by selector
+    });
+    $("#emojionearea2").emojioneArea({
+        container: $("#container1") // by jQuery object
+    });
+</script>
+```
+
+#### `tones`
+
+Whether to show the skin tone buttons in the emoji picker
+
+**type**: `boolean`  
+**default**: `true`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    tones: false
+});
+```
+
+#### `tonesStyle`
+
+The style of the skin tones selector
+
+**type**: `string`  
+**default**: `'bullet'`  
+**accepts values**: `'bullet' | 'radio' | 'square' | 'checkbox'`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    tonesStyle: 'checkbox'
+});
+```
+
+#### `shortnames`
+
+By default EmojioneArea parses only utf8 emojis (e.g. 😀😊😍🤑😜🤓) from the value of the input source.  
+This option enables to parse also the shortnames (e.g. `:smile:`, `:smiley:`, `:cat:`, etc).  
+Also affects the work of the method `setText()`.  
+
+Note. Affects only to how it parse emojis.  
+To change how it saves emojis use `saveEmojisAs` option (see below).
+
+**type**: `boolean`  
+**default**: `false`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    shortnames: true
+});
+```
+
+#### `saveEmojisAs`
+
+The processor type of the how emojionearea saves icons to the source, also affects on the method `getText()`
+
+**type**: `string`  
+**default**: `'unicode'`  
+**accepts values**: `'unicode' | 'shortname' | 'image'`  
+* unicode - saves emojis as utf8 text (e.g.  😀😊😍🤑😜🤓);
+* shortname - save emojis as shortnames (e.g. `:smile:`, `:smiley:`, `:cat:`, etc);
+* image - save emojis as html images, example: 
+```html
+<img alt="😀" class="emojioneemoji" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/1f600.png">
+```
+
+#### `hideSource`
+
+Whether to hide source input after render the plugin
+
+**type**: `boolean`  
+**default**: `true`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    hideSource: false
+});
+```
+
+#### `inline`
+
+Inline mode.  
+Whether to use plugin editor as inline input 
+
+**type**: `boolean|null`  
+**default**: `null`  
+**accepts values**: `null | true | false`  
+* `null` - auto detect, if input is textarea then `false`, when it is `input[type=text]` then `true`
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    inline: true
+});
+```
+
+Preview:  
+
+![EmojioneArea - inline mode](http://mervick.github.io/emojionearea/images/inline.png?)
+
+#### `shortcuts`
+
+Whether to attach shortcuts events
+
+**type**: `boolean`  
+**default**: `true`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    shortcuts: false
+});
+```
+
+#### `autocomplete`
+
+Whether to add the emojis short names autocomplete functional 
+
+**type**: `boolean`  
+**default**: `true`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    autocomplete: false
+});
+```
+
+#### `autocompleteTones`
+
+Whether to show skin emojis in the autocomplete dropdown
+
+**type**: `boolean`  
+**default**: `false`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    autocompleteTones: true
+});
+```
+
+#### `textcomplete`
+
+The settings of the autocomplete dropdown 
+
+**type**: `object`  
+**default**: 
+```json
+{
+    maxCount  : 15,
+    placement : null
+}
+```
+where
+* `maxCount` - max count of items at the dropdown
+* `placement` - the placement of the dropdown (`null | "top" | "absleft" | "absright"`)
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    textcomplete: {
+        maxCount  : 20,
+        placement : 'absleft'
+    }
+});
+```
+
+#### `attributes`
+
+The html attributes of the editor (contenteditable) of the plugin 
+
+**type**: `object`  
+**default**: 
+```js
+{
+    dir            : "ltr",
+    spellcheck     : false,
+    autocomplete   : "off",
+    autocorrect    : "off",
+    autocapitalize : "off",
+}
+```
+where
+* `dir`           - direction http://www.w3schools.com/tags/att_global_dir.asp
+* `spellcheck`    - spellcheck http://www.w3schools.com/tags/att_global_spellcheck.asp
+* `autocomplete`  - autocomplete http://www.w3schools.com/tags/att_input_autocomplete.asp
+* `autocorrect`   - autocorrect https://davidwalsh.name/disable-autocorrect
+* `autocapitalize`- autocapitalize http://www.w3schools.com/tags/att_input_autocomplete.asp
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    attributes: {
+        spellcheck : true,
+        autocomplete   : "on",
+    }
+});
+```
+
+#### `filters`
+
+The filters (tabs) in the emojis picker.  
+
+**type**: `object`  
+**default**: [the full default filters you can find here [here](https://github.com/mervick/emojionearea/blob/master/src/var/getDefaultOptions.js#L52)]
+```js
+{
+    tones: {
+        title: "Diversity",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+    recent: {
+        icon: "clock3",
+        title: "Recent",
+    },
+    smileys_people: {
+        icon: "yum",
+        title: "Smileys & People",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+    animals_nature: {
+        icon: "hamster",
+        title: "Animals & Nature",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+    food_drink: {
+        icon: "pizza",
+        title: "Food & Drink",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+    activity: {
+        icon: "basketball",
+        title: "Activity",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+    travel_places: {
+        icon: "rocket",
+        title: "Travel & Places",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+    objects: {
+        icon: "bulb",
+        title: "Objects",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+    symbols: {
+        icon: "heartpulse",
+        title: "Symbols",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+    flags: {
+        icon: "flag_gb",
+        title: "Flags",
+        emoji: "[...]", // list of the emojis, see source code
+    },
+}
+
+```
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    filters: {
+        recent : false, // disable recent
+        smileys_people: {
+            icon: 'cat' // change smileys_people filter icon to "cat"
+        },
+        animals_nature: {
+            title: 'Animals' // change animals_nature filter title to "Animals"
+        },
+        food_drink: {
+            emoji: "smiley smile cat" // change emojis of the filter food_drink
+        },
+        objects: false, // disable objects filter
+        symbols: false, // disable symbols filter
+        flags : false // disable flags filter
+    }
+});
+
 ```
 
 ### Api
