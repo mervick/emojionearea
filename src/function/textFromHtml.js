@@ -6,6 +6,8 @@ define([
 function(emojione, invisibleChar, unicodeTo) {
     return function(str, self) {
         str = str
+            .replace(/&#10;/g, '\n')
+            .replace(/&#09;/g, '\t')
             .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
             .replace(/\n|\r/g, '')
             .replace(/<br[^>]*>/ig, '\n')
@@ -29,6 +31,8 @@ function(emojione, invisibleChar, unicodeTo) {
             .replace(/&quot;/g, '"')
             .replace(/&#x27;/g, "'")
             .replace(/&#x60;/g, '`')
+            .replace(/&#60;/g, '<')
+            .replace(/&#62;/g, '>')
             .replace(/&amp;/g, '&');
 
         switch (self.saveEmojisAs) {
