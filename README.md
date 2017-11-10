@@ -76,7 +76,7 @@ Preview:
 
 #### `emojiPlaceholder`
 
-The placeholder (default emoji) of the button in the standalone mode.
+The placeholder (default emoji) of the button in the standalone mode.  
 Works only with standalone mode
 
 **type**: `string`  
@@ -248,7 +248,7 @@ $(".emojionearea").emojioneArea({
 
 #### `shortnames`
 
-By default EmojioneArea parses only utf8 emojis (e.g. 😀😊😍🤑😜🤓) from the value of the input source.  
+By default EmojioneArea parses only utf8 emojis (e.g. `😀😊😍🤑😜🤓`) from the value of the input source.  
 This option enables to parse also the shortnames (e.g. `:smile:`, `:smiley:`, `:cat:`, etc).  
 Also affects the work of the method `setText()`.  
 
@@ -272,7 +272,7 @@ The processor type of the how emojionearea saves icons to the source, also affec
 **type**: `string`  
 **default**: `'unicode'`  
 **accepts values**: `'unicode' | 'shortname' | 'image'`  
-* unicode - saves emojis as utf8 text (e.g.  😀😊😍🤑😜🤓);
+* unicode - saves emojis as utf8 text (e.g. `😀😊😍🤑😜🤓`);
 * shortname - save emojis as shortnames (e.g. `:smile:`, `:smiley:`, `:cat:`, etc);
 * image - save emojis as html images, example: 
 ```html
