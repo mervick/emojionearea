@@ -45,6 +45,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
+        self.source = source;
+
+        if (source.is(":disabled") || source.is(".disabled")) {
+            self.disable();
+        }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, scrollArea,
@@ -65,7 +70,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 div('wrapper',
                     filters = div('filters'),
                     search = div('search',
-                        options.search ? 
+                        options.search ?
                         function() {
                             self.search = $("<input/>", {
                                 "placeholder": "SEARCH",
@@ -215,7 +220,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
-        
+
         if (options.search) {
             attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
         }
@@ -437,13 +442,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 self.stayFocused = true;
                 self.search.addClass("focused");
             })
-    
+
             .on("@search.keypress", function() {
                 var filterBtns = picker.find(".emojionearea-filter");
                 var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-    
+
                 var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
-    
+
                 if (term && term.length) {
                     if (self.recentFilter.hasClass("active")) {
                         self.recentFilter.removeClass("active").next().addClass("active");
@@ -461,20 +466,20 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                             } else {
                                 var $notMatched = category.find('.emojibtn:not([data-name*="' + term + '"])');
                                 $notMatched.hide();
-    
+
                                 $matched.show();
-    
+
                                 if (category.data('tone') === activeTone) {
                                     category.show();
                                 }
-    
+
                                 filterBtns.filter('[data-filter="' + category.attr('name') + '"]').show();
                             }
                         }
-    
+
                         var $category = $(this);
                         matchEmojis($category, activeTone);
-    
+
                         // If tone 0 category, show/hide matches for tone 0 no matter the active tone
                         if ($category.data('tone') === 0) {
                             $category.children(selector("category") + ':not([name="recent"])').each(function() {
@@ -495,7 +500,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     lazyLoading.call(self);
                 }
             })
-    
+
             .on("@search.blur", function() {
                 self.stayFocused = false;
                 self.search.removeClass("focused");
@@ -572,14 +577,27 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     }
                 }
             };
+
+            var initAutocomplete = function() {
+                if (self.disabled) {
+                    var enable = function () {
+                        self.off('enabled', enable);
+                        autocomplete();
+                    };
+                    self.on('enabled', enable);
+                } else {
+                    autocomplete();
+                }
+            }
+
             if ($.fn.textcomplete) {
-                autocomplete();
+                initAutocomplete();
             } else {
                 $.ajax({
                     url: "https://cdn.rawgit.com/yuku-t/jquery-textcomplete/v1.3.4/dist/jquery.textcomplete.js",
                     dataType: "script",
                     cache: true,
-                    success: autocomplete
+                    success: initAutocomplete
                 });
             }
         }
@@ -598,7 +616,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             document.execCommand("enableObjectResizing", false, false);
         }
 
+        self.isReady = true;
         self.trigger("onLoad", editor);
+        self.trigger("ready", editor);
         //}, self.id === 1); // calcElapsedTime()
     };
 });
