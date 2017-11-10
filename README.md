@@ -104,6 +104,20 @@ $(".emojionearea").emojioneArea({
 });
 ```
 
+#### `search`
+
+Whether is enabled search emojis in the picker
+
+**type**: `boolean`  
+**default**: `true`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    search: false
+});
+```
+
 #### `searchPlaceholder`
 
 The search placeholder
@@ -116,6 +130,7 @@ Example:
 $(".emojionearea").emojioneArea({
     searchPlaceholder: "Search"
 });
+```
 
 #### `useInternalCDN`
 

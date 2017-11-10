@@ -65,6 +65,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 div('wrapper',
                     filters = div('filters'),
                     search = div('search',
+                        options.search ? 
                         function() {
                             self.search = $("<input/>", {
                                 "placeholder": "SEARCH",
@@ -72,7 +73,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                                 "class": "search"
                             });
                             this.append(self.search);
-                        }
+                        } : null
                     ),
                     tones = div('tones',
                         function() {
@@ -214,7 +215,10 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
-        attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
+        
+        if (options.search) {
+            attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
+        }
 
         var noListenScroll = false;
         scrollArea.on('scroll', function () {
@@ -281,7 +285,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
-            self.trigger('search.keypress');
+            if (options.search) {
+                self.trigger('search.keypress');
+            }
         })
 
         .on("@button.click", function(button) {
@@ -420,78 +426,82 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 source.blur();
             }
 
-            self.search.val('').trigger('keyup');
-            self.trigger('search.keypress');
-        })
+            if (options.search) {
+                self.search.val('').trigger('keyup');
+                self.trigger('search.keypress');
+            }
+        });
 
-        .on("@search.focus", function() {
-            self.stayFocused = true;
-            self.search.addClass("focused");
-        })
-
-        .on("@search.keypress", function() {
-            var filterBtns = picker.find(".emojionearea-filter");
-            var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-
-            var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
-
-            if (term && term.length) {
-                if (self.recentFilter.hasClass("active")) {
-                    self.recentFilter.removeClass("active").next().addClass("active");
-                }
-                self.recentCategory.hide();
-                self.recentFilter.hide();
-                categories.filter(':not([data-sub-category])').each(function() {
-                    var matchEmojis = function(category, activeTone) {
-                        var $matched = category.find('.emojibtn[data-name*="' + term + '"]');
-                        if ($matched.length === 0) {
-                            if (category.data('tone') === activeTone) {
-                                category.hide();
+        if (options.search) {
+            self.on("@search.focus", function() {
+                self.stayFocused = true;
+                self.search.addClass("focused");
+            })
+    
+            .on("@search.keypress", function() {
+                var filterBtns = picker.find(".emojionearea-filter");
+                var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
+    
+                var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
+    
+                if (term && term.length) {
+                    if (self.recentFilter.hasClass("active")) {
+                        self.recentFilter.removeClass("active").next().addClass("active");
+                    }
+                    self.recentCategory.hide();
+                    self.recentFilter.hide();
+                    categories.filter(':not([data-sub-category])').each(function() {
+                        var matchEmojis = function(category, activeTone) {
+                            var $matched = category.find('.emojibtn[data-name*="' + term + '"]');
+                            if ($matched.length === 0) {
+                                if (category.data('tone') === activeTone) {
+                                    category.hide();
+                                }
+                                filterBtns.filter('[data-filter="' + category.attr('name') + '"]').hide();
+                            } else {
+                                var $notMatched = category.find('.emojibtn:not([data-name*="' + term + '"])');
+                                $notMatched.hide();
+    
+                                $matched.show();
+    
+                                if (category.data('tone') === activeTone) {
+                                    category.show();
+                                }
+    
+                                filterBtns.filter('[data-filter="' + category.attr('name') + '"]').show();
                             }
-                            filterBtns.filter('[data-filter="' + category.attr('name') + '"]').hide();
-                        } else {
-                            var $notMatched = category.find('.emojibtn:not([data-name*="' + term + '"])');
-                            $notMatched.hide();
-
-                            $matched.show();
-
-                            if (category.data('tone') === activeTone) {
-                                category.show();
-                            }
-
-                            filterBtns.filter('[data-filter="' + category.attr('name') + '"]').show();
                         }
+    
+                        var $category = $(this);
+                        matchEmojis($category, activeTone);
+    
+                        // If tone 0 category, show/hide matches for tone 0 no matter the active tone
+                        if ($category.data('tone') === 0) {
+                            $category.children(selector("category") + ':not([name="recent"])').each(function() {
+                                matchEmojis($(this), 0);
+                            })
+                        }
+                    });
+                    if (!noListenScroll) {
+                        scrollArea.trigger('scroll');
+                    } else {
+                        lazyLoading.call(self);
                     }
-
-                    var $category = $(this);
-                    matchEmojis($category, activeTone);
-
-                    // If tone 0 category, show/hide matches for tone 0 no matter the active tone
-                    if ($category.data('tone') === 0) {
-                        $category.children(selector("category") + ':not([name="recent"])').each(function() {
-                            matchEmojis($(this), 0);
-                        })
-                    }
-                });
-                if (!noListenScroll) {
-                    scrollArea.trigger('scroll');
                 } else {
+                    updateRecent(self, true);
+                    categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
+                    $('.emojibtn', categories).show();
+                    filterBtns.show();
                     lazyLoading.call(self);
                 }
-            } else {
-                updateRecent(self, true);
-                categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
-                $('.emojibtn', categories).show();
-                filterBtns.show();
-                lazyLoading.call(self);
-            }
-        })
-
-        .on("@search.blur", function() {
-            self.stayFocused = false;
-            self.search.removeClass("focused");
-            self.trigger("blur");
-        });
+            })
+    
+            .on("@search.blur", function() {
+                self.stayFocused = false;
+                self.search.removeClass("focused");
+                self.trigger("blur");
+            });
+        }
 
         if (options.shortcuts) {
             self.on("@keydown", function(_, e) {

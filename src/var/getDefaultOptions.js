@@ -19,6 +19,7 @@ function($, emojione, emojioneVersion, detectVersion, getSupportMode) {
                 autocorrect       : "off",
                 autocapitalize    : "off",
             },
+            search            : true,
             placeholder       : null,
             emojiPlaceholder  : ":smiley:",
             searchPlaceholder : "SEARCH",

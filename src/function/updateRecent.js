@@ -15,7 +15,6 @@ function(saveSelection, pasteHtmlAtCaret, shortnameTo, getRecent) {
                 if (!skinnable) {
                     scrollTop = self.scrollArea.scrollTop();
                     if (show) {
-                        console.log(show);
                         self.recentCategory.show();
                     }
                     height = self.recentCategory.is(":visible") ? self.recentCategory.height() : 0;
