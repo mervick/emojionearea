@@ -54,9 +54,9 @@ By changing value below you can change emojione version which will be loaded fro
 window.emojioneVersion = "3.1.2";
 ```
 
-### Options
+## Options
 
-##### `standalone`
+#### `standalone`
 
 Standalone mode
 
@@ -295,8 +295,8 @@ $(".emojionearea").emojioneArea({
 
 #### `inline`
 
-Inline mode.  
-Whether to use plugin editor as inline input 
+Inline mode  
+Whether to use plugin editor as inline input  
 
 **type**: `boolean|null`  
 **default**: `null`  
@@ -362,14 +362,14 @@ The settings of the autocomplete dropdown
 
 **type**: `object`  
 **default**: 
-```json
+```js
 {
     maxCount  : 15,
     placement : null
 }
 ```
 where
-* `maxCount` - max count of items at the dropdown
+* `maxCount` - max count of items in the dropdown
 * `placement` - the placement of the dropdown (`null | "top" | "absleft" | "absright"`)
 
 Example:
@@ -416,7 +416,7 @@ $(".emojionearea").emojioneArea({
 
 #### `filters`
 
-The filters (tabs) in the emojis picker.  
+The filters (tabs) in the emojis picker
 
 **type**: `object`  
 **default**: [the full default filters you can find here [here](https://github.com/mervick/emojionearea/blob/master/src/var/getDefaultOptions.js#L52)]
@@ -496,7 +496,9 @@ $(".emojionearea").emojioneArea({
 
 ```
 
-### Api
+## Api
+
+#### Methods
 ```js
   .on(events, handler);
   // - events
@@ -534,7 +536,7 @@ $(".emojionearea").emojioneArea({
   });
 ```
 
-### Events
+#### Events
 
 Two ways to set events, in options:
 ```JS
