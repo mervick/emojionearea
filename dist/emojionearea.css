@@ -227,7 +227,7 @@
   -webkit-border-radius: 5px;
   border-radius: 5px;
   height: 276px;
-  width: 348px;
+  width: 316px;
   top: -15px;
   right: -15px;
   z-index: 90;
@@ -248,7 +248,7 @@
   .emojionearea .emojionearea-picker .emojionearea-wrapper {
     position: relative;
     height: 276px;
-    width: 348px; }
+    width: 316px; }
     /* line 192, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker .emojionearea-wrapper:after {
       content: "";
@@ -499,7 +499,7 @@
       background-position: -2px -80px; }
   /* line 490, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-picker.emojionearea-picker-position-left, .emojionearea .emojionearea-picker.emojionearea-picker-position-right {
-    margin-right: -358px;
+    margin-right: -326px;
     top: -8px; }
     /* line 495, ../scss/emojionearea.scss */
     .emojionearea .emojionearea-picker.emojionearea-picker-position-left .emojionearea-wrapper:after, .emojionearea .emojionearea-picker.emojionearea-picker-position-right .emojionearea-wrapper:after {
@@ -536,7 +536,7 @@
 /* line 540, ../scss/emojionearea.scss */
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-left,
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-right {
-  margin-right: -341px; }
+  margin-right: -309px; }
 /* line 545, ../scss/emojionearea.scss */
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-bottom {
   margin-top: -7px; }
