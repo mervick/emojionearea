@@ -432,8 +432,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             }
 
             if (options.search) {
-                self.search.val('').trigger('keyup');
-                self.trigger('search.keypress');
+                self.search.val('');
+                self.trigger('search.keypress', true);
             }
         });
 
@@ -443,10 +443,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 self.search.addClass("focused");
             })
 
-            .on("@search.keypress", function() {
+            .on("@search.keypress", function(hide) {
                 var filterBtns = picker.find(".emojionearea-filter");
                 var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-
                 var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
 
                 if (term && term.length) {
@@ -497,7 +496,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categories).show();
                     filterBtns.show();
-                    lazyLoading.call(self);
+                    if (!hide) {
+                        lazyLoading.call(self);
+                    }
                 }
             })
 
