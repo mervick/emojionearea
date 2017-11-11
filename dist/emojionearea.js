@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.2.5
+ * EmojioneArea v3.2.6
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-11-10T05:28Z
+ * Date: 2017-11-11T03:58Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1259,8 +1259,8 @@ document = window.document || {};
             }
 
             if (options.search) {
-                self.search.val('').trigger('keyup');
-                self.trigger('search.keypress');
+                self.search.val('');
+                self.trigger('search.keypress', true);
             }
         });
 
@@ -1270,10 +1270,9 @@ document = window.document || {};
                 self.search.addClass("focused");
             })
 
-            .on("@search.keypress", function() {
+            .on("@search.keypress", function(hide) {
                 var filterBtns = picker.find(".emojionearea-filter");
                 var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-
                 var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
 
                 if (term && term.length) {
@@ -1324,7 +1323,9 @@ document = window.document || {};
                     categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categories).show();
                     filterBtns.show();
-                    lazyLoading.call(self);
+                    if (!hide) {
+                        lazyLoading.call(self);
+                    }
                 }
             })
 
