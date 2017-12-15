@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2017-11-11T03:58Z
+ * Date: 2017-12-15T14:14Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -31,12 +31,12 @@ document = window.document || {};
     var emojione = window.emojione;
     var readyCallbacks = [];
     function emojioneReady (fn) {
-		if (emojione) {
-			fn();
-		} else {
-			readyCallbacks.push(fn);
-		}
-	};
+        if (emojione) {
+            fn();
+        } else {
+            readyCallbacks.push(fn);
+        }
+    };
     var blankImg = 'data:image/gif;base64,R0lGODlhAQABAJH/AP///wAAAMDAwAAAACH5BAEAAAIALAAAAAABAAEAAAICVAEAOw==';
     var slice = [].slice;
     var css_class = "emojionearea";
@@ -58,13 +58,13 @@ document = window.document || {};
         return result;
     }
     function attach(self, element, events, target) {
-		target = target || function (event, callerEvent) { return $(callerEvent.currentTarget) };
-		$.each(events, function(event, link) {
-			event = $.isArray(events) ? link : event;
-			(possibleEvents[self.id][link] || (possibleEvents[self.id][link] = []))
-				.push([element, event, target]);
-		});
-	}
+        target = target || function (event, callerEvent) { return $(callerEvent.currentTarget) };
+        $.each(events, function(event, link) {
+            event = $.isArray(events) ? link : event;
+            (possibleEvents[self.id][link] || (possibleEvents[self.id][link] = []))
+                .push([element, event, target]);
+        });
+    }
     function getTemplate(template, unicode, shortname) {
         var imageType = emojione.imageType, imagePath;
         if (imageType=='svg'){
@@ -106,35 +106,35 @@ document = window.document || {};
         });
     };
     function pasteHtmlAtCaret(html) {
-		var sel, range;
-		if (window.getSelection) {
-			sel = window.getSelection();
-			if (sel.getRangeAt && sel.rangeCount) {
-				range = sel.getRangeAt(0);
-				range.deleteContents();
-				var el = document.createElement("div");
-				el.innerHTML = html;
-				var frag = document.createDocumentFragment(), node, lastNode;
-				while ( (node = el.firstChild) ) {
-					lastNode = frag.appendChild(node);
-				}
-				range.insertNode(frag);
-				if (lastNode) {
-					range = range.cloneRange();
-					range.setStartAfter(lastNode);
-					range.collapse(true);
-					sel.removeAllRanges();
-					sel.addRange(range);
-				}
-			}
-		} else if (document.selection && document.selection.type != "Control") {
-			document.selection.createRange().pasteHTML(html);
-		}
-	}
+        var sel, range;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+                var el = document.createElement("div");
+                el.innerHTML = html;
+                var frag = document.createDocumentFragment(), node, lastNode;
+                while ( (node = el.firstChild) ) {
+                    lastNode = frag.appendChild(node);
+                }
+                range.insertNode(frag);
+                if (lastNode) {
+                    range = range.cloneRange();
+                    range.setStartAfter(lastNode);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+        } else if (document.selection && document.selection.type != "Control") {
+            document.selection.createRange().pasteHTML(html);
+        }
+    }
     var emojioneVersion = window.emojioneVersion || '2.2.7';
     function isObject(variable) {
-		return typeof variable === 'object';
-	};
+        return typeof variable === 'object';
+    };
     function detectVersion(emojione) {
         var version;
         if (emojione.cacheBustParam) {
@@ -189,7 +189,7 @@ document = window.document || {};
             search            : true,
             placeholder       : null,
             emojiPlaceholder  : ":smiley:",
-            searchPlaceholder : "SEARCH",
+            searchPlaceholder : null,
             container         : null,
             hideSource        : true,
             shortnames        : true,
@@ -621,22 +621,22 @@ document = window.document || {};
         return defaultOptions;
     };
     function getOptions(options) {
-		var default_options = getDefaultOptions();
-		if (options && options['filters']) {
-			var filters = default_options.filters;
-			$.each(options['filters'], function(filter, data) {
-				if (!isObject(data) || $.isEmptyObject(data)) {
-					delete filters[filter];
-					return;
-				}
-				$.each(data, function(key, val) {
-					filters[filter][key] = val;
-				});
-			});
-			options['filters'] = filters;
-		}
-		return $.extend({}, default_options, options);
-	};
+        var default_options = getDefaultOptions();
+        if (options && options['filters']) {
+            var filters = default_options.filters;
+            $.each(options['filters'], function(filter, data) {
+                if (!isObject(data) || $.isEmptyObject(data)) {
+                    delete filters[filter];
+                    return;
+                }
+                $.each(data, function(key, val) {
+                    filters[filter][key] = val;
+                });
+            });
+            options['filters'] = filters;
+        }
+        return $.extend({}, default_options, options);
+    };
 
     var saveSelection, restoreSelection;
     if (window.getSelection && document.createRange) {
@@ -673,33 +673,33 @@ document = window.document || {};
 
     var uniRegexp;
     function unicodeTo(str, template) {
-		return str.replace(uniRegexp, function(unicodeChar) {
-			var map = emojione[(emojioneSupportMode === 0 ? 'jsecapeMap' : 'jsEscapeMap')];
-			if (typeof unicodeChar !== 'undefined' && unicodeChar in map) {
-				return getTemplate(template, map[unicodeChar]);
-			}
-			return unicodeChar;
-		});
-	}
+        return str.replace(uniRegexp, function(unicodeChar) {
+            var map = emojione[(emojioneSupportMode === 0 ? 'jsecapeMap' : 'jsEscapeMap')];
+            if (typeof unicodeChar !== 'undefined' && unicodeChar in map) {
+                return getTemplate(template, map[unicodeChar]);
+            }
+            return unicodeChar;
+        });
+    }
     function htmlFromText(str, self) {
-		str = str
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#x27;')
-			.replace(/`/g, '&#x60;')
-			.replace(/(?:\r\n|\r|\n)/g, '\n')
-			.replace(/(\n+)/g, '<div>$1</div>')
-			.replace(/\n/g, '<br/>')
-			.replace(/<br\/><\/div>/g, '</div>');
-		if (self.shortnames) {
-			str = emojione.shortnameToUnicode(str);
-		}
-		return unicodeTo(str, self.emojiTemplate)
-			.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
-			.replace(/  /g, '&nbsp;&nbsp;');
-	}
+        str = str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/`/g, '&#x60;')
+            .replace(/(?:\r\n|\r|\n)/g, '\n')
+            .replace(/(\n+)/g, '<div>$1</div>')
+            .replace(/\n/g, '<br/>')
+            .replace(/<br\/><\/div>/g, '</div>');
+        if (self.shortnames) {
+            str = emojione.shortnameToUnicode(str);
+        }
+        return unicodeTo(str, self.emojiTemplate)
+            .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
+            .replace(/  /g, '&nbsp;&nbsp;');
+    }
     function textFromHtml(str, self) {
         str = str
             .replace(/&#10;/g, '\n')
@@ -741,48 +741,48 @@ document = window.document || {};
         return str;
     }
     function calcButtonPosition() {
-		var self = this,
-			offset = self.editor[0].offsetWidth - self.editor[0].clientWidth,
-			current = parseInt(self.button.css('marginRight'));
-		if (current !== offset) {
-			self.button.css({marginRight: offset});
-			if (self.floatingPicker) {
-				self.picker.css({right: parseInt(self.picker.css('right')) - current + offset});
-			}
-		}
-	}
+        var self = this,
+            offset = self.editor[0].offsetWidth - self.editor[0].clientWidth,
+            current = parseInt(self.button.css('marginRight'));
+        if (current !== offset) {
+            self.button.css({marginRight: offset});
+            if (self.floatingPicker) {
+                self.picker.css({right: parseInt(self.picker.css('right')) - current + offset});
+            }
+        }
+    }
     function lazyLoading() {
-		var self = this;
-		if (!self.sprite && self.lasyEmoji[0]) {
-			var pickerTop = self.picker.offset().top,
-				pickerBottom = pickerTop + self.picker.height() + 20;
-			self.lasyEmoji.each(function() {
-				var e = $(this), top = e.offset().top;
-				if (top > pickerTop && top < pickerBottom) {
-					e.attr("src", e.data("src")).removeClass("lazy-emoji");
-				}
-			})
-			self.lasyEmoji = self.lasyEmoji.filter(".lazy-emoji");
-		}
-	}
+        var self = this;
+        if (!self.sprite && self.lasyEmoji[0]) {
+            var pickerTop = self.picker.offset().top,
+                pickerBottom = pickerTop + self.picker.height() + 20;
+            self.lasyEmoji.each(function() {
+                var e = $(this), top = e.offset().top;
+                if (top > pickerTop && top < pickerBottom) {
+                    e.attr("src", e.data("src")).removeClass("lazy-emoji");
+                }
+            })
+            self.lasyEmoji = self.lasyEmoji.filter(".lazy-emoji");
+        }
+    }
     function selector (prefix, skip_dot) {
-		return (skip_dot ? '' : '.') + css_class + (prefix ? ("-" + prefix) : "");
-	}
+        return (skip_dot ? '' : '.') + css_class + (prefix ? ("-" + prefix) : "");
+    }
     function div(prefix) {
-		var parent = $('<div/>', isObject(prefix) ? prefix : {"class" : selector(prefix, true)});
-		$.each(slice.call(arguments).slice(1), function(i, child) {
-			if ($.isFunction(child)) {
-				child = child.call(parent);
-			}
-			if (child) {
-				$(child).appendTo(parent);
-			}
-		});
-		return parent;
-	}
+        var parent = $('<div/>', isObject(prefix) ? prefix : {"class" : selector(prefix, true)});
+        $.each(slice.call(arguments).slice(1), function(i, child) {
+            if ($.isFunction(child)) {
+                child = child.call(parent);
+            }
+            if (child) {
+                $(child).appendTo(parent);
+            }
+        });
+        return parent;
+    }
     function getRecent () {
-		return localStorage.getItem("recent_emojis") || "";
-	}
+        return localStorage.getItem("recent_emojis") || "";
+    }
     function updateRecent(self, show) {
         var emojis = getRecent();
         if (!self.recent || self.recent !== emojis || show) {
@@ -829,34 +829,34 @@ document = window.document || {};
         }
     };
     function setRecent(self, emoji) {
-		var recent = getRecent();
-		var emojis = recent.split("|");
+        var recent = getRecent();
+        var emojis = recent.split("|");
 
-		var index = emojis.indexOf(emoji);
-		if (index !== -1) {
-			emojis.splice(index, 1);
-		}
-		emojis.unshift(emoji);
+        var index = emojis.indexOf(emoji);
+        if (index !== -1) {
+            emojis.splice(index, 1);
+        }
+        emojis.unshift(emoji);
 
-		if (emojis.length > 9) {
-			emojis.pop();
-		}
+        if (emojis.length > 9) {
+            emojis.pop();
+        }
 
-		localStorage.setItem("recent_emojis", emojis.join("|"));
+        localStorage.setItem("recent_emojis", emojis.join("|"));
 
-		updateRecent(self);
-	};
+        updateRecent(self);
+    };
 // see https://github.com/Modernizr/Modernizr/blob/master/feature-detects/storage/localstorage.js
     function supportsLocalStorage () {
-		var test = 'test';
-		try {
-			localStorage.setItem(test, test);
-			localStorage.removeItem(test);
-			return true;
-		} catch(e) {
-			return false;
-		}
-	}
+        var test = 'test';
+        try {
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
     function init(self, source, options) {
         //calcElapsedTime('init', function() {
         options = getOptions(options);
@@ -900,7 +900,7 @@ document = window.document || {};
                         options.search ?
                         function() {
                             self.search = $("<input/>", {
-                                "placeholder": "SEARCH",
+                                "placeholder": options.searchPlaceholder || source.data("search-placeholder") || "SEARCH",
                                 "type": "text",
                                 "class": "search"
                             });
@@ -1528,35 +1528,35 @@ document = window.document || {};
         });
     };
     var EmojioneArea = function(element, options) {
-		var self = this;
-		loadEmojione(options);
-		eventStorage[self.id = ++unique] = {};
-		possibleEvents[self.id] = {};
-		emojioneReady(function() {
-			init(self, element, options);
-		});
-	};
+        var self = this;
+        loadEmojione(options);
+        eventStorage[self.id = ++unique] = {};
+        possibleEvents[self.id] = {};
+        emojioneReady(function() {
+            init(self, element, options);
+        });
+    };
     function bindEvent(self, event) {
-		event = event.replace(/^@/, '');
-		var id = self.id;
-		if (possibleEvents[id][event]) {
-			$.each(possibleEvents[id][event], function(i, ev) {
-				// ev[0] = element
-				// ev[1] = event
-				// ev[2] = target
-				$.each($.isArray(ev[0]) ? ev[0] : [ev[0]], function(i, el) {
-					$(el).on(ev[1], function() {
-						var args = slice.call(arguments),
-							target = $.isFunction(ev[2]) ? ev[2].apply(self, [event].concat(args)) : ev[2];
-						if (target) {
-							trigger(self, event, [target].concat(args));
-						}
-					});
-				});
-			});
-			possibleEvents[id][event] = null;
-		}
-	}
+        event = event.replace(/^@/, '');
+        var id = self.id;
+        if (possibleEvents[id][event]) {
+            $.each(possibleEvents[id][event], function(i, ev) {
+                // ev[0] = element
+                // ev[1] = event
+                // ev[2] = target
+                $.each($.isArray(ev[0]) ? ev[0] : [ev[0]], function(i, el) {
+                    $(el).on(ev[1], function() {
+                        var args = slice.call(arguments),
+                            target = $.isFunction(ev[2]) ? ev[2].apply(self, [event].concat(args)) : ev[2];
+                        if (target) {
+                            trigger(self, event, [target].concat(args));
+                        }
+                    });
+                });
+            });
+            possibleEvents[id][event] = null;
+        }
+    }
 
     EmojioneArea.prototype.on = function(events, handler) {
         if (events && $.isFunction(handler)) {
@@ -1569,32 +1569,32 @@ document = window.document || {};
         return this;
     };
 
-	EmojioneArea.prototype.off = function(events, handler) {
-		if (events) {
-			var id = this.id;
-			$.each(events.toLowerCase().replace(/_/g, '.').split(' '), function(i, event) {
-				if (eventStorage[id][event] && !/^@/.test(event)) {
-					if (handler) {
-						$.each(eventStorage[id][event], function(j, fn) {
-							if (fn === handler) {
-								eventStorage[id][event] = eventStorage[id][event].splice(j, 1);
-							}
-						});
-					} else {
-						eventStorage[id][event] = [];
-					}
-				}
-			});
-		}
-		return this;
-	};
+    EmojioneArea.prototype.off = function(events, handler) {
+        if (events) {
+            var id = this.id;
+            $.each(events.toLowerCase().replace(/_/g, '.').split(' '), function(i, event) {
+                if (eventStorage[id][event] && !/^@/.test(event)) {
+                    if (handler) {
+                        $.each(eventStorage[id][event], function(j, fn) {
+                            if (fn === handler) {
+                                eventStorage[id][event] = eventStorage[id][event].splice(j, 1);
+                            }
+                        });
+                    } else {
+                        eventStorage[id][event] = [];
+                    }
+                }
+            });
+        }
+        return this;
+    };
 
-	EmojioneArea.prototype.trigger = function() {
-		var args = slice.call(arguments),
-			call_args = [this].concat(args.slice(0,1));
-		call_args.push(args.slice(1));
-		return trigger.apply(this, call_args);
-	};
+    EmojioneArea.prototype.trigger = function() {
+        var args = slice.call(arguments),
+            call_args = [this].concat(args.slice(0,1));
+        call_args.push(args.slice(1));
+        return trigger.apply(this, call_args);
+    };
 
     EmojioneArea.prototype.setFocus = function () {
         var self = this;
@@ -1604,46 +1604,46 @@ document = window.document || {};
         return self;
     };
 
-	EmojioneArea.prototype.setText = function (str) {
-		var self = this;
-		emojioneReady(function () {
-			self.editor.html(htmlFromText(str, self));
-			self.content = self.editor.html();
-			trigger(self, 'change', [self.editor]);
-			calcButtonPosition.apply(self);
-		});
-		return self;
-	}
+    EmojioneArea.prototype.setText = function (str) {
+        var self = this;
+        emojioneReady(function () {
+            self.editor.html(htmlFromText(str, self));
+            self.content = self.editor.html();
+            trigger(self, 'change', [self.editor]);
+            calcButtonPosition.apply(self);
+        });
+        return self;
+    }
 
-	EmojioneArea.prototype.getText = function() {
-		return textFromHtml(this.editor.html(), this);
-	}
+    EmojioneArea.prototype.getText = function() {
+        return textFromHtml(this.editor.html(), this);
+    }
 
-	EmojioneArea.prototype.showPicker = function () {
-		var self = this;
-		if (self._sh_timer) {
-			window.clearTimeout(self._sh_timer);
-		}
-		self.picker.removeClass("hidden");
-		self._sh_timer =  window.setTimeout(function() {
-			self.button.addClass("active");
-		}, 50);
-		trigger(self, "picker.show", [self.picker]);
-		return self;
-	}
+    EmojioneArea.prototype.showPicker = function () {
+        var self = this;
+        if (self._sh_timer) {
+            window.clearTimeout(self._sh_timer);
+        }
+        self.picker.removeClass("hidden");
+        self._sh_timer =  window.setTimeout(function() {
+            self.button.addClass("active");
+        }, 50);
+        trigger(self, "picker.show", [self.picker]);
+        return self;
+    }
 
-	EmojioneArea.prototype.hidePicker = function () {
-		var self = this;
-		if (self._sh_timer) {
-			window.clearTimeout(self._sh_timer);
-		}
-		self.button.removeClass("active");
-		self._sh_timer =  window.setTimeout(function() {
-			self.picker.addClass("hidden");
-		}, 500);
-		trigger(self, "picker.hide", [self.picker]);
-		return self;
-	}
+    EmojioneArea.prototype.hidePicker = function () {
+        var self = this;
+        if (self._sh_timer) {
+            window.clearTimeout(self._sh_timer);
+        }
+        self.button.removeClass("active");
+        self._sh_timer =  window.setTimeout(function() {
+            self.picker.addClass("hidden");
+        }, 500);
+        trigger(self, "picker.hide", [self.picker]);
+        return self;
+    }
 
     EmojioneArea.prototype.enable = function () {
         var self = this;

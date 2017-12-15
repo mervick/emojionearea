@@ -22,7 +22,7 @@ function($, emojione, emojioneVersion, detectVersion, getSupportMode) {
             search            : true,
             placeholder       : null,
             emojiPlaceholder  : ":smiley:",
-            searchPlaceholder : "SEARCH",
+            searchPlaceholder : null,
             container         : null,
             hideSource        : true,
             shortnames        : true,
