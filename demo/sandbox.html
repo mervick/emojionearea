@@ -1,0 +1,31 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EmojioneArea Sandbox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../dist/emojionearea.min.css" media="screen">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emojione@3.1.2/lib/js/emojione.min.js"></script>
+    <script type="text/javascript" src="../node_modules/emojione/lib/js/emojione.js"></script>
+    <script type="text/javascript" src="../dist/emojionearea.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $("#emojionearea1").emojioneArea({
+            pickerPosition: "bottom",
+            tonesStyle: "bullet"
+          });
+      })
+    </script>
+    <style type="text/css">
+      div.span { width: 500px; }
+    </style>
+</head>
+<body>
+    <h1>Sandbox for testing EmojiOneArea v3.x</h1>
+
+    <div class="row">
+      <div class="span">
+        <textarea id="emojionearea1"></textarea>
+      </div>
+    </div>
+</body>
