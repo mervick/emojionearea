@@ -73,7 +73,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         options.search ?
                         function() {
                             self.search = $("<input/>", {
-                                "placeholder": "SEARCH",
+                                "placeholder": options.searchPlaceholder || "",
                                 "type": "text",
                                 "class": "search"
                             });
