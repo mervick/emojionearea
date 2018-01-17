@@ -52,7 +52,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, scrollArea,
+            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea,
             app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -111,7 +111,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             editor.attr(attr, value);
         });
 
-        div('category').attr({"data-tone": 0}).appendTo(emojisList);
+        var mainBlock = div('category-block').attr({"data-tone": 0}).prependTo(emojisList);
 
         $.each(options.filters, function(filter, params) {
             var skin = 0;
@@ -131,22 +131,22 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             } else {
                 return;
             }
+
             do {
-                var parentEl;
-                var categoryAttributes = {
-                    name: filter,
-                    "data-tone": skin
-                }
+                var category,
+                    items = params.emoji.replace(/[\s,;]+/g, '|');
 
                 if (skin === 0) {
-                    parentEl = emojisList.children('[data-tone="0"]');
-                    categoryAttributes["data-sub-category"] = true;
+                    category = div('category').attr({
+                        name: filter
+                    }).appendTo(mainBlock);
                 } else {
-                    parentEl = emojisList;
+                    category = div('category-block').attr({
+                        name: filter,
+                        "data-tone": skin
+                    }).appendTo(emojisList);
                 }
 
-                var category = div('category').attr(categoryAttributes).appendTo(parentEl),
-                    items = params.emoji.replace(/[\s,;]+/g, '|');
                 if (skin > 0) {
                     category.hide();
                     items = items.split('|').join('_tone' + skin + '|') + '_tone' + skin;
@@ -174,7 +174,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
         filtersBtns = filters.find(selector("filter"));
         filtersBtns.eq(0).addClass("active");
-        categories = emojisList.find(selector("category"));
+        categoryBlocks = emojisList.find(selector("category-block"))
+        categories = emojisList.find(selector("category"))
 
         self.recentFilter = filtersBtns.filter('[data-filter="recent"]');
         self.recentCategory = categories.filter("[name=recent]");
@@ -260,6 +261,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             var headerOffset = categories.filter('[name="' + filter.data('filter') + '"]').offset().top,
                 scroll = scrollArea.scrollTop(),
                 offsetTop = scrollArea.offset().top;
+
             scrollArea.stop().animate({
                 scrollTop: headerOffset + scroll - offsetTop - 2
             }, 200, 'swing', function () {
@@ -280,13 +282,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             var skin = tone.addClass("active").data("skin");
             if (skin) {
                 scrollArea.addClass("skinnable");
-                categories.filter(":not([data-sub-category])").hide().filter("[data-tone=" + skin + "]").show();
-                if (filtersBtns.eq(0).is('.active[data-filter="recent"]')) {
-                    filtersBtns.eq(0).removeClass("active").next().addClass("active");
-                }
+                categoryBlocks.hide().filter("[data-tone=" + skin + "]").show();
+                filtersBtns.removeClass("active");//.not('[data-filter="recent"]').eq(0).addClass("active");
             } else {
                 scrollArea.removeClass("skinnable");
-                categories.filter(":not([data-sub-category])").hide().filter("[data-tone=0]").show();
+                categoryBlocks.hide().filter("[data-tone=0]").show();
                 filtersBtns.eq(0).click();
             }
             lazyLoading.call(self);
@@ -452,9 +452,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     if (self.recentFilter.hasClass("active")) {
                         self.recentFilter.removeClass("active").next().addClass("active");
                     }
+
                     self.recentCategory.hide();
                     self.recentFilter.hide();
-                    categories.filter(':not([data-sub-category])').each(function() {
+
+                    categoryBlocks.each(function() {
                         var matchEmojis = function(category, activeTone) {
                             var $matched = category.find('.emojibtn[data-name*="' + term + '"]');
                             if ($matched.length === 0) {
@@ -493,8 +495,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     }
                 } else {
                     updateRecent(self, true);
-                    categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
-                    $('.emojibtn', categories).show();
+                    categoryBlocks.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
+                    $('.emojibtn', categoryBlocks).show();
                     filterBtns.show();
                     if (!hide) {
                         lazyLoading.call(self);
