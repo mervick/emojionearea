@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.2.8
+ * EmojioneArea v3.3.0
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-01-17T23:32Z
+ * Date: 2018-01-17T23:35Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -132,7 +132,7 @@ document = window.document || {};
         }
     }
     function getEmojioneVersion() {
-        return window.emojioneVersion || '2.2.7';
+        return window.emojioneVersion || '3.1.2';
     };
     function isObject(variable) {
         return typeof variable === 'object';
