@@ -418,11 +418,17 @@
                 }
             }
 
-            .#{$css-prefix}-category {
+            .#{$css-prefix}-category-block {
                 padding: 0 0 0 7px;
 
                 > .#{$css-prefix}-category {
                     padding: 0!important;
+
+                    &:after, &:before {
+                        content: " ";
+                        display: block;
+                        clear: both;
+                    }
                 }
 
                 &:after, &:before {
