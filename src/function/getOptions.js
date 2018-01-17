@@ -1,6 +1,6 @@
 define([
     'jquery',
-    'var/getDefaultOptions',
+    'function/getDefaultOptions',
     'function/isObject'
 ],
 function($, getDefaultOptions, isObject) {

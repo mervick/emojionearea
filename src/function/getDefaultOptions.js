@@ -1,11 +1,11 @@
 define([
     'jquery',
     'var/emojione',
-    'var/emojioneVersion',
+    'function/getEmojioneVersion',
     'function/detectVersion',
     'function/getSupportMode'
 ],
-function($, emojione, emojioneVersion, detectVersion, getSupportMode) {
+function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
     return function () {
         if ($.fn.emojioneArea && $.fn.emojioneArea.defaults) {
             return $.fn.emojioneArea.defaults;
@@ -48,7 +48,7 @@ function($, emojione, emojioneVersion, detectVersion, getSupportMode) {
             }
         };
 
-        var supportMode = !emojione ? getSupportMode(emojioneVersion) : getSupportMode(detectVersion(emojione));
+        var supportMode = !emojione ? getSupportMode(getEmojioneVersion()) : getSupportMode(detectVersion(emojione));
 
         if (supportMode > 4) {
             defaultOptions.filters = {

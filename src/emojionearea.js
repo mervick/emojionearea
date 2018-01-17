@@ -1,7 +1,7 @@
 define([
     'jquery',
     'prototype/var/EmojioneArea',
-    'var/getDefaultOptions',
+    'function/getDefaultOptions',
     'function/htmlFromText',
     'var/blankImg',
     'var/emojioneSupportMode',

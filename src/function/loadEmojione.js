@@ -1,17 +1,19 @@
 define([
     'var/emojione',
     'var/uniRegexp',
-    'var/emojioneVersion',
     'var/readyCallbacks',
     'var/emojioneSupportMode',
     'var/cdn',
+    'function/getEmojioneVersion',
     'function/emojioneReady',
     'function/detectVersion',
     'function/getSupportMode'
 ],
-function(emojione, uniRegexp, emojioneVersion, readyCallbacks, emojioneSupportMode, cdn, emojioneReady, detectVersion, getSupportMode) {
+function(emojione, uniRegexp, readyCallbacks, emojioneSupportMode, cdn, getEmojioneVersion, emojioneReady, detectVersion, getSupportMode) {
     return function(options) {
+        var emojioneVersion = getEmojioneVersion()
         options = getOptions(options);
+
         if (!cdn.isLoading) {
             if (!emojione || getSupportMode(detectVersion(emojione)) < 2) {
                 cdn.isLoading = true;
