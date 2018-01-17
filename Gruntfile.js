@@ -41,7 +41,7 @@ module.exports = function (grunt) {
                 options: {
                     unixNewlines: true,
                     compass: true,
-                    lineNumbers: true
+                    lineNumbers: false
                 },
                 files: {
                     'dist/emojionearea.css': 'scss/emojionearea.scss'
