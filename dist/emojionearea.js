@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.3.0
+ * EmojioneArea v3.3.1
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-01-17T23:35Z
+ * Date: 2018-01-18T00:05Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -967,7 +967,8 @@ document = window.document || {};
 
                 if (skin === 0) {
                     category = div('category').attr({
-                        name: filter
+                        name: filter,
+                        "data-tone": skin
                     }).appendTo(mainBlock);
                 } else {
                     category = div('category-block').attr({
@@ -1307,14 +1308,13 @@ document = window.document || {};
                             }
                         }
 
-                        var $category = $(this);
-                        matchEmojis($category, activeTone);
-
-                        // If tone 0 category, show/hide matches for tone 0 no matter the active tone
-                        if ($category.data('tone') === 0) {
-                            $category.children(selector("category") + ':not([name="recent"])').each(function() {
+                        var $block = $(this);
+                        if ($block.data('tone') === 0) {
+                            categories.filter(':not([name="recent"])').each(function() {
                                 matchEmojis($(this), 0);
                             })
+                        } else {
+                            matchEmojis($block, activeTone);
                         }
                     });
                     if (!noListenScroll) {

@@ -138,7 +138,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
                 if (skin === 0) {
                     category = div('category').attr({
-                        name: filter
+                        name: filter,
+                        "data-tone": skin
                     }).appendTo(mainBlock);
                 } else {
                     category = div('category-block').attr({
@@ -478,14 +479,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                             }
                         }
 
-                        var $category = $(this);
-                        matchEmojis($category, activeTone);
-
-                        // If tone 0 category, show/hide matches for tone 0 no matter the active tone
-                        if ($category.data('tone') === 0) {
-                            $category.children(selector("category") + ':not([name="recent"])').each(function() {
+                        var $block = $(this);
+                        if ($block.data('tone') === 0) {
+                            categories.filter(':not([name="recent"])').each(function() {
                                 matchEmojis($(this), 0);
                             })
+                        } else {
+                            matchEmojis($block, activeTone);
                         }
                     });
                     if (!noListenScroll) {
