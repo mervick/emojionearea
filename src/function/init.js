@@ -52,7 +52,20 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea,
+            editor, button, picker, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea,
+            tones = div('tones',
+                options.tones ?
+                    function() {
+                        this.addClass(selector('tones-' + options.tonesStyle, true));
+                        for (var i = 0; i <= 5; i++) {
+                            this.append($("<i/>", {
+                                "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                "data-skin": i,
+                                role: "button"
+                            }));
+                        }
+                    } : null
+            ),
             app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -82,34 +95,12 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                                     this.append(self.search);
                                 } : null
                             ),
-                            tones = div('tones',
-                                options.tones ?
-                                function() {
-                                    this.addClass(selector('tones-' + options.tonesStyle, true));
-                                    for (var i = 0; i <= 5; i++) {
-                                        this.append($("<i/>", {
-                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                            "data-skin": i,
-                                            role: "button"
-                                        }));
-                                    }
-                                } : null
-                        )) : null
+                            tones
+                        ) : null
                     ),
                     scrollArea = div('scroll-area',
                         options.tones && !options.search ? div('tones-panel',
-                            tones = div('tones',
-                                function() {
-                                    this.addClass(selector('tones-' + options.tonesStyle, true));
-                                    for (var i = 0; i <= 5; i++) {
-                                        this.append($("<i/>", {
-                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                            "data-skin": i,
-                                            role: "button"
-                                        }));
-                                    }
-                                }
-                            )
+                            tones
                         ) : null,
                         emojisList = div('emojis-list')
                     )
