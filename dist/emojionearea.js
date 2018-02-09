@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.3.1
+ * EmojioneArea v3.4.0
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-01-18T00:05Z
+ * Date: 2018-02-09T18:57Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -198,6 +198,7 @@ document = window.document || {};
             sprite            : true,
             pickerPosition    : "top", // top | bottom | right
             filtersPosition   : "top", // top | bottom
+            searchPosition    : "top", // top | bottom
             hidePickerOnBlur  : true,
             buttonTitle       : "Use the TAB key to insert emoji faster",
             tones             : true,
@@ -861,7 +862,7 @@ document = window.document || {};
     }
     function init(self, source, options) {
         //calcElapsedTime('init', function() {
-        options = getOptions(options);
+        self.options = options = getOptions(options);
         self.sprite = options.sprite && emojioneSupportMode < 3;
         self.inline = options.inline === null ? source.is("INPUT") : options.inline;
         self.shortnames = options.shortnames;
@@ -881,7 +882,20 @@ document = window.document || {};
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea,
+            editor, button, picker, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea,
+            tones = div('tones',
+                options.tones ?
+                    function() {
+                        this.addClass(selector('tones-' + options.tonesStyle, true));
+                        for (var i = 0; i <= 5; i++) {
+                            this.append($("<i/>", {
+                                "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                "data-skin": i,
+                                role: "button"
+                            }));
+                        }
+                    } : null
+            ),
             app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -898,39 +912,38 @@ document = window.document || {};
             picker = self.picker = div('picker',
                 div('wrapper',
                     filters = div('filters'),
-                    search = div('search',
-                        options.search ?
-                        function() {
-                            self.search = $("<input/>", {
-                                "placeholder": options.searchPlaceholder || "",
-                                "type": "text",
-                                "class": "search"
-                            });
-                            this.append(self.search);
-                        } : null
-                    ),
-                    tones = div('tones',
-                        function() {
-                            if (options.tones) {
-                                this.addClass(selector('tones-' + options.tonesStyle, true));
-                                for (var i = 0; i <= 5; i++) {
-                                    this.append($("<i/>", {
-                                        "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                        "data-skin": i,
-                                        role: "button"
-                                    }));
-                                }
-                            }
-                        }
+                    (options.search ?
+                        searchPanel = div('search-panel',
+                            div('search',
+                                options.search ?
+                                function() {
+                                    self.search = $("<input/>", {
+                                        "placeholder": options.searchPlaceholder || "",
+                                        "type": "text",
+                                        "class": "search"
+                                    });
+                                    this.append(self.search);
+                                } : null
+                            ),
+                            tones
+                        ) : null
                     ),
                     scrollArea = div('scroll-area',
+                        options.tones && !options.search ? div('tones-panel',
+                            tones
+                        ) : null,
                         emojisList = div('emojis-list')
                     )
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
              .addClass(selector('filters-position-' + options.filtersPosition, true))
+             .addClass(selector('search-position-' + options.searchPosition, true))
              .addClass('hidden')
         );
+
+        if (options.search) {
+            searchPanel.addClass(selector('with-search', true));
+        }
 
         self.searchSel = null;
 
@@ -1051,6 +1064,7 @@ document = window.document || {};
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
+        attach(self, source, {change: "source.change"});
 
         if (options.search) {
             attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
@@ -1239,6 +1253,11 @@ document = window.document || {};
                 self.editor.html(self.content = '');
             }
             source[sourceValFunc](self.getText());
+        })
+
+        .on("@source.change", function() {
+            self.setText(source[sourceValFunc]());
+            trigger('change');
         })
 
         .on("@focus", function() {
@@ -1691,6 +1710,8 @@ document = window.document || {};
     $.fn.emojioneArea.defaults = getDefaultOptions();
 
     $.fn.emojioneAreaText = function(options) {
+        options = getOptions(options);
+
         var self = this, pseudoSelf = {
             shortnames: (options && typeof options.shortnames !== 'undefined' ? options.shortnames : true),
             emojiTemplate: '<img alt="{alt}" class="emojione' + (options && options.sprite && emojioneSupportMode < 3 ? '-{uni}" src="' + blankImg : 'emoji" src="{img}') + '"/>'
