@@ -29,6 +29,7 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
             sprite            : true,
             pickerPosition    : "top", // top | bottom | right
             filtersPosition   : "top", // top | bottom
+            searchPosition    : "top", // top | bottom
             hidePickerOnBlur  : true,
             buttonTitle       : "Use the TAB key to insert emoji faster",
             tones             : true,
