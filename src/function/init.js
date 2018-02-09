@@ -52,7 +52,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea,
+            editor, button, picker, tones, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea,
             app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -69,39 +69,60 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             picker = self.picker = div('picker',
                 div('wrapper',
                     filters = div('filters'),
-                    search = div('search',
-                        options.search ?
-                        function() {
-                            self.search = $("<input/>", {
-                                "placeholder": options.searchPlaceholder || "",
-                                "type": "text",
-                                "class": "search"
-                            });
-                            this.append(self.search);
-                        } : null
-                    ),
-                    tones = div('tones',
-                        function() {
-                            if (options.tones) {
-                                this.addClass(selector('tones-' + options.tonesStyle, true));
-                                for (var i = 0; i <= 5; i++) {
-                                    this.append($("<i/>", {
-                                        "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                        "data-skin": i,
-                                        role: "button"
-                                    }));
-                                }
-                            }
-                        }
+                    (options.search ?
+                        searchPanel = div('search-panel',
+                            div('search',
+                                options.search ?
+                                function() {
+                                    self.search = $("<input/>", {
+                                        "placeholder": options.searchPlaceholder || "",
+                                        "type": "text",
+                                        "class": "search"
+                                    });
+                                    this.append(self.search);
+                                } : null
+                            ),
+                            tones = div('tones',
+                                options.tones ?
+                                function() {
+                                    this.addClass(selector('tones-' + options.tonesStyle, true));
+                                    for (var i = 0; i <= 5; i++) {
+                                        this.append($("<i/>", {
+                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                            "data-skin": i,
+                                            role: "button"
+                                        }));
+                                    }
+                                } : null
+                        )) : null
                     ),
                     scrollArea = div('scroll-area',
+                        options.tones && !options.search ? div('tones-panel',
+                            tones = div('tones',
+                                function() {
+                                    this.addClass(selector('tones-' + options.tonesStyle, true));
+                                    for (var i = 0; i <= 5; i++) {
+                                        this.append($("<i/>", {
+                                            "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                            "data-skin": i,
+                                            role: "button"
+                                        }));
+                                    }
+                                }
+                            )
+                        ) : null,
                         emojisList = div('emojis-list')
                     )
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
              .addClass(selector('filters-position-' + options.filtersPosition, true))
+             .addClass(selector('search-position-' + options.searchPosition, true))
              .addClass('hidden')
         );
+
+        if (options.search) {
+            searchPanel.addClass(selector('with-search', true));
+        }
 
         self.searchSel = null;
 
@@ -222,6 +243,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
+        attach(self, source, {change: "source.change"});
 
         if (options.search) {
             attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
@@ -410,6 +432,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 self.editor.html(self.content = '');
             }
             source[sourceValFunc](self.getText());
+        })
+
+        .on("@source.change", function() {
+            self.setText(source[sourceValFunc]());
+            trigger('change');
         })
 
         .on("@focus", function() {
