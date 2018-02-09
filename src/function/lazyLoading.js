@@ -4,7 +4,7 @@ define([
 function($) {
     return function() {
         var self = this;
-        if (!self.sprite && self.lasyEmoji[0]) {
+        if (!self.sprite && self.lasyEmoji[0] && self.lasyEmoji.eq(0).is(".lazy-emoji")) {
             var pickerTop = self.picker.offset().top,
                 pickerBottom = pickerTop + self.picker.height() + 20;
             self.lasyEmoji.each(function() {
