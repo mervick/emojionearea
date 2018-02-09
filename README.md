@@ -204,7 +204,7 @@ $(".emojionearea").emojioneArea({
 });
 ```
 
-![EmojiOneArea - searchPosition bottom](http://mervick.github.io/emojionearea/images/filters-position-bottom.png)
+![EmojiOneArea - searchPosition bottom](http://mervick.github.io/emojionearea/images/filters-position-bottom.png?1)
 
 #### `searchPosition`
 
@@ -221,7 +221,7 @@ $(".emojionearea").emojioneArea({
 });
 ```
 
-![EmojiOneArea - searchPosition bottom](http://mervick.github.io/emojionearea/images/search-position-bottom.png)
+![EmojiOneArea - searchPosition bottom](http://mervick.github.io/emojionearea/images/search-position-bottom.png?!)
 
 #### `hidePickerOnBlur`
 
