@@ -516,9 +516,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     categoryBlocks.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categoryBlocks).show();
                     filterBtns.show();
-                    if (!hide) {
-                        lazyLoading.call(self);
-                    }
+                    lazyLoading.call(self);
                 }
             })
 

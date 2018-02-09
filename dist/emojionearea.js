@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-02-09T20:58Z
+ * Date: 2018-02-09T22:42Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -767,7 +767,6 @@ document = window.document || {};
                     e.attr("src", e.data("src")).removeClass("lazy-emoji");
                 }
 
-                // improve performance by early-exit when we encounter first emoji below bottom of picker viewport
                 if (top > pickerBottom) {
                     return false;
                 }
@@ -1353,9 +1352,7 @@ document = window.document || {};
                     categoryBlocks.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categoryBlocks).show();
                     filterBtns.show();
-                    if (!hide) {
-                        lazyLoading.call(self);
-                    }
+                    lazyLoading.call(self);
                 }
             })
 
