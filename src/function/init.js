@@ -396,7 +396,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 }
             } else {
                 if (!app.is(".focused")) {
-                    editor.focus();
+                    editor.trigger("focus");
                 }
                 event.preventDefault();
             }
@@ -427,9 +427,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             if (self.content !== content) {
                 self.content = content;
                 trigger(self, 'change', [self.editor]);
-                source.blur().trigger("change");
+                source.trigger("blur").trigger("change");
             } else {
-                source.blur();
+                source.trigger("blur");
             }
 
             if (options.search) {

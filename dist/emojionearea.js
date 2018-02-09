@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-01-18T00:05Z
+ * Date: 2018-02-09T20:53Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -758,15 +758,22 @@ document = window.document || {};
         if (!self.sprite && self.lasyEmoji[0]) {
             var pickerTop = self.picker.offset().top,
                 pickerBottom = pickerTop + self.picker.height() + 20;
+
             self.lasyEmoji.each(function() {
                 var e = $(this), top = e.offset().top;
+
                 if (top > pickerTop && top < pickerBottom) {
                     e.attr("src", e.data("src")).removeClass("lazy-emoji");
                 }
-            })
+
+                // improve performance by early-exit when we encounter first emoji below bottom of picker viewport
+                if (top > pickerBottom) {
+                    return false;
+                }
+            });
             self.lasyEmoji = self.lasyEmoji.filter(".lazy-emoji");
         }
-    }
+    };
     function selector (prefix, skip_dot) {
         return (skip_dot ? '' : '.') + css_class + (prefix ? ("-" + prefix) : "");
     }
@@ -1225,7 +1232,7 @@ document = window.document || {};
                 }
             } else {
                 if (!app.is(".focused")) {
-                    editor.focus();
+                    editor.trigger("focus");
                 }
                 event.preventDefault();
             }
@@ -1256,9 +1263,9 @@ document = window.document || {};
             if (self.content !== content) {
                 self.content = content;
                 trigger(self, 'change', [self.editor]);
-                source.blur().trigger("change");
+                source.trigger("blur").trigger("change");
             } else {
-                source.blur();
+                source.trigger("blur");
             }
 
             if (options.search) {
