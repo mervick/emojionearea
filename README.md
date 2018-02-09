@@ -200,9 +200,28 @@ The position of the filters header in the emojis picker
 Example:
 ```js
 $(".emojionearea").emojioneArea({
-    filtersPosition: "top"
+    filtersPosition: "bottom"
 });
 ```
+
+![EmojiOneArea - searchPosition bottom](http://mervick.github.io/emojionearea/images/filters-position-bottom.png)
+
+#### `searchPosition`
+
+The search panel position if `search` option enabled
+
+**type** `string`  
+**default**: `top`  
+**accepts**: `'top' | 'bottom'`  
+
+Example:
+```js
+$(".emojionearea").emojioneArea({
+    searchPosition: "bottom"
+});
+```
+
+![EmojiOneArea - searchPosition bottom](http://mervick.github.io/emojionearea/images/search-position-bottom.png)
 
 #### `hidePickerOnBlur`
 
