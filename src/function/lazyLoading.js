@@ -15,7 +15,6 @@ function($) {
                     e.attr("src", e.data("src")).removeClass("lazy-emoji");
                 }
 
-                // improve performance by early-exit when we encounter first emoji below bottom of picker viewport
                 if (top > pickerBottom) {
                     return false;
                 }
