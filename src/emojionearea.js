@@ -6,6 +6,8 @@ define([
     'var/blankImg',
     'var/emojioneSupportMode',
     'function/loadEmojione',
+    'function/getOptions',
+
     'prototype/on',
     'prototype/off',
     'prototype/trigger',
@@ -17,7 +19,7 @@ define([
     'prototype/enable',
     'prototype/disable'
 ],
-function($, EmojioneArea, getDefaultOptions, htmlFromText, blankImg, emojioneSupportMode, loadEmojione) {
+function($, EmojioneArea, getDefaultOptions, htmlFromText, blankImg, emojioneSupportMode, loadEmojione, getOptions) {
     $.fn.emojioneArea = function(options) {
         return this.each(function() {
             if (!!this.emojioneArea) return this.emojioneArea;
@@ -29,6 +31,8 @@ function($, EmojioneArea, getDefaultOptions, htmlFromText, blankImg, emojioneSup
     $.fn.emojioneArea.defaults = getDefaultOptions();
 
     $.fn.emojioneAreaText = function(options) {
+        options = getOptions(options);
+
         var self = this, pseudoSelf = {
             shortnames: (options && typeof options.shortnames !== 'undefined' ? options.shortnames : true),
             emojiTemplate: '<img alt="{alt}" class="emojione' + (options && options.sprite && emojioneSupportMode < 3 ? '-{uni}" src="' + blankImg : 'emoji" src="{img}') + '"/>'
