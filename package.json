@@ -1,6 +1,6 @@
 {
   "name": "emojionearea",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "WYSIWYG-like EmojiOne Converter / Picker Plugin for jQuery",
   "main": "dist/emojionearea.js",
   "scripts": {
