@@ -11,7 +11,7 @@ function(EmojioneArea, trigger) {
         self.button.removeClass("active");
         self._sh_timer =  window.setTimeout(function() {
             self.picker.addClass("hidden");
-        }, 500);
+        }, 50);
         trigger(self, "picker.hide", [self.picker]);
         return self;
     }
