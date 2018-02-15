@@ -464,7 +464,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             .on("@search.keypress", function(hide) {
                 var filterBtns = picker.find(".emojionearea-filter");
                 var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-                var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
+                var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"").toLowerCase();
 
                 if (term && term.length) {
                     if (self.recentFilter.hasClass("active")) {
