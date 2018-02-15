@@ -52,7 +52,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea,
+            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution,
             app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -96,12 +96,29 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     ),
                     scrollArea = div('scroll-area',
                         emojisList = div('emojis-list')
+                    ),
+                    attribution = div('attribution',
+                        options.showAttribution ?
+                        function() {
+                            if (options.showAttribution) {
+                                this.append('Emoji icons supplied by ');
+                                this.append($("<a/>", {
+                                    "href": "https://www.emojione.com/",
+                                    "target": "_blank",
+                                    "text": "EmojiOne"
+                                }));
+                            }
+                        } : null
                     )
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
              .addClass(selector('filters-position-' + options.filtersPosition, true))
              .addClass('hidden')
         );
+
+        if (options.showAttribution) {
+            picker.addClass(selector('showing-attribution-' + options.pickerPosition, true));
+        }
 
         self.searchSel = null;
 

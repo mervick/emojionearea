@@ -217,6 +217,24 @@
             }
         }
 
+        &.#{$css-prefix}-showing-attribution-top {
+            &, .#{$css-prefix}-wrapper {
+                height: $picker-height + $attribution-height
+            }
+
+            .#{$css-prefix}-wrapper {
+                .#{$css-prefix}-attribution {
+                    position: absolute;
+                    height: $attribution-height;
+                    padding: 5px;
+                    text-align: center;
+                    width: 100%;
+                    border-top: 1px solid #d0d0d0;
+                    bottom: 0;
+                }
+            }
+        }
+
         .#{$css-prefix}-filters, .#{$css-prefix}-search {
             width: 100%;
             position: absolute;
@@ -486,6 +504,10 @@
             .#{$css-prefix}-scroll-area {
                 bottom: 0;
             }
+
+            &.#{$css-prefix}-showing-attribution-top {
+                bottom: $attribution-height;
+            }
         }
 
         &.#{$css-prefix}-filters-position-bottom {
@@ -573,6 +595,10 @@
 
         + .#{$css-prefix}-picker-position-top {
             margin-top: - $picker-height + 7;
+
+            &.#{$css-prefix}-showing-attribution-top {
+                margin-top: - $picker-height + $attribution-height + 7;
+            }
         }
 
         + .#{$css-prefix}-picker-position-left,

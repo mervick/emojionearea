@@ -45,7 +45,8 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
             textcomplete: {
                 maxCount      : 15,
                 placement     : null // null - default | top | absleft | absright
-            }
+            },
+            showAttribution   : false
         };
 
         var supportMode = !emojione ? getSupportMode(getEmojioneVersion()) : getSupportMode(detectVersion(emojione));
