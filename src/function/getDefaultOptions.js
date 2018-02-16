@@ -46,7 +46,8 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
                 maxCount      : 15,
                 placement     : null // null - default | top | absleft | absright
             },
-            showAttribution   : false
+            showAttribution   : false,
+            noResultsText     : 'No results found'
         };
 
         var supportMode = !emojione ? getSupportMode(getEmojioneVersion()) : getSupportMode(detectVersion(emojione));

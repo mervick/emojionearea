@@ -52,7 +52,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution,
+            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
             app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -95,7 +95,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         }
                     ),
                     scrollArea = div('scroll-area',
-                        emojisList = div('emojis-list')
+                        emojisList = div('emojis-list'),
+                        emojisNoResults = div('emojis-no-results').text(options.noResultsText)
                     ),
                     attribution = div('attribution',
                         options.showAttribution ?
@@ -474,6 +475,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     self.recentCategory.hide();
                     self.recentFilter.hide();
 
+                    var foundMatches = false;
+
                     categoryBlocks.each(function() {
                         var matchEmojis = function(category, activeTone) {
                             var $matched = category.find('.emojibtn[data-name*="' + term + '"]');
@@ -489,6 +492,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                                 $matched.show();
 
                                 if (category.data('tone') === activeTone) {
+                                    foundMatches = true;
                                     category.show();
                                 }
 
@@ -499,12 +503,21 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         var $block = $(this);
                         if ($block.data('tone') === 0) {
                             categories.filter(':not([name="recent"])').each(function() {
-                                matchEmojis($(this), 0);
+                                matchEmojis($(this), activeTone);
                             })
                         } else {
                             matchEmojis($block, activeTone);
                         }
                     });
+
+                    if (!foundMatches) {
+                        emojisList.hide();
+                        emojisNoResults.show();
+                    } else {
+                        emojisList.show();
+                        emojisNoResults.hide();
+                    }
+
                     if (!noListenScroll) {
                         scrollArea.trigger('scroll');
                     } else {
@@ -515,6 +528,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     categoryBlocks.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categoryBlocks).show();
                     filterBtns.show();
+                    emojisList.show();
+                    emojisNoResults.hide();
                     if (!hide) {
                         lazyLoading.call(self);
                     }

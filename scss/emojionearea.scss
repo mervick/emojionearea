@@ -415,8 +415,14 @@
             position: absolute;
             padding: 0 0 5px;
 
-            .#{$css-prefix}-emojis-list {
+            .#{$css-prefix}-emojis-list,
+            .#{$css-prefix}-emojis-no-results, {
                 z-index: 1;
+            }
+
+            .#{$css-prefix}-emojis-no-results {
+                display: none;
+                padding: 7px 0 5px 13px; 
             }
 
             .#{$css-prefix}-category-title {
