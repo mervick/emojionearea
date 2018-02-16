@@ -606,6 +606,12 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     }
                 ], textcompleteOptions);
 
+                if (self.recentEmojis) {
+                    editor.on("textComplete:select", function(e, value) {
+                        setRecent(self, value);
+                    });
+                }
+
                 if (options.textcomplete.placement) {
                     // Enable correct positioning for textcomplete
                     if ($(editor.data('textComplete').option.appendTo).css("position") == "static") {
