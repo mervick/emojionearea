@@ -217,7 +217,7 @@
             }
         }
 
-        &.#{$css-prefix}-showing-attribution-top {
+        &.#{$css-prefix}-showing-attribution {
             &, .#{$css-prefix}-wrapper {
                 height: $picker-height + $attribution-height
             }
@@ -504,10 +504,6 @@
             .#{$css-prefix}-scroll-area {
                 bottom: 0;
             }
-
-            &.#{$css-prefix}-showing-attribution-top {
-                bottom: $attribution-height;
-            }
         }
 
         &.#{$css-prefix}-filters-position-bottom {
@@ -525,6 +521,19 @@
             }
             .#{$css-prefix}-scroll-area {
                 top: 0;
+            }
+
+            &.#{$css-prefix}-showing-attribution {
+                .#{$css-prefix}-filters {
+                    bottom: $attribution-height;
+                    border-radius: 0;
+                }
+                .#{$css-prefix}-search {
+                    bottom: $filters-height + $attribution-height;
+                }
+                .#{$css-prefix}-tones {
+                    bottom: $filters-height + $attribution-height + 13px;
+                }
             }
         }
 
@@ -596,7 +605,7 @@
         + .#{$css-prefix}-picker-position-top {
             margin-top: - $picker-height + 7;
 
-            &.#{$css-prefix}-showing-attribution-top {
+            &.#{$css-prefix}-showing-attribution {
                 margin-top: - $picker-height + $attribution-height + 7;
             }
         }
@@ -608,6 +617,10 @@
 
         + .#{$css-prefix}-picker-position-bottom {
             margin-top: - 7px;
+
+            &.#{$css-prefix}-showing-attribution {
+                margin-top: - $attribution-height + 7;
+            }
         }
     }
 

@@ -117,7 +117,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         );
 
         if (options.showAttribution) {
-            picker.addClass(selector('showing-attribution-' + options.pickerPosition, true));
+            picker.addClass(selector('showing-attribution', true));
         }
 
         self.searchSel = null;
