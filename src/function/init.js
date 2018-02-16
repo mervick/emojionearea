@@ -242,7 +242,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
 
         if (options.search) {
-            attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
+            attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur", input: "search.input"});
         }
 
         var noListenScroll = false;
@@ -535,6 +535,10 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         lazyLoading.call(self);
                     }
                 }
+            })
+
+            .on("@search.input", function () {
+                self.trigger('search.keypress');
             })
 
             .on("@search.blur", function() {
