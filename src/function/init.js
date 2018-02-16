@@ -526,6 +526,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 } else {
                     updateRecent(self, true);
                     categoryBlocks.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
+                    categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categoryBlocks).show();
                     filterBtns.show();
                     emojisList.show();
