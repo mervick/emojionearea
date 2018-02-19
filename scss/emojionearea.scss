@@ -87,6 +87,7 @@
             content: attr(placeholder);
             display: block;
             color: $placeholder-color;
+            position: absolute;
         }
 
         &:focus {
