@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-02-16T13:14Z
+ * Date: 2018-02-20T16:32Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -28,6 +28,7 @@ document = window.document || {};
     var unique = 0;
     var eventStorage = {};
     var possibleEvents = {};
+    var bindedEvents = {};
     var emojione = window.emojione;
     var readyCallbacks = [];
     function emojioneReady (fn) {
@@ -873,6 +874,8 @@ document = window.document || {};
         self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>';
         self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}">' + self.emojiTemplateAlt + '</i>';
         self.recentEmojis = options.recentEmojis && supportsLocalStorage();
+        self.events = options.events;
+        self.autocomplete = options.autocomplete;
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
@@ -884,7 +887,7 @@ document = window.document || {};
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
-            app = div({
+            app = self.app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
             },
@@ -1073,7 +1076,7 @@ document = window.document || {};
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
 
         if (options.search) {
-            attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
+            attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur", input: "search.input"});
         }
 
         var noListenScroll = false;
@@ -1175,7 +1178,7 @@ document = window.document || {};
             };
 
             if (event.originalEvent.clipboardData) {
-                var text = event.originalEvent.clipboardData.getData('text/plain');
+                var text = textFromHtml(event.originalEvent.clipboardData.getData('text/html').replace(/\r\n|\n|\r/g, '<br>'), self);
                 pasteText(text);
 
                 if (event.preventDefault){
@@ -1368,6 +1371,10 @@ document = window.document || {};
                 }
             })
 
+            .on("@search.input", function () {
+                self.trigger('search.keypress');
+            })
+
             .on("@search.blur", function() {
                 self.stayFocused = false;
                 self.search.removeClass("focused");
@@ -1392,8 +1399,8 @@ document = window.document || {};
             });
         }
 
-        if (isObject(options.events) && !$.isEmptyObject(options.events)) {
-            $.each(options.events, function(event, handler) {
+        if (isObject(self.events) && !$.isEmptyObject(self.events)) {
+            $.each(self.events, function(event, handler) {
                 self.on(event.replace(/_/g, '.'), handler);
             });
         }
@@ -1579,13 +1586,54 @@ document = window.document || {};
         loadEmojione(options);
         eventStorage[self.id = ++unique] = {};
         possibleEvents[self.id] = {};
+        bindedEvents[self.id] = {};
         emojioneReady(function() {
             init(self, element, options);
         });
     };
     function destroy (self) {
-        console.log(123);
+        self.off("@filter.click");
+        self.off("@tone.click");
+        self.off("@button.click");
+        self.off("@!paste");
+        self.off("@emojibtn.click");
+        self.off("@!resize @keyup @emojibtn.click");
+        self.off("@!mousedown");
+        self.off("@change");
+        self.off("@focus");
+        self.off("@blur");
+
+        if (self.search) {
+            self.off("@search.focus");
+            self.off("@search.keypress");
+            self.off("@search.blur");
+        }
+
+        if (isObject(self.events) && !$.isEmptyObject(self.events)) {
+            $.each(self.events, function(event) {
+                self.off(event.replace(/_/g, '.'));
+            });
+        }
+
+        if (self.inline) {
+            self.off("@keydown");
+        }
+
+        if (self.autocomplete) {
+            self.editor.textcomplete('destroy');
+        }
+
+        self.app.remove();
+
+        self.app = self.editor = self.search = self.scrollArea = null;
     };
+    function bindEventHandler(e) {
+        var args = slice.call(arguments),
+            target = $.isFunction(e.data.target) ? e.data.target.apply(self, [e.data.event].concat(args)) : e.data.target;
+        if (target) {
+            trigger(e.data.self, e.data.event, [target].concat(args));
+        }
+    }
     function bindEvent(self, event) {
         event = event.replace(/^@/, '');
         var id = self.id;
@@ -1595,15 +1643,10 @@ document = window.document || {};
                 // ev[1] = event
                 // ev[2] = target
                 $.each($.isArray(ev[0]) ? ev[0] : [ev[0]], function(i, el) {
-                    $(el).on(ev[1], function() {
-                        var args = slice.call(arguments),
-                            target = $.isFunction(ev[2]) ? ev[2].apply(self, [event].concat(args)) : ev[2];
-                        if (target) {
-                            trigger(self, event, [target].concat(args));
-                        }
-                    });
+                    $(el).on(ev[1], {self: self, event: event, target: ev[2]}, bindEventHandler);
                 });
             });
+            bindedEvents[id][event] = possibleEvents[id][event];
             possibleEvents[id][event] = null;
         }
     }
@@ -1618,12 +1661,28 @@ document = window.document || {};
         }
         return this;
     };
+    function unbindEvent(self, event) {
+        event = event.replace(/^@/, '');
+        var id = self.id;
+        if (bindedEvents[id][event]) {
+            $.each(bindedEvents[id][event], function(i, ev) {
+                // ev[0] = element
+                // ev[1] = event
+                // ev[2] = target
+                $.each($.isArray(ev[0]) ? ev[0] : [ev[0]], function(i, el) {
+                    $(el).off(ev[1], bindEventHandler);
+                });
+            });
+            bindedEvents[id][event] = null;
+        }
+    }
 
     EmojioneArea.prototype.off = function(events, handler) {
         if (events) {
-            var id = this.id;
+            var self = this;
+            var id = self.id;
             $.each(events.toLowerCase().replace(/_/g, '.').split(' '), function(i, event) {
-                if (eventStorage[id][event] && !/^@/.test(event)) {
+                if (eventStorage[id][event]) {
                     if (handler) {
                         $.each(eventStorage[id][event], function(j, fn) {
                             if (fn === handler) {
@@ -1633,6 +1692,7 @@ document = window.document || {};
                     } else {
                         eventStorage[id][event] = [];
                     }
+                    unbindEvent(self, event);
                 }
             });
         }
@@ -1727,7 +1787,9 @@ document = window.document || {};
     $.fn.emojioneArea = function(options) {
         if (typeof options === 'string') {
             if (options === 'destroy') {
-                destroy(this.emojioneArea);
+                return this.each(function() {
+                    destroy(this.emojioneArea);
+                });
             }
         } else {
             return this.each(function() {
