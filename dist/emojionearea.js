@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-01-18T00:05Z
+ * Date: 2018-02-16T13:14Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -214,7 +214,9 @@ document = window.document || {};
             textcomplete: {
                 maxCount      : 15,
                 placement     : null // null - default | top | absleft | absright
-            }
+            },
+            showAttribution   : false,
+            noResultsText     : 'No results found'
         };
 
         var supportMode = !emojione ? getSupportMode(getEmojioneVersion()) : getSupportMode(detectVersion(emojione));
@@ -881,7 +883,7 @@ document = window.document || {};
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea,
+            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
             app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -924,13 +926,31 @@ document = window.document || {};
                         }
                     ),
                     scrollArea = div('scroll-area',
-                        emojisList = div('emojis-list')
+                        emojisList = div('emojis-list'),
+                        emojisNoResults = div('emojis-no-results').text(options.noResultsText)
+                    ),
+                    attribution = div('attribution',
+                        options.showAttribution ?
+                        function() {
+                            if (options.showAttribution) {
+                                this.append('Emoji icons supplied by ');
+                                this.append($("<a/>", {
+                                    "href": "https://www.emojione.com/",
+                                    "target": "_blank",
+                                    "text": "EmojiOne"
+                                }));
+                            }
+                        } : null
                     )
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
              .addClass(selector('filters-position-' + options.filtersPosition, true))
              .addClass('hidden')
         );
+
+        if (options.showAttribution) {
+            picker.addClass(selector('showing-attribution', true));
+        }
 
         self.searchSel = null;
 
@@ -1276,7 +1296,7 @@ document = window.document || {};
             .on("@search.keypress", function(hide) {
                 var filterBtns = picker.find(".emojionearea-filter");
                 var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-                var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
+                var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"").toLowerCase();
 
                 if (term && term.length) {
                     if (self.recentFilter.hasClass("active")) {
@@ -1285,6 +1305,8 @@ document = window.document || {};
 
                     self.recentCategory.hide();
                     self.recentFilter.hide();
+
+                    var foundMatches = false;
 
                     categoryBlocks.each(function() {
                         var matchEmojis = function(category, activeTone) {
@@ -1301,6 +1323,7 @@ document = window.document || {};
                                 $matched.show();
 
                                 if (category.data('tone') === activeTone) {
+                                    foundMatches = true;
                                     category.show();
                                 }
 
@@ -1311,12 +1334,21 @@ document = window.document || {};
                         var $block = $(this);
                         if ($block.data('tone') === 0) {
                             categories.filter(':not([name="recent"])').each(function() {
-                                matchEmojis($(this), 0);
+                                matchEmojis($(this), activeTone);
                             })
                         } else {
                             matchEmojis($block, activeTone);
                         }
                     });
+
+                    if (!foundMatches) {
+                        emojisList.hide();
+                        emojisNoResults.show();
+                    } else {
+                        emojisList.show();
+                        emojisNoResults.hide();
+                    }
+
                     if (!noListenScroll) {
                         scrollArea.trigger('scroll');
                     } else {
@@ -1325,8 +1357,11 @@ document = window.document || {};
                 } else {
                     updateRecent(self, true);
                     categoryBlocks.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
+                    categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categoryBlocks).show();
                     filterBtns.show();
+                    emojisList.show();
+                    emojisNoResults.hide();
                     if (!hide) {
                         lazyLoading.call(self);
                     }
@@ -1401,6 +1436,12 @@ document = window.document || {};
                         index: 1
                     }
                 ], textcompleteOptions);
+
+                if (self.recentEmojis) {
+                    editor.on("textComplete:select", function(e, value) {
+                        setRecent(self, value);
+                    });
+                }
 
                 if (options.textcomplete.placement) {
                     // Enable correct positioning for textcomplete
@@ -1542,6 +1583,9 @@ document = window.document || {};
             init(self, element, options);
         });
     };
+    function destroy (self) {
+        console.log(123);
+    };
     function bindEvent(self, event) {
         event = event.replace(/^@/, '');
         var id = self.id;
@@ -1646,7 +1690,7 @@ document = window.document || {};
         self.button.removeClass("active");
         self._sh_timer =  window.setTimeout(function() {
             self.picker.addClass("hidden");
-        }, 500);
+        }, 50);
         trigger(self, "picker.hide", [self.picker]);
         return self;
     }
@@ -1681,11 +1725,17 @@ document = window.document || {};
     }
 
     $.fn.emojioneArea = function(options) {
-        return this.each(function() {
-            if (!!this.emojioneArea) return this.emojioneArea;
-            $.data(this, 'emojioneArea', this.emojioneArea = new EmojioneArea($(this), options));
-            return this.emojioneArea;
-        });
+        if (typeof options === 'string') {
+            if (options === 'destroy') {
+                destroy(this.emojioneArea);
+            }
+        } else {
+            return this.each(function() {
+                if (!!this.emojioneArea) return this.emojioneArea;
+                $.data(this, 'emojioneArea', this.emojioneArea = new EmojioneArea($(this), options));
+                return this.emojioneArea;
+            });
+        }
     };
 
     $.fn.emojioneArea.defaults = getDefaultOptions();

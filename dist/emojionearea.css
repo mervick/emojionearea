@@ -246,6 +246,16 @@
       position: absolute;
       background-repeat: no-repeat;
       z-index: 91; }
+  .emojionearea .emojionearea-picker.emojionearea-showing-attribution, .emojionearea .emojionearea-picker.emojionearea-showing-attribution .emojionearea-wrapper {
+    height: 306px; }
+  .emojionearea .emojionearea-picker.emojionearea-showing-attribution .emojionearea-wrapper .emojionearea-attribution {
+    position: absolute;
+    height: 30px;
+    padding: 5px;
+    text-align: center;
+    width: 100%;
+    border-top: 1px solid #d0d0d0;
+    bottom: 0; }
   .emojionearea .emojionearea-picker .emojionearea-filters, .emojionearea .emojionearea-picker .emojionearea-search {
     width: 100%;
     position: absolute;
@@ -257,7 +267,8 @@
     .emojionearea .emojionearea-picker .emojionearea-search > input {
       outline: none;
       width: 160px;
-      min-width: 160px; }
+      min-width: 160px;
+      height: auto; }
   .emojionearea .emojionearea-picker .emojionearea-filters {
     background: #F5F7F9;
     padding: 0 0 0 7px;
@@ -360,8 +371,12 @@
     width: 100%;
     position: absolute;
     padding: 0 0 5px; }
-    .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-emojis-list {
+    .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-emojis-list,
+    .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-emojis-no-results {
       z-index: 1; }
+    .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-emojis-no-results {
+      display: none;
+      padding: 7px 0 5px 13px; }
     .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojionearea-category-title {
       display: block;
       font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
@@ -447,6 +462,13 @@
     bottom: 53px; }
   .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom .emojionearea-scroll-area {
     top: 0; }
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-showing-attribution .emojionearea-filters {
+    bottom: 30px;
+    border-radius: 0; }
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-showing-attribution .emojionearea-search {
+    bottom: 70px; }
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-showing-attribution .emojionearea-tones {
+    bottom: 83px; }
   .emojionearea .emojionearea-picker.emojionearea-picker-position-top {
     margin-top: -286px;
     right: -14px; }
@@ -486,11 +508,15 @@
   opacity: 1; }
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-top {
   margin-top: -269px; }
+  .emojionearea .emojionearea-button.active + .emojionearea-picker-position-top.emojionearea-showing-attribution {
+    margin-top: -239px; }
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-left,
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-right {
   margin-right: -309px; }
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-bottom {
   margin-top: -7px; }
+  .emojionearea .emojionearea-button.active + .emojionearea-picker-position-bottom.emojionearea-showing-attribution {
+    margin-top: -23px; }
 .emojionearea.emojionearea-standalone {
   display: inline-block;
   width: auto;

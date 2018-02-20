@@ -1,10 +1,10 @@
 define([
     'jquery',
-    'var/slice',
     'var/possibleEvents',
-    'function/trigger',
+    'var/bindedEvents',
+    'function/bindEventHandler'
 ],
-function($, slice, possibleEvents, trigger) {
+function($, possibleEvents, bindedEvents, bindEventHandler) {
     return function(self, event) {
         event = event.replace(/^@/, '');
         var id = self.id;
@@ -14,15 +14,10 @@ function($, slice, possibleEvents, trigger) {
                 // ev[1] = event
                 // ev[2] = target
                 $.each($.isArray(ev[0]) ? ev[0] : [ev[0]], function(i, el) {
-                    $(el).on(ev[1], function() {
-                        var args = slice.call(arguments),
-                            target = $.isFunction(ev[2]) ? ev[2].apply(self, [event].concat(args)) : ev[2];
-                        if (target) {
-                            trigger(self, event, [target].concat(args));
-                        }
-                    });
+                    $(el).on(ev[1], {self: self, event: event, target: ev[2]}, bindEventHandler);
                 });
             });
+            bindedEvents[id][event] = possibleEvents[id][event];
             possibleEvents[id][event] = null;
         }
     }
