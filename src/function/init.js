@@ -346,7 +346,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             };
 
             if (event.originalEvent.clipboardData) {
-                var text = event.originalEvent.clipboardData.getData('text/plain');
+                var text = textFromHtml(event.originalEvent.clipboardData.getData('text/html').replace(/\r\n|\n|\r/g, '<br>'), self);
                 pasteText(text);
 
                 if (event.preventDefault){
