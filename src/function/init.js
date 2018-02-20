@@ -42,6 +42,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>';
         self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}">' + self.emojiTemplateAlt + '</i>';
         self.recentEmojis = options.recentEmojis && supportsLocalStorage();
+        self.events = options.events;
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
@@ -53,7 +54,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
             editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
-            app = div({
+            app = self.app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
             },
@@ -561,8 +562,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             });
         }
 
-        if (isObject(options.events) && !$.isEmptyObject(options.events)) {
-            $.each(options.events, function(event, handler) {
+        if (isObject(self.events) && !$.isEmptyObject(self.events)) {
+            $.each(self.events, function(event, handler) {
                 self.on(event.replace(/_/g, '.'), handler);
             });
         }

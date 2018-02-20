@@ -22,7 +22,9 @@ function($, EmojioneArea, getDefaultOptions, destroy, htmlFromText, blankImg, em
     $.fn.emojioneArea = function(options) {
         if (typeof options === 'string') {
             if (options === 'destroy') {
-                destroy(this.emojioneArea);
+                return this.each(function() {
+                    destroy(this.emojioneArea);
+                });
             }
         } else {
             return this.each(function() {
