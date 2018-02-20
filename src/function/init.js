@@ -43,6 +43,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}">' + self.emojiTemplateAlt + '</i>';
         self.recentEmojis = options.recentEmojis && supportsLocalStorage();
         self.events = options.events;
+        self.autocomplete = options.autocomplete;
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';

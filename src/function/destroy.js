@@ -30,6 +30,10 @@ define([
             self.off("@keydown");
         }
 
+        if (self.autocomplete) {
+            self.editor.textcomplete('destroy');
+        }
+
         self.app.remove();
 
         self.app = self.editor = self.search = self.scrollArea = null;
