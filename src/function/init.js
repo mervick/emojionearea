@@ -248,8 +248,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var noListenScroll = false;
-        scrollArea.on('scroll', function () {
+        scrollArea.on('scroll', function (e) {
             if (!noListenScroll) {
+                e.stopPropagation();
                 lazyLoading.call(self);
                 if (scrollArea.is(":not(.skinnable)")) {
                     var item = categories.eq(0), scrollTop = scrollArea.offset().top;
