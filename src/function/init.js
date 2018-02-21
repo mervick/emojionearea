@@ -455,7 +455,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
             if (options.search) {
                 self.search.val('');
-                self.trigger('search.keypress', true);
+                window.setTimeout(function() {
+                    self.trigger('search.keypress', true);
+                }, 50);
             }
         });
 
