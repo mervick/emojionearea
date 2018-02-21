@@ -127,7 +127,7 @@
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
   box-shadow: none; }
-  .emojionearea .emojionearea-editor:empty:before {
+  .emojionearea .emojionearea-editor:empty:after {
     content: attr(placeholder);
     display: block;
     color: #BBBBBB; }
