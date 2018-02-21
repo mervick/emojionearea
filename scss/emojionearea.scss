@@ -83,7 +83,7 @@
         @include border-radius(0);
         @include box-shadow(none);
 
-        &:empty:before {
+        &:empty:after {
             content: attr(placeholder);
             display: block;
             color: $placeholder-color;
