@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-02-20T16:32Z
+ * Date: 2018-02-21T12:13Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1080,8 +1080,9 @@ document = window.document || {};
         }
 
         var noListenScroll = false;
-        scrollArea.on('scroll', function () {
+        scrollArea.on('scroll', function (e) {
             if (!noListenScroll) {
+                e.stopPropagation();
                 lazyLoading.call(self);
                 if (scrollArea.is(":not(.skinnable)")) {
                     var item = categories.eq(0), scrollTop = scrollArea.offset().top;
