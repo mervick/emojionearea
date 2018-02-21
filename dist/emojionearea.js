@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-02-21T12:13Z
+ * Date: 2018-02-21T13:48Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1783,6 +1783,22 @@ document = window.document || {};
         };
         self.isReady ? next() : self.on("ready", next);
         return self;
+    }
+
+    // Polyfill for IE - https://github.com/mervick/emojionearea/issues/172
+    if (!String.prototype.includes) {
+      String.prototype.includes = function(search, start) {
+        'use strict';
+        if (typeof start !== 'number') {
+          start = 0;
+        }
+        
+        if (start + search.length > this.length) {
+          return false;
+        } else {
+          return this.indexOf(search, start) !== -1;
+        }
+      };
     }
 
     $.fn.emojioneArea = function(options) {
