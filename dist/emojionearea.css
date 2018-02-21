@@ -130,8 +130,7 @@
   .emojionearea .emojionearea-editor:empty:before {
     content: attr(placeholder);
     display: block;
-    color: #BBBBBB;
-    position: absolute; }
+    color: #BBBBBB; }
   .emojionearea .emojionearea-editor:focus {
     border: 0;
     outline: 0;
