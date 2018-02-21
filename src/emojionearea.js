@@ -19,6 +19,22 @@ define([
     'prototype/disable'
 ],
 function($, EmojioneArea, getDefaultOptions, destroy, htmlFromText, blankImg, emojioneSupportMode, loadEmojione) {
+    // Polyfill for IE - https://github.com/mervick/emojionearea/issues/172
+    if (!String.prototype.includes) {
+      String.prototype.includes = function(search, start) {
+        'use strict';
+        if (typeof start !== 'number') {
+          start = 0;
+        }
+        
+        if (start + search.length > this.length) {
+          return false;
+        } else {
+          return this.indexOf(search, start) !== -1;
+        }
+      };
+    }
+
     $.fn.emojioneArea = function(options) {
         if (typeof options === 'string') {
             if (options === 'destroy') {
