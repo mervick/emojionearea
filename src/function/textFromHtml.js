@@ -5,10 +5,28 @@ define([
 ],
 function(emojione, invisibleChar, unicodeTo) {
     return function(str, self) {
+        var previousImageWithUnicodeAlt = {};
+        var replaceImageTagsWithAltAttribute = function(image, alt, offset) {
+            if (emojione.unicodeToImage(alt)) {
+                if (Object.keys(previousImageWithUnicodeAlt).length) {
+                    if (previousImageWithUnicodeAlt.offset + previousImageWithUnicodeAlt.image.length === offset) {
+                        var combinedEmojioneImage = emojione.unicodeToImage(previousImageWithUnicodeAlt.unicode + alt);
+                        if (combinedEmojioneImage.indexOf('<img') === -1) {
+                            alt = '&nbsp;' + alt;
+                        }
+                    }
+                }
+                previousImageWithUnicodeAlt.unicode = alt;
+                previousImageWithUnicodeAlt.image = image;
+                previousImageWithUnicodeAlt.offset = offset;
+            }
+            return alt;
+        };
+
         str = str
             .replace(/&#10;/g, '\n')
             .replace(/&#09;/g, '\t')
-            .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, '$1')
+            .replace(/<img[^>]*alt="([^"]+)"[^>]*>/ig, replaceImageTagsWithAltAttribute)
             .replace(/\n|\r/g, '')
             .replace(/<br[^>]*>/ig, '\n')
             .replace(/(?:<(?:div|p|ol|ul|li|pre|code|object)[^>]*>)+/ig, '<div>')
