@@ -347,19 +347,17 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             };
 
             if (event.originalEvent.clipboardData) {
-                window.setTimeout(function() {
-                    var text = event.originalEvent.clipboardData.getData('text/plain');
-                    pasteText(text.trim());
+                var text = event.originalEvent.clipboardData.getData('text/plain');
+                pasteText(text.trim());
 
-                    if (event.preventDefault){
-                        event.preventDefault();
-                    } else {
-                        event.stop();
-                    }
+                if (event.preventDefault){
+                    event.preventDefault();
+                } else {
+                    event.stop();
+                }
 
-                    event.returnValue = false;
-                    event.stopPropagation();
-                }, 50);
+                event.returnValue = false;
+                event.stopPropagation();
                 return false;
             }
 
