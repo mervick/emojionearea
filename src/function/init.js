@@ -10,6 +10,7 @@ define([
     'function/attach',
     'function/shortnameTo',
     'function/pasteHtmlAtCaret',
+    'function/moveCaretToEnd',
     'function/getOptions',
     'function/saveSelection',
     'function/restoreSelection',
@@ -27,7 +28,7 @@ define([
     //'function/calcElapsedTime', // debug only
 ],
 function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisibleChar, trigger, attach, shortnameTo,
-         pasteHtmlAtCaret, getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
+         pasteHtmlAtCaret, moveCaretToEnd, getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
          calcButtonPosition, lazyLoading, selector, div, updateRecent, getRecent, setRecent, supportsLocalStorage)
 {
     return function(self, source, options) {
@@ -418,6 +419,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             } else {
                 if (!app.is(".focused")) {
                     editor.focus();
+                    moveCaretToEnd(editor[0]);
                 }
                 event.preventDefault();
             }
