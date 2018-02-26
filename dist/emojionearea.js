@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-02-23T15:05Z
+ * Date: 2018-02-26T10:27Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -130,6 +130,22 @@ document = window.document || {};
             }
         } else if (document.selection && document.selection.type != "Control") {
             document.selection.createRange().pasteHTML(html);
+        }
+    }
+    function moveCaretToEnd(el) {
+        var sel, range;
+        if (window.getSelection && document.createRange) {
+            range = document.createRange();
+            range.selectNodeContents(el);
+            range.collapse(false);
+            sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else if (document.selection && document.body.createTextRange) {
+            range = document.body.createTextRange();
+            range.moveToElementText(el);
+            range.collapse(false);
+            range.select();
         }
     }
     function getEmojioneVersion() {
@@ -1250,6 +1266,7 @@ document = window.document || {};
             } else {
                 if (!app.is(".focused")) {
                     editor.focus();
+                    moveCaretToEnd(editor[0]);
                 }
                 event.preventDefault();
             }
