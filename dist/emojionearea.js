@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-02-26T14:26Z
+ * Date: 2018-02-27T16:03Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -78,11 +78,17 @@ document = window.document || {};
             friendlyName = shortname.substr(1, shortname.length - 2).replace(/_/g, ' ').replace(/\w\S*/g, function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
         }
         var fname = '';
-        if (emojioneSupportMode > 4) {
+        if (unicode.uc_base && emojioneSupportMode > 4) {
             fname = unicode.uc_base;
             unicode = unicode.uc_output.toUpperCase();
         } else {
             fname = unicode;
+        }
+        if (!shortname) {
+            var mappedUnicode = emojione.mapUnicodeToShort();
+            shortname = mappedUnicode[fname];
+            fname = emojione.emojioneList[shortname].uc_base;
+            unicode = emojione.emojioneList[shortname].uc_output;
         }
         return template
             .replace('{name}', shortname || '')
