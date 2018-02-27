@@ -21,6 +21,12 @@ function(emojione, emojioneSupportMode) {
         } else {
             fname = unicode;
         }
+        if (!shortname) {
+            var mappedUnicode = emojione.mapUnicodeToShort();
+            shortname = mappedUnicode[fname];
+            fname = emojione.emojioneList[shortname].uc_base;
+            unicode = emojione.emojioneList[shortname].uc_output;
+        }
         return template
             .replace('{name}', shortname || '')
             .replace('{friendlyName}', friendlyName)
