@@ -1,9 +1,9 @@
 /*!
- * EmojioneArea v3.4.0
+ * EmojioneArea v3.4.1
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-02-09T22:42Z
+ * Date: 2018-03-02T00:44Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};

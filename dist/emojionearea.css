@@ -423,8 +423,8 @@
       height: 24px;
       float: left;
       display: block;
-      margin: 1px;
-      padding: 3px; }
+      margin: 0px;
+      padding: 4px; }
       .emojionearea .emojionearea-picker .emojionearea-scroll-area .emojibtn:hover {
         -moz-border-radius: 4px;
         -webkit-border-radius: 4px;
