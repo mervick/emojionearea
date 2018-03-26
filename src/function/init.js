@@ -10,6 +10,7 @@ define([
     'function/attach',
     'function/shortnameTo',
     'function/pasteHtmlAtCaret',
+    'function/moveCaretToEnd',
     'function/getOptions',
     'function/saveSelection',
     'function/restoreSelection',
@@ -27,7 +28,7 @@ define([
     //'function/calcElapsedTime', // debug only
 ],
 function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisibleChar, trigger, attach, shortnameTo,
-         pasteHtmlAtCaret, getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
+         pasteHtmlAtCaret, moveCaretToEnd, getOptions, saveSelection, restoreSelection, htmlFromText, textFromHtml, isObject,
          calcButtonPosition, lazyLoading, selector, div, updateRecent, getRecent, setRecent, supportsLocalStorage)
 {
     return function(self, source, options) {
@@ -42,6 +43,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>';
         self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}">' + self.emojiTemplateAlt + '</i>';
         self.recentEmojis = options.recentEmojis && supportsLocalStorage();
+        self.events = options.events;
+        self.autocomplete = options.autocomplete;
 
         var pickerPosition = options.pickerPosition;
         self.floatingPicker = pickerPosition === 'top' || pickerPosition === 'bottom';
@@ -52,8 +55,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea,
-            app = div({
+            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
+            app = self.app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
             },
@@ -95,13 +98,31 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         }
                     ),
                     scrollArea = div('scroll-area',
-                        emojisList = div('emojis-list')
+                        emojisList = div('emojis-list'),
+                        emojisNoResults = div('emojis-no-results').text(options.noResultsText)
+                    ),
+                    attribution = div('attribution',
+                        options.showAttribution ?
+                        function() {
+                            if (options.showAttribution) {
+                                this.append('Emoji icons supplied by ');
+                                this.append($("<a/>", {
+                                    "href": "https://www.emojione.com/",
+                                    "target": "_blank",
+                                    "text": "EmojiOne"
+                                }));
+                            }
+                        } : null
                     )
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
              .addClass(selector('filters-position-' + options.filtersPosition, true))
              .addClass('hidden')
         );
+
+        if (options.showAttribution) {
+            picker.addClass(selector('showing-attribution', true));
+        }
 
         self.searchSel = null;
 
@@ -224,12 +245,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
 
         if (options.search) {
-            attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur"});
+            attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur", input: "search.input"});
         }
 
         var noListenScroll = false;
-        scrollArea.on('scroll', function () {
+        scrollArea.on('scroll', function (e) {
             if (!noListenScroll) {
+                e.stopPropagation();
                 lazyLoading.call(self);
                 if (scrollArea.is(":not(.skinnable)")) {
                     var item = categories.eq(0), scrollTop = scrollArea.offset().top;
@@ -327,7 +349,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
             if (event.originalEvent.clipboardData) {
                 var text = event.originalEvent.clipboardData.getData('text/plain');
-                pasteText(text);
+                pasteText(text.trim());
 
                 if (event.preventDefault){
                     event.preventDefault();
@@ -397,6 +419,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             } else {
                 if (!app.is(".focused")) {
                     editor.focus();
+                    moveCaretToEnd(editor[0]);
                 }
                 event.preventDefault();
             }
@@ -434,7 +457,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
             if (options.search) {
                 self.search.val('');
-                self.trigger('search.keypress', true);
+                window.setTimeout(function() {
+                    self.trigger('search.keypress', true);
+                }, 50);
             }
         });
 
@@ -447,7 +472,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             .on("@search.keypress", function(hide) {
                 var filterBtns = picker.find(".emojionearea-filter");
                 var activeTone = (options.tones ? tones.find("i.active").data("skin") : 0);
-                var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"");
+                var term = self.search.val().replace( / /g, "_" ).replace(/"/g, "\\\"").toLowerCase();
 
                 if (term && term.length) {
                     if (self.recentFilter.hasClass("active")) {
@@ -456,6 +481,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
                     self.recentCategory.hide();
                     self.recentFilter.hide();
+
+                    var foundMatches = false;
 
                     categoryBlocks.each(function() {
                         var matchEmojis = function(category, activeTone) {
@@ -472,6 +499,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                                 $matched.show();
 
                                 if (category.data('tone') === activeTone) {
+                                    foundMatches = true;
                                     category.show();
                                 }
 
@@ -482,12 +510,21 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         var $block = $(this);
                         if ($block.data('tone') === 0) {
                             categories.filter(':not([name="recent"])').each(function() {
-                                matchEmojis($(this), 0);
+                                matchEmojis($(this), activeTone);
                             })
                         } else {
                             matchEmojis($block, activeTone);
                         }
                     });
+
+                    if (!foundMatches) {
+                        emojisList.hide();
+                        emojisNoResults.show();
+                    } else {
+                        emojisList.show();
+                        emojisNoResults.hide();
+                    }
+
                     if (!noListenScroll) {
                         scrollArea.trigger('scroll');
                     } else {
@@ -496,12 +533,19 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 } else {
                     updateRecent(self, true);
                     categoryBlocks.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
+                    categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categoryBlocks).show();
                     filterBtns.show();
+                    emojisList.show();
+                    emojisNoResults.hide();
                     if (!hide) {
                         lazyLoading.call(self);
                     }
                 }
+            })
+
+            .on("@search.input", function () {
+                self.trigger('search.keypress');
             })
 
             .on("@search.blur", function() {
@@ -528,8 +572,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             });
         }
 
-        if (isObject(options.events) && !$.isEmptyObject(options.events)) {
-            $.each(options.events, function(event, handler) {
+        if (isObject(self.events) && !$.isEmptyObject(self.events)) {
+            $.each(self.events, function(event, handler) {
                 self.on(event.replace(/_/g, '.'), handler);
             });
         }
@@ -572,6 +616,12 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         index: 1
                     }
                 ], textcompleteOptions);
+
+                if (self.recentEmojis) {
+                    editor.on("textComplete:select", function(e, value) {
+                        setRecent(self, value);
+                    });
+                }
 
                 if (options.textcomplete.placement) {
                     // Enable correct positioning for textcomplete
