@@ -55,36 +55,36 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
             defaultOptions.filters = {
                 tones: {
                     title: "Diversity",
-                    emoji: "open_hands raised_hands clap pray thumbsup thumbsdown punch fist left_facing_fist right_facing_fist " +
-                    "fingers_crossed v metal ok_hand point_left point_right point_up_2 point_down point_up raised_hand " +
+                    emoji: "open_hands raised_hands palms_up_together clap pray thumbsup thumbsdown punch fist left_facing_fist right_facing_fist " +
+                    "fingers_crossed v metal love_you_gesture ok_hand point_left point_right point_up_2 point_down point_up raised_hand " +
                     "raised_back_of_hand hand_splayed vulcan wave call_me muscle middle_finger writing_hand selfie nail_care ear " +
-                    "nose baby boy girl man woman blond-haired_woman blond_haired_person blond-haired_man older_man older_woman " +
-                    "man_with_chinese_cap woman_wearing_turban person_wearing_turban man_wearing_turban woman_police_officer " +
-                    "police_officer man_police_officer woman_construction_worker construction_worker man_construction_worker " +
-                    "woman_guard guard man_guard woman_detective detective man_detective woman_health_worker man_health_worker " +
+                    "nose baby boy girl man woman blond-haired_woman blond-haired_man older_man older_woman " +
+                    "man_with_chinese_cap woman_wearing_turban man_wearing_turban woman_police_officer " +
+                    "man_police_officer woman_construction_worker man_construction_worker " +
+                    "woman_guard man_guard woman_detective man_detective woman_health_worker man_health_worker " +
                     "woman_farmer man_farmer woman_cook man_cook woman_student man_student woman_singer man_singer woman_teacher " +
                     "man_teacher woman_factory_worker man_factory_worker woman_technologist man_technologist woman_office_worker " +
                     "man_office_worker woman_mechanic man_mechanic woman_scientist man_scientist woman_artist man_artist " +
                     "woman_firefighter man_firefighter woman_pilot man_pilot woman_astronaut man_astronaut woman_judge " +
-                    "man_judge mrs_claus santa princess prince bride_with_veil man_in_tuxedo angel pregnant_woman woman_bowing " +
-                    "person_bowing man_bowing person_tipping_hand man_tipping_hand woman_tipping_hand person_gesturing_no " +
-                    "man_gesturing_no woman_gesturing_no person_gesturing_ok man_gesturing_ok woman_gesturing_ok " +
-                    "person_raising_hand man_raising_hand woman_raising_hand woman_facepalming man_facepalming person_facepalming " +
-                    "woman_shrugging man_shrugging person_shrugging person_pouting man_pouting woman_pouting person_frowning " +
-                    "man_frowning woman_frowning person_getting_haircut man_getting_haircut woman_getting_haircut " +
-                    "person_getting_massage man_getting_face_massage woman_getting_face_massage levitate dancer man_dancing " +
-                    "woman_walking person_walking man_walking woman_running person_running man_running adult child older_adult " +
-                    "bearded_person woman_with_headscarf mage fairy vampire merperson elf love_you_gesture palms_up_together " +
-                    "woman_mage man_mage woman_fairy man_fairy woman_vampire man_vampire mermaid merman woman_elf man_elf " +
-                    "snowboarder woman_lifting_weights person_lifting_weights man_lifting_weights woman_cartwheeling " +
-                    "man_cartwheeling person_doing_cartwheel woman_bouncing_ball person_bouncing_ball man_bouncing_ball " +
-                    "woman_playing_handball man_playing_handball person_playing_handball woman_golfing person_golfing man_golfing " +
-                    "woman_surfing person_surfing man_surfing woman_swimming person_swimming man_swimming woman_playing_water_polo " +
-                    "man_playing_water_polo person_playing_water_polo woman_rowing_boat person_rowing_boat man_rowing_boat " +
-                    "horse_racing woman_biking person_biking man_biking woman_mountain_biking person_mountain_biking " +
-                    "man_mountain_biking woman_juggling man_juggling person_juggling breast_feeding person_in_steamy_room " +
-                    "person_climbing person_in_lotus_position woman_in_steamy_room man_in_steamy_room woman_climbing " +
-                    "man_climbing woman_in_lotus_position man_in_lotus_position bath sleeping_accommodation"
+                    "man_judge mrs_claus santa princess prince bride_with_veil man_in_tuxedo angel pregnant_woman " +
+                    "breast_feeding woman_bowing man_bowing man_tipping_hand woman_tipping_hand " +
+                    "man_gesturing_no woman_gesturing_no man_gesturing_ok woman_gesturing_ok " +
+                    "man_raising_hand woman_raising_hand woman_facepalming man_facepalming " +
+                    "woman_shrugging man_shrugging man_pouting woman_pouting " +
+                    "man_frowning woman_frowning man_getting_haircut woman_getting_haircut " +
+                    "man_getting_face_massage woman_getting_face_massage man_in_business_suit_levitating dancer man_dancing " +
+                    "woman_walking man_walking woman_running man_running adult child older_adult " +
+                    "bearded_person woman_with_headscarf woman_mage man_mage " +
+                    "woman_fairy man_fairy woman_vampire man_vampire mermaid merman woman_elf man_elf " +
+                    "snowboarder woman_lifting_weights man_lifting_weights woman_cartwheeling " +
+                    "man_cartwheeling woman_bouncing_ball man_bouncing_ball " +
+                    "woman_playing_handball man_playing_handball woman_golfing man_golfing " +
+                    "woman_surfing man_surfing woman_swimming man_swimming woman_playing_water_polo " +
+                    "man_playing_water_polo woman_rowing_boat man_rowing_boat " +
+                    "horse_racing woman_biking man_biking woman_mountain_biking " +
+                    "man_mountain_biking woman_juggling man_juggling " +
+                    "woman_in_steamy_room man_in_steamy_room woman_climbing " +
+                    "man_climbing woman_in_lotus_position man_in_lotus_position bath person_in_bed"
                 },
 
                 recent: {
@@ -97,42 +97,41 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
                     icon: "yum",
                     title: "Smileys & People",
                     emoji: "grinning smiley smile grin laughing sweat_smile joy rofl relaxed blush innocent slight_smile upside_down " +
-                    "wink relieved heart_eyes kissing_heart kissing kissing_smiling_eyes kissing_closed_eyes yum " +
+                    "wink relieved crazy_face star_struck heart_eyes kissing_heart kissing kissing_smiling_eyes kissing_closed_eyes yum " +
                     "stuck_out_tongue_winking_eye stuck_out_tongue_closed_eyes stuck_out_tongue money_mouth hugging nerd sunglasses " +
-                    "clown cowboy smirk unamused disappointed pensive worried confused slight_frown frowning2 persevere confounded " +
-                    "tired_face weary triumph angry rage no_mouth neutral_face expressionless hushed frowning anguished open_mouth " +
-                    "astonished dizzy_face flushed scream fearful cold_sweat cry disappointed_relieved drooling_face sob sweat sleepy " +
-                    "sleeping rolling_eyes thinking lying_face grimacing zipper_mouth nauseated_face sneezing_face mask thermometer_face " +
+                    "cowboy smirk unamused disappointed pensive worried face_with_raised_eyebrow face_with_monocle confused slight_frown " +
+                    "frowning2 persevere confounded tired_face weary triumph angry rage face_with_symbols_over_mouth " +
+                    "no_mouth neutral_face expressionless hushed frowning anguished open_mouth astonished dizzy_face exploding_head flushed scream " +
+                    "fearful cold_sweat cry disappointed_relieved drooling_face sob sweat sleepy sleeping rolling_eyes thinking " +
+                    "shushing_face face_with_hand_over_mouth lying_face grimacing zipper_mouth face_vomiting nauseated_face sneezing_face mask thermometer_face " +
                     "head_bandage smiling_imp imp japanese_ogre japanese_goblin poop ghost skull skull_crossbones alien space_invader " +
-                    "robot jack_o_lantern smiley_cat smile_cat joy_cat heart_eyes_cat smirk_cat kissing_cat scream_cat crying_cat_face " +
-                    "pouting_cat open_hands raised_hands clap pray handshake thumbsup thumbsdown punch fist left_facing_fist " +
-                    "right_facing_fist fingers_crossed v metal ok_hand point_left point_right point_up_2 point_down point_up " +
+                    "robot jack_o_lantern clown smiley_cat smile_cat joy_cat heart_eyes_cat smirk_cat kissing_cat scream_cat crying_cat_face " +
+                    "pouting_cat open_hands raised_hands palms_up_together clap pray handshake thumbsup thumbsdown punch fist left_facing_fist " +
+                    "right_facing_fist fingers_crossed v metal love_you_gesture ok_hand point_left point_right point_up_2 point_down point_up " +
                     "raised_hand raised_back_of_hand hand_splayed vulcan wave call_me muscle middle_finger writing_hand selfie " +
                     "nail_care ring lipstick kiss lips tongue ear nose footprints eye eyes speaking_head bust_in_silhouette " +
-                    "busts_in_silhouette baby boy girl man woman blond-haired_woman blond_haired_person older_man older_woman " +
-                    "man_with_chinese_cap woman_wearing_turban person_wearing_turban woman_police_officer police_officer " +
+                    "busts_in_silhouette baby boy girl man woman blond-haired_woman blond_haired_man older_man older_woman " +
+                    "man_with_chinese_cap woman_wearing_turban man_wearing_turban woman_police_officer police_officer " +
                     "woman_construction_worker construction_worker woman_guard guard woman_detective detective woman_health_worker " +
                     "man_health_worker woman_farmer man_farmer woman_cook man_cook woman_student man_student woman_singer man_singer " +
                     "woman_teacher man_teacher woman_factory_worker man_factory_worker woman_technologist man_technologist " +
                     "woman_office_worker man_office_worker woman_mechanic man_mechanic woman_scientist man_scientist woman_artist " +
                     "man_artist woman_firefighter man_firefighter woman_pilot man_pilot woman_astronaut man_astronaut woman_judge " +
-                    "man_judge mrs_claus santa princess prince bride_with_veil man_in_tuxedo angel pregnant_woman woman_bowing " +
-                    "person_bowing person_tipping_hand man_tipping_hand person_gesturing_no man_gesturing_no person_gesturing_ok " +
-                    "man_gesturing_ok person_raising_hand man_raising_hand woman_facepalming man_facepalming woman_shrugging " +
-                    "man_shrugging person_pouting man_pouting person_frowning man_frowning person_getting_haircut man_getting_haircut " +
-                    "person_getting_massage man_getting_face_massage levitate dancer man_dancing people_with_bunny_ears_partying " +
-                    "men_with_bunny_ears_partying woman_walking person_walking woman_running person_running couple two_women_holding_hands " +
+                    "man_judge mrs_claus santa princess prince bride_with_veil man_in_tuxedo angel pregnant_woman breast_feeding woman_bowing " +
+                    "man_bowing woman_tipping_hand man_tipping_hand woman_gesturing_no man_gesturing_no woman_gesturing_ok " +
+                    "man_gesturing_ok woman_raising_hand man_raising_hand woman_facepalming man_facepalming woman_shrugging " +
+                    "man_shrugging woman_pouting man_pouting woman_frowning man_frowning woman_getting_haircut man_getting_haircut " +
+                    "woman_getting_face_massage man_getting_face_massage man_in_business_suit_levitating dancer man_dancing women_with_bunny_ears_partying " +
+                    "men_with_bunny_ears_partying woman_walking man_walking woman_running man_running couple two_women_holding_hands " +
                     "two_men_holding_hands couple_with_heart couple_ww couple_mm couplekiss kiss_ww kiss_mm family family_mwg family_mwgb " +
                     "family_mwbb family_mwgg family_wwb family_wwg family_wwgb family_wwbb family_wwgg family_mmb family_mmg family_mmgb " +
                     "family_mmbb family_mmgg family_woman_boy family_woman_girl family_woman_girl_boy family_woman_boy_boy " +
                     "family_woman_girl_girl family_man_boy family_man_girl family_man_girl_boy family_man_boy_boy family_man_girl_girl " +
+                    "bearded_person woman_with_headscarf woman_mage man_mage woman_fairy man_fairy woman_vampire man_vampire " +
+                    "mermaid merman woman_elf man_elf woman_genie man_genie woman_zombie man_zombie " +
                     "womans_clothes shirt jeans necktie dress bikini kimono high_heel sandal boot mans_shoe athletic_shoe womans_hat " +
                     "tophat mortar_board crown helmet_with_cross school_satchel pouch purse handbag briefcase eyeglasses dark_sunglasses " +
-                    "closed_umbrella umbrella2 face_with_raised_eyebrow star_struck crazy_face shushing_face face_with_symbols_over_mouth " +
-                    "face_with_hand_over_mouth face_vomiting exploding_head face_with_monocle adult child older_adult bearded_person " +
-                    "woman_with_headscarf brain billed_cap scarf gloves coat socks love_you_gesture palms_up_together woman_mage " +
-                    "man_mage woman_fairy man_fairy woman_vampire man_vampire mermaid merman woman_elf man_elf woman_genie man_genie " +
-                    "woman_zombie man_zombie"
+                    "closed_umbrella umbrella2 brain billed_cap scarf gloves coat socks "
                 },
 
                 animals_nature: {
@@ -142,15 +141,15 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
                     "hear_no_evil speak_no_evil monkey chicken penguin bird baby_chick hatching_chick hatched_chick duck eagle owl bat wolf boar " +
                     "horse unicorn bee bug butterfly snail shell beetle ant spider spider_web turtle snake lizard scorpion crab squid octopus shrimp " +
                     "tropical_fish fish blowfish dolphin shark whale whale2 crocodile leopard tiger2 water_buffalo ox cow2 deer dromedary_camel camel " +
-                    "elephant rhino gorilla racehorse pig2 goat ram sheep dog2 poodle cat2 rooster turkey dove rabbit2 mouse2 rat chipmunk feet " +
-                    "dragon dragon_face cactus christmas_tree evergreen_tree deciduous_tree palm_tree seedling herb shamrock four_leaf_clover " +
+                    "elephant rhino gorilla racehorse pig2 goat ram sheep dog2 poodle cat2 rooster turkey dove rabbit2 mouse2 rat chipmunk dragon " +
+                    "giraffe zebra hedgehog sauropod t_rex cricket dragon_face feet cactus christmas_tree evergreen_tree deciduous_tree palm_tree seedling herb shamrock four_leaf_clover " +
                     "bamboo tanabata_tree leaves fallen_leaf maple_leaf mushroom ear_of_rice bouquet tulip rose wilted_rose sunflower blossom " +
                     "cherry_blossom hibiscus earth_americas earth_africa earth_asia full_moon waning_gibbous_moon last_quarter_moon " +
                     "waning_crescent_moon new_moon waxing_crescent_moon first_quarter_moon waxing_gibbous_moon new_moon_with_face " +
                     "full_moon_with_face sun_with_face first_quarter_moon_with_face last_quarter_moon_with_face crescent_moon dizzy star star2 " +
                     "sparkles zap fire boom comet sunny white_sun_small_cloud partly_sunny white_sun_cloud white_sun_rain_cloud rainbow cloud " +
                     "cloud_rain thunder_cloud_rain cloud_lightning cloud_snow snowman2 snowman snowflake wind_blowing_face dash cloud_tornado " +
-                    "fog ocean droplet sweat_drops umbrella giraffe zebra hedgehog sauropod t_rex cricket"
+                    "fog ocean droplet sweat_drops umbrella "
                 },
 
                 food_drink: {
@@ -171,15 +170,15 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
                     title: "Activity",
                     emoji: "soccer basketball football baseball tennis volleyball rugby_football 8ball ping_pong badminton goal hockey field_hockey " +
                     "cricket_game golf bow_and_arrow fishing_pole_and_fish boxing_glove martial_arts_uniform ice_skate ski skier snowboarder " +
-                    "woman_lifting_weights person_lifting_weights person_fencing women_wrestling men_wrestling woman_cartwheeling " +
-                    "man_cartwheeling woman_bouncing_ball person_bouncing_ball woman_playing_handball man_playing_handball woman_golfing " +
-                    "person_golfing woman_surfing person_surfing woman_swimming person_swimming woman_playing_water_polo " +
-                    "man_playing_water_polo woman_rowing_boat person_rowing_boat horse_racing woman_biking person_biking " +
-                    "woman_mountain_biking person_mountain_biking running_shirt_with_sash medal military_medal first_place second_place " +
+                    "woman_lifting_weights man_lifting_weights person_fencing women_wrestling men_wrestling woman_cartwheeling " +
+                    "man_cartwheeling woman_bouncing_ball man_bouncing_ball woman_playing_handball man_playing_handball woman_golfing " +
+                    "man_golfing woman_surfing man_surfing woman_swimming man_swimming woman_playing_water_polo " +
+                    "man_playing_water_polo woman_rowing_boat man_rowing_boat horse_racing woman_biking man_biking woman_mountain_biking man_mountain_biking " +
+                    "woman_in_steamy_room man_in_steamy_room woman_climbing man_climbing woman_in_lotus_position man_in_lotus_position " +
+                    "running_shirt_with_sash medal military_medal first_place second_place " +
                     "third_place trophy rosette reminder_ribbon ticket tickets circus_tent woman_juggling man_juggling performing_arts art " +
                     "clapper microphone headphones musical_score musical_keyboard drum saxophone trumpet guitar violin game_die dart bowling " +
-                    "video_game slot_machine sled breast_feeding curling_stone woman_in_steamy_room man_in_steamy_room woman_climbing " +
-                    "man_climbing woman_in_lotus_position man_in_lotus_position"
+                    "video_game slot_machine sled curling_stone "
                 },
 
                 travel_places: {
@@ -217,13 +216,13 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
                     "file_cabinet clipboard file_folder open_file_folder dividers newspaper2 newspaper notebook " +
                     "notebook_with_decorative_cover ledger closed_book green_book blue_book orange_book books book bookmark link " +
                     "paperclip paperclips triangular_ruler straight_ruler pushpin round_pushpin scissors pen_ballpoint pen_fountain " +
-                    "black_nib paintbrush crayon pencil pencil2 mag mag_right lock_with_ink_pen closed_lock_with_key lock unlock orange_heart"
+                    "black_nib paintbrush crayon pencil pencil2 mag mag_right lock_with_ink_pen closed_lock_with_key lock unlock"
                 },
 
                 symbols: {
                     icon: "heartpulse",
                     title: "Symbols",
-                    emoji: "heart yellow_heart green_heart blue_heart purple_heart black_heart broken_heart heart_exclamation two_hearts " +
+                    emoji: "heart orange_heart yellow_heart green_heart blue_heart purple_heart black_heart broken_heart heart_exclamation two_hearts " +
                     "revolving_hearts heartbeat heartpulse sparkling_heart cupid gift_heart heart_decoration peace cross star_and_crescent " +
                     "om_symbol wheel_of_dharma star_of_david six_pointed_star menorah yin_yang orthodox_cross place_of_worship ophiuchus " +
                     "aries taurus gemini cancer leo virgo libra scorpius sagittarius capricorn aquarius pisces id atom accept radioactive " +
