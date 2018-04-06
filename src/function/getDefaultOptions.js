@@ -251,7 +251,7 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
                     "clock6 clock7 clock8 clock9 clock10 clock11 clock12 clock130 clock230 clock330 clock430 clock530 clock630 " +
                     "clock730 clock830 clock930 clock1030 clock1130 clock1230"
                 },
-                
+
                 flags: {
                     icon: "flag_gb",
                     title: "Flags",
