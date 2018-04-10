@@ -8,7 +8,7 @@ function($, trigger, EmojioneArea) {
         var self = this;
         self.disabled = true;
         var next = function () {
-            self.editor.prop('contenteditable', false);
+            // self.editor.prop('contenteditable', false);
             self.hidePicker();
             self.button.hide();
             var editor = self[(self.standalone) ? "button" : "editor"];
