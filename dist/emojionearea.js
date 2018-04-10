@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-02-27T16:03Z
+ * Date: 2018-04-10T07:32Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1799,7 +1799,7 @@ document = window.document || {};
         var self = this;
         self.disabled = true;
         var next = function () {
-            self.editor.prop('contenteditable', false);
+            // self.editor.prop('contenteditable', false);
             self.hidePicker();
             self.button.hide();
             var editor = self[(self.standalone) ? "button" : "editor"];
