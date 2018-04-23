@@ -345,6 +345,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 self.stayFocused = false;
                 calcButtonPosition.apply(self);
                 trigger(self, 'paste', [editor, text, html]);
+
+                self.trigger('paste.finish', editor, event.originalEvent);
             };
 
             if (event.originalEvent.clipboardData) {

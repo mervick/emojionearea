@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-04-10T07:32Z
+ * Date: 2018-04-17T09:37Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1198,6 +1198,8 @@ document = window.document || {};
                 self.stayFocused = false;
                 calcButtonPosition.apply(self);
                 trigger(self, 'paste', [editor, text, html]);
+
+                self.trigger('paste.finish', editor, event.originalEvent);
             };
 
             if (event.originalEvent.clipboardData) {
