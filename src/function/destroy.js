@@ -4,6 +4,7 @@ define([
 ], function($, isObject) {
     return function (self) {
         self.off("@filter.click");
+        self.off("@picker.show");
         self.off("@tone.click");
         self.off("@button.click");
         self.off("@!paste");
@@ -17,6 +18,7 @@ define([
         if (self.search) {
             self.off("@search.focus");
             self.off("@search.keypress");
+            self.off("@search.input");
             self.off("@search.blur");
         }
 
@@ -26,9 +28,7 @@ define([
             });
         }
 
-        if (self.inline) {
-            self.off("@keydown");
-        }
+        self.off("@keydown");
 
         if (self.autocomplete) {
             self.editor.textcomplete('destroy');
@@ -37,5 +37,9 @@ define([
         self.app.remove();
 
         self.app = self.editor = self.search = self.scrollArea = null;
+
+        eventStorage[self.id] = {};
+        possibleEvents[self.id] = {};
+        bindedEvents[self.id] = {};
     };
 });

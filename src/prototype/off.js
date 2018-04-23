@@ -14,7 +14,7 @@ function($, eventStorage, unbindEvent, EmojioneArea) {
                     if (handler) {
                         $.each(eventStorage[id][event], function(j, fn) {
                             if (fn === handler) {
-                                eventStorage[id][event] = eventStorage[id][event].splice(j, 1);
+                                eventStorage[id][event].splice(j, 1);
                             }
                         });
                     } else {

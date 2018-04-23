@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-04-17T09:37Z
+ * Date: 2018-04-23T11:22Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1621,6 +1621,7 @@ document = window.document || {};
     };
     function destroy (self) {
         self.off("@filter.click");
+        self.off("@picker.show");
         self.off("@tone.click");
         self.off("@button.click");
         self.off("@!paste");
@@ -1634,6 +1635,7 @@ document = window.document || {};
         if (self.search) {
             self.off("@search.focus");
             self.off("@search.keypress");
+            self.off("@search.input");
             self.off("@search.blur");
         }
 
@@ -1643,9 +1645,7 @@ document = window.document || {};
             });
         }
 
-        if (self.inline) {
-            self.off("@keydown");
-        }
+        self.off("@keydown");
 
         if (self.autocomplete) {
             self.editor.textcomplete('destroy');
@@ -1654,6 +1654,10 @@ document = window.document || {};
         self.app.remove();
 
         self.app = self.editor = self.search = self.scrollArea = null;
+
+        eventStorage[self.id] = {};
+        possibleEvents[self.id] = {};
+        bindedEvents[self.id] = {};
     };
     function bindEventHandler(e) {
         var args = slice.call(arguments),
@@ -1714,7 +1718,7 @@ document = window.document || {};
                     if (handler) {
                         $.each(eventStorage[id][event], function(j, fn) {
                             if (fn === handler) {
-                                eventStorage[id][event] = eventStorage[id][event].splice(j, 1);
+                                eventStorage[id][event].splice(j, 1);
                             }
                         });
                     } else {
