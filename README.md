@@ -771,7 +771,7 @@ See https://github.com/mervick/emojionearea/issues/131
 #### Browser loads the textcomplete.js from CDN, everytime an EmojiOneArea is instantiated
 You can avoid this by explicitly including the textcomplete script into your document.
 If it already exists, EmojiOneArea will use the preloaded script instead of attempting to load it from CDN for each instance
-You can also avoid this by disabling autocomplate entirely by setting the autocomplete option to false
+You can also avoid this by disabling autocomplete entirely by setting the autocomplete option to false
 
 
 
