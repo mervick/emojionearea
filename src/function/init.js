@@ -620,8 +620,10 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 ], textcompleteOptions);
 
                 if (self.recentEmojis) {
-                    editor.on("textComplete:select", function(e, value) {
-                        setRecent(self, value);
+                    editor.on("textComplete:select", function(e, value, strategy) {
+                        if (strategy.id === css_class) {
+                            setRecent(self, value);
+                        }
                     });
                 }
 
