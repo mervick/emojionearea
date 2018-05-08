@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-04-23T11:22Z
+ * Date: 2018-05-08T10:48Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -1473,8 +1473,10 @@ document = window.document || {};
                 ], textcompleteOptions);
 
                 if (self.recentEmojis) {
-                    editor.on("textComplete:select", function(e, value) {
-                        setRecent(self, value);
+                    editor.on("textComplete:select", function(e, value, strategy) {
+                        if (strategy.id === css_class) {
+                            setRecent(self, value);
+                        }
                     });
                 }
 
