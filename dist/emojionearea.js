@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-05-08T10:48Z
+ * Date: 2018-05-22T11:26Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -671,6 +671,8 @@ document = window.document || {};
             var sel = window.getSelection && window.getSelection();
             if (sel && sel.rangeCount > 0) {
                 return sel.getRangeAt(0);
+            } else {
+                return null;
             }
         };
 
@@ -691,7 +693,7 @@ document = window.document || {};
         restoreSelection = function(el, sel) {
             var textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
-            textRange.setStart(sel.startContanier, sel.startOffset);
+            textRange.setStart(sel.startContainer, sel.startOffset);
             textRange.setEnd(sel.endContainer, sel.endOffset);
             textRange.select();
         };
