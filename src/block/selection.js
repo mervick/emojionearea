@@ -5,6 +5,8 @@ define([], function() {
             var sel = window.getSelection && window.getSelection();
             if (sel && sel.rangeCount > 0) {
                 return sel.getRangeAt(0);
+            } else {
+                return null;
             }
         };
 
