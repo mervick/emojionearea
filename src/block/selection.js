@@ -6,6 +6,7 @@ define([], function() {
             if (sel && sel.rangeCount > 0) {
                 return sel.getRangeAt(0);
             }
+            return null;
         };
 
         restoreSelection = function(el, sel) {
