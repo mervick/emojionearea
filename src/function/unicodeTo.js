@@ -9,7 +9,15 @@ function(emojione, uniRegexp, emojioneSupportMode, getTemplate) {
         return str.replace(uniRegexp, function(unicodeChar) {
             var map = emojione[(emojioneSupportMode === 0 ? 'jsecapeMap' : 'jsEscapeMap')];
             if (typeof unicodeChar !== 'undefined' && unicodeChar in map) {
-                return getTemplate(template, map[unicodeChar], emojione.toShort(unicodeChar));
+                if (emojioneSupportMode > 3) {
+                    var fname = map[unicodeChar];
+                    var mappedUnicode = emojione.mapUnicodeToShort();
+                    var shortcode = mappedUnicode[fname];
+
+                    return shortnameTo(shortcode, template);
+                } else {
+                    return getTemplate(template, map[unicodeChar], emojione.toShort(unicodeChar));
+                }
             }
             return unicodeChar;
         });
