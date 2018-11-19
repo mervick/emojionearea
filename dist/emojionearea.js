@@ -3,7 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
- * Date: 2018-04-27T09:03Z
+ * Date: 2018-11-19T08:01Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -653,6 +653,7 @@ document = window.document || {};
             if (sel && sel.rangeCount > 0) {
                 return sel.getRangeAt(0);
             }
+            return null;
         };
 
         restoreSelection = function(el, sel) {
@@ -672,7 +673,7 @@ document = window.document || {};
         restoreSelection = function(el, sel) {
             var textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
-            textRange.setStart(sel.startContanier, sel.startOffset);
+            textRange.setStart(sel.startContainer, sel.startOffset);
             textRange.setEnd(sel.endContainer, sel.endOffset);
             textRange.select();
         };
@@ -1161,7 +1162,7 @@ document = window.document || {};
 
         .on("@!paste", function(editor, event) {
 
-            var pasteText = function(text) {
+            var pasteText = function(text, items) {
                 var caretID = "caret-" + (new Date()).getTime();
                 var html = htmlFromText(text, self);
                 pasteHtmlAtCaret(html);
@@ -1176,12 +1177,13 @@ document = window.document || {};
                 caret.remove();
                 self.stayFocused = false;
                 calcButtonPosition.apply(self);
-                trigger(self, 'paste', [editor, text, html]);
+                trigger(self, 'paste', [editor, text, html, items]);
             };
 
             if (event.originalEvent.clipboardData) {
                 var text = event.originalEvent.clipboardData.getData('text/plain');
-                pasteText(text);
+                var items = event.originalEvent.clipboardData.items;
+                pasteText(text, items);
 
                 if (event.preventDefault){
                     event.preventDefault();

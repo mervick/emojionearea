@@ -320,7 +320,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 
         .on("@!paste", function(editor, event) {
 
-            var pasteText = function(text) {
+            var pasteText = function(text, items) {
                 var caretID = "caret-" + (new Date()).getTime();
                 var html = htmlFromText(text, self);
                 pasteHtmlAtCaret(html);
@@ -335,12 +335,13 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 caret.remove();
                 self.stayFocused = false;
                 calcButtonPosition.apply(self);
-                trigger(self, 'paste', [editor, text, html]);
+                trigger(self, 'paste', [editor, text, html, items]);
             };
 
             if (event.originalEvent.clipboardData) {
                 var text = event.originalEvent.clipboardData.getData('text/plain');
-                pasteText(text);
+                var items = event.originalEvent.clipboardData.items;
+                pasteText(text, items);
 
                 if (event.preventDefault){
                     event.preventDefault();
