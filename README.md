@@ -466,7 +466,7 @@ $(".emojionearea").emojioneArea({
 The filters (tabs) in the emojis picker
 
 **type**: `object`  
-**default**: [the full default filters you can find here [here](https://github.com/mervick/emojionearea/blob/master/src/var/getDefaultOptions.js#L52)]
+**default**: [the full default filters you can find here [here](https://github.com/mervick/emojionearea/blob/master/src/function/getDefaultOptions.js#L55)]
 ```js
 {
     tones: {
