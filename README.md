@@ -467,9 +467,10 @@ The filters (tabs) in the emojis picker
 
 **type**: `object`  
 **default**: [the full default filters you can find here [here](https://github.com/mervick/emojionearea/blob/master/src/function/getDefaultOptions.js#L55)]
+
 ```js
 {
-    tones: {
+    tones: { // this tab is hidden, and used for list tones emojis
         title: "Diversity",
         emoji: "[...]", // list of the emojis, see source code
     },
@@ -543,155 +544,272 @@ $(".emojionearea").emojioneArea({
 
 ```
 
-## Api
 
-### Methods
+## Methods
+
+**List of methods**
+
+#### `.on(events, handler)`
+
+  Attach handler for event(s)
+
+- param **events**  
+  Type: `String`  
+  One or more space-separated event types
+
+- param **handler**  
+  Type: `Function(jQuery Element, Event eventObject [, any extraParameter ] [, ...])`  
+  A function to execute when the event is triggered
+
+- returns `EmojioneArea` instance
+
+#### `.off(events[, handler])`
+
+  Remove previously attached handler (if handler is specified) or all handlers of specified event(s)
+
+- param **events**  
+  Type: `String`
+  One or more space-separated event types
+
+- param **handler** [optional]  
+  Type: `Function(jQuery Element, Event eventObject [, any extraParameter ] [, ... ])`  
+  A handler function previously attached for the event(s) by `.on` method
+
+- returns `EmojioneArea` instance
+
+#### `.trigger(events[, ... ])`
+
+  Trigger event(s)
+
+- param **events**  
+  Type: `String`  
+  One or more space-separated event types
+
+- params **[, ...]** [optional]  
+  Type: `any`
+  Extra parameters
+
+- returns `Boolean` the result of all called handlers
+
+#### `.setText(str)`
+
+  Set emojionearea text
+
+- param **str**
+  Type: `String`  
+  Set text
+
+- returns `EmojioneArea` instance
+
+#### `.getText()`
+
+  Get text of emojionearea, there is no any html, just vanilla text
+
+- returns `String`
+
+#### `.showPicker()`
+
+  Show Picker
+
+- returns `EmojioneArea` instance
+
+#### `.hidePicker()`
+
+  Hide Picker
+
+- returns `EmojioneArea` instance
+
+#### `.enable()`
+
+  Enable emojionearea area
+
+- returns `EmojioneArea` instance
+
+#### `.disable()`
+
+Disable emojionearea area
+
+- returns `EmojioneArea` instance
+
+#### `.focus()`
+
+  Focus on emojionearea area
+
+- returns `EmojioneArea` instance
+
+
+### Methods Usage
+
+How to use methods, example:
+
 ```js
-  .on(events, handler);
-  // - events
-  //   Type: String
-  //   One or more space-separated event types and optional namespaces
-  // - handler
-  //   Type: Function(jQuery Element, Event eventObject [, Anything extraParameter ] [, ... ] )
-  //   A function to execute when the event is triggered.
-
-  .off(events[, handler]);
-  // - events
-  //   Type: String
-  //   One or more space-separated event types and optional namespaces
-  // - handler
-  //   Type: Function(jQuery Element, Event eventObject [, Anything extraParameter ] [, ... ] )
-  //   A handler function previously attached for the event(s)
-
-  // built-in events:
-  //   "mousedown", "mouseup", "click", "keyup", "keydown", "keypress"
-  //   "filter.click", "emojibtn.click", "arrowLeft.click", "arrowRight.click",
-  //   "focus", "blur", "paste", "resize", "change"
-
-  .setText(str);
-  // - str
-  //   Type: String
-  //   Set text
-
-  .getText();
-  //   Get text
-
-  // Usage methods, example:
   var el = $("selector").emojioneArea();
   el[0].emojioneArea.on("emojibtn.click", function(btn, event) {
     console.log(btn.html());
   });
+  
+  // OR
+  $("selector2").emojioneArea();
+  $("selector2")[0].emojioneArea.getText();
+  
+  // OR
+  $("selector3").emojioneArea();
+  $("selector3").data("emojioneArea").showPicker();
 ```
 
-### Events
 
-Two ways to set events, in options:
+## Events
+
+**List of built-in events:**
+
+#### `ready` or `onLoad`
+  triggers when emojionearea is initialized  
+  Handler type: `Function` (no params)
+  
+#### `click`
+  triggers when user clicks on emojionearea input or picker  
+  Handler type: `Function (editor: jQuery, event: Event)`  
+  - param {jQuery} **editor** - EmojioneArea input  
+  - param {Event} **event** - jQuery Event object
+
+#### `mousedown`
+  triggers on `mousedown` of emojionearea input or picker  
+  Handler type: `Function (editor: jQuery, event: Event)`  
+  - param {jQuery} **editor** - EmojioneArea input  
+  - param {Event} **event** - jQuery Event object
+  
+#### `mouseup`
+  triggers on `mouseup` of emojionearea input or picker  
+  Handler type: `Function (editor: jQuery, event: Event)`  
+  - param {jQuery} **editor** - EmojioneArea input  
+  - param {Event} **event** - jQuery Event object
+  
+#### `keyup`
+  triggers on `keyup` of emojionearea input or picker  
+  Handler type: `Function (editor: jQuery, event: Event)`  
+  - param {jQuery} **editor** - EmojioneArea input  
+  - param {Event} **event** - jQuery Event object
+  
+#### `keypress`
+  triggers on `keypress` of emojionearea input or picker  
+  Handler type: `Function (editor: jQuery, event: Event)`  
+  - param {jQuery} **editor** - EmojioneArea input  
+  - param {Event} **event** - jQuery Event object
+  
+#### `focus`
+  triggers on `focus` of emojionearea input  
+  Handler type: `Function (editor: jQuery, event: Event)`  
+  - param {jQuery} **editor** - EmojioneArea input  
+  - param {Event} **event** - jQuery Event object
+
+#### `blur`
+  triggers on `blur` of emojionearea input  
+  Handler type: `Function (editor: jQuery, event: Event)`  
+  - param {jQuery} **editor** - EmojioneArea input  
+  - param {Event} **event** - jQuery Event object
+
+#### `paste`
+  triggers when user has pasted content to input area  
+  Handler type: `Function (editor: jQuery, text: String, html: String)`
+  - param {jQuery} **editor** - EmojioneArea input  
+  - param {String} **text** - pasted vanilla text
+  - param {String} **html** - pasted html content
+  
+#### `resize`
+  triggers when input area has resized  
+  Handler type: `Function` (no params)
+  
+#### `change`
+  triggers when input area has changed  
+  Handler type: `Function` (no params)
+
+#### `emojibtn.click`
+  triggers when user clicks on emoji button at the picker area  
+  Handler type: `Function (emojibtn: jQuery)`
+  - param {jQuery} **emojibtn** - emoji button that user has clicked 
+  
+#### `button.click`
+  triggers when user clicks on show/hide button  
+  Handler type: `Function (button: jQuery)`
+  - param {jQuery} **button** - show/hide button
+  
+#### `tone.click`
+  triggers when user clicks on tone filter button  
+  Handler type: `Function (button: jQuery)`
+  - param {jQuery} **button** - tone button that user has clicked
+
+#### `picker.show`
+  triggers on show picker  
+  Handler type: `Function (picker: jQuery)`
+  - param {jQuery} **picker** - picker area
+
+#### `picker.hide`
+  triggers when picker has been hidden  
+  Handler type: `Function (picker: jQuery)`
+  - param {jQuery} **picker** - picker area
+
+#### `picker.mousedown`
+  triggers on `mousedown` of emojionearea picker area 
+  Handler type: `Function (picker: jQuery)`
+  - param {jQuery} **picker** - picker area
+
+#### `picker.mouseup`
+  triggers on `mouseup` of emojionearea picker area 
+  Handler type: `Function (picker: jQuery)`
+  - param {jQuery} **picker** - picker area
+
+#### `picker.click`
+  triggers on `click` of emojionearea picker area 
+  Handler type: `Function (picker: jQuery)`
+  - param {jQuery} **picker** - picker area
+
+#### `picker.keydown`
+  triggers on `keydown` of emojionearea picker area 
+  Handler type: `Function (picker: jQuery)`
+  - param {jQuery} **picker** - picker area
+
+#### `picker.keypress`
+  triggers on `keypress` of emojionearea picker area 
+  Handler type: `Function (picker: jQuery)`
+  - param {jQuery} **picker** - picker area
+  
+#### `search.focus`
+  triggers on `focus` of picker search area  
+  Handler type: `Function` (no params)
+
+#### `search.keypress`
+  triggers when user press key on picker search area  
+  Handler type: `Function` (no params)
+
+
+### Events Usage
+
+There are 2 ways to set events, directly in options via options `events`.  
+Note: For events with `.` (dot) you can set event name with `_`(dash) instead of `.` (dot) here.
+
+Example, set events in the options:
+
 ```JS
 $("selector").emojioneArea({
   events: {
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
-    focus: function (editor, event) {
-      console.log('event:focus');
-    },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
-    blur: function (editor, event) {
-      console.log('event:blur');
-    },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
-    mousedown: function (editor, event) {
-      console.log('event:mousedown');
-    },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
-    mouseup: function (editor, event) {
-      console.log('event:mouseup');
-    },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
-    click: function (editor, event) {
-      console.log('event:click');
-    },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
-    keyup: function (editor, event) {
-      console.log('event:keyup');
-    },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
-    keydown: function (editor, event) {
-      console.log('event:keydown');
-    },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
-    keypress: function (editor, event) {
-      console.log('event:keypress');
-    },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
     paste: function (editor, event) {
       console.log('event:paste');
     },
-    /**
-     * @param {jQuery} editor EmojioneArea input
-     * @param {Event} event jQuery Event object
-     */
     change: function (editor, event) {
       console.log('event:change');
     },
-    /**
-     * @param {jQuery} filter EmojioneArea filter
-     * @param {Event} event jQuery Event object
-     */
-    filter_click: function (filter, event) {
-      console.log('event:filter.click, filter=' + filter.data("filter"));
-    },
-    /**
-     * @param {jQuery} button EmojioneArea emoji button
-     * @param {Event} event jQuery Event object
-     */
     emojibtn_click: function (button, event) {
       console.log('event:emojibtn.click, emoji=' + button.children().data("name"));
-    },
-    /**
-     * @param {jQuery} button EmojioneArea left arrow button
-     * @param {Event} event jQuery Event object
-     */
-    arrowLeft_click: function (button, event) {
-      console.log('event:arrowLeft.click');
-    },
-    /**
-     * @param {jQuery} button EmojioneArea right arrow button
-     * @param {Event} event jQuery Event object
-     */
-    arrowRight_click: function (button, event) {
-      console.log('event:arrowRight.click');
     }
   }
 });
 ```
 
-or by `.on()` &amp; `.off()` methods:
+
+Also you can manage events via `.on()`, `.off()` and `.trigger()` methods
+
+Example: 
+
 ```JS
   var el = $("selector").emojioneArea();
 
@@ -718,6 +836,8 @@ or by `.on()` &amp; `.off()` methods:
   // unset eventHandler1
   el[0].emojioneArea.off("click", eventHandler1);
 ```
+
+
 ## Building
 
 Building EmojiOneArea requires grunt, compass, and sass to be available
@@ -728,7 +848,7 @@ npm update
 npm run build
 ```
 
-PRs welcome.
+PRs welcome!!!
 
 
 ## FAQ / Troubleshooting
