@@ -662,7 +662,7 @@ How to use methods, example:
 
 **List of built-in events:**
 
-#### `ready` or `onLoad`
+#### [`ready` or `onLoad`](#event-ready)
   triggers when emojionearea is initialized  
   Handler type: `Function` (no params)
   
