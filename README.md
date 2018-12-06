@@ -609,31 +609,31 @@ $(".emojionearea").emojioneArea({
 
 #### `.showPicker()`
 
-  Show Picker
+  Show picker area
 
 - returns `EmojioneArea` instance
 
 #### `.hidePicker()`
 
-  Hide Picker
+  Hide picker area
 
 - returns `EmojioneArea` instance
 
 #### `.enable()`
 
-  Enable emojionearea area
+  Enable emojionearea input area
 
 - returns `EmojioneArea` instance
 
 #### `.disable()`
 
-Disable emojionearea area
+Disable emojionearea input area
 
 - returns `EmojioneArea` instance
 
 #### `.focus()`
 
-  Focus on emojionearea area
+  Focus on emojionearea input area
 
 - returns `EmojioneArea` instance
 
