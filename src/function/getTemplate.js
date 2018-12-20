@@ -21,17 +21,17 @@ function(emojione, emojioneSupportMode) {
         } else {
             fname = unicode;
         }
-        if (!shortname) {
-            var mappedUnicode = emojione.mapUnicodeToShort();
-            shortname = mappedUnicode[fname];
-            fname = emojione.emojioneList[shortname].uc_base;
-            unicode = emojione.emojioneList[shortname].uc_output;
-        }
-        return template
-            .replace('{name}', shortname || '')
+        template = template.replace('{name}', shortname || '')
             .replace('{friendlyName}', friendlyName)
             .replace('{img}', imagePath + (emojioneSupportMode < 2 ? fname.toUpperCase() : fname) + '.' + imageType)
-            .replace('{uni}', unicode)
-            .replace('{alt}', emojione.convert(unicode));
+            .replace('{uni}', unicode);
+
+        if(shortname) {
+            template = template.replace('{alt}', emojione.shortnameToUnicode(shortname));
+        } else {
+            template = template.replace('{alt}', emojione.convert(unicode));
+        }
+
+        return template;
     };
 });

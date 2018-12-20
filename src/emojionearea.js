@@ -7,6 +7,8 @@ define([
     'var/blankImg',
     'var/emojioneSupportMode',
     'function/loadEmojione',
+    'function/getOptions',
+
     'prototype/on',
     'prototype/off',
     'prototype/trigger',
@@ -18,7 +20,7 @@ define([
     'prototype/enable',
     'prototype/disable'
 ],
-function($, EmojioneArea, getDefaultOptions, destroy, htmlFromText, blankImg, emojioneSupportMode, loadEmojione) {
+function($, EmojioneArea, getDefaultOptions, destroy, htmlFromText, blankImg, emojioneSupportMode, loadEmojione, getOptions) {
     // Polyfill for IE - https://github.com/mervick/emojionearea/issues/172
     if (!String.prototype.includes) {
       String.prototype.includes = function(search, start) {
@@ -26,7 +28,7 @@ function($, EmojioneArea, getDefaultOptions, destroy, htmlFromText, blankImg, em
         if (typeof start !== 'number') {
           start = 0;
         }
-        
+
         if (start + search.length > this.length) {
           return false;
         } else {
@@ -54,9 +56,11 @@ function($, EmojioneArea, getDefaultOptions, destroy, htmlFromText, blankImg, em
     $.fn.emojioneArea.defaults = getDefaultOptions();
 
     $.fn.emojioneAreaText = function(options) {
+        options = getOptions(options);
+
         var self = this, pseudoSelf = {
             shortnames: (options && typeof options.shortnames !== 'undefined' ? options.shortnames : true),
-            emojiTemplate: '<img alt="{alt}" class="emojione' + (options && options.sprite && emojioneSupportMode < 3 ? '-{uni}" src="' + blankImg : 'emoji" src="{img}') + '"/>'
+            emojiTemplate: '<img alt="{alt}" class="emojione' + (options && options.sprite && emojioneSupportMode < 3 ? '-{uni}" src="' + blankImg : 'emoji" src="{img}') + '" crossorigin />'
         };
 
         loadEmojione(options);
