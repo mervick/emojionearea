@@ -8,6 +8,7 @@ define([], function() {
             } else {
                 return null;
             }
+            return null;
         };
 
         restoreSelection = function(el, sel) {

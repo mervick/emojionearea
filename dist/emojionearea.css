@@ -246,29 +246,10 @@
       position: absolute;
       background-repeat: no-repeat;
       z-index: 91; }
-  .emojionearea .emojionearea-picker.emojionearea-showing-attribution, .emojionearea .emojionearea-picker.emojionearea-showing-attribution .emojionearea-wrapper {
-    height: 306px; }
-  .emojionearea .emojionearea-picker.emojionearea-showing-attribution .emojionearea-wrapper .emojionearea-attribution {
-    position: absolute;
-    height: 30px;
-    padding: 5px;
-    text-align: center;
-    width: 100%;
-    border-top: 1px solid #d0d0d0;
-    bottom: 0; }
-  .emojionearea .emojionearea-picker .emojionearea-filters, .emojionearea .emojionearea-picker .emojionearea-search {
+  .emojionearea .emojionearea-picker .emojionearea-filters {
     width: 100%;
     position: absolute;
     z-index: 95; }
-  .emojionearea .emojionearea-picker .emojionearea-search {
-    padding: 5px 0 0 8px;
-    height: 40px;
-    width: 160px; }
-    .emojionearea .emojionearea-picker .emojionearea-search > input {
-      outline: none;
-      width: 160px;
-      min-width: 160px;
-      height: auto; }
   .emojionearea .emojionearea-picker .emojionearea-filters {
     background: #F5F7F9;
     padding: 0 0 0 7px;
@@ -296,12 +277,36 @@
         width: 24px;
         height: 24px;
         margin: 0 3px; }
-  .emojionearea .emojionearea-picker .emojionearea-tones {
+  .emojionearea .emojionearea-picker .emojionearea-search-panel {
+    height: 30px;
     position: absolute;
-    top: 46px;
-    right: 10px;
-    height: 22px;
-    z-index: 95; }
+    z-index: 95;
+    top: 40px;
+    left: 0;
+    right: 0;
+    padding: 5px 0 5px 8px; }
+    .emojionearea .emojionearea-picker .emojionearea-search-panel .emojionearea-tones {
+      float: right;
+      margin-right: 10px;
+      margin-top: -1px; }
+  .emojionearea .emojionearea-picker .emojionearea-tones-panel .emojionearea-tones {
+    position: absolute;
+    top: 4px;
+    left: 171px; }
+  .emojionearea .emojionearea-picker .emojionearea-search {
+    float: left;
+    padding: 0;
+    height: 20px;
+    width: 160px; }
+    .emojionearea .emojionearea-picker .emojionearea-search > input {
+      outline: none;
+      width: 160px;
+      min-width: 160px;
+      height: auto; }
+  .emojionearea .emojionearea-picker .emojionearea-tones {
+    padding: 0;
+    width: 120px;
+    height: 20px; }
     .emojionearea .emojionearea-picker .emojionearea-tones > .btn-tone {
       display: inline-block;
       padding: 0;
@@ -365,7 +370,10 @@
       -webkit-border-radius: 1px;
       border-radius: 1px; }
   .emojionearea .emojionearea-picker .emojionearea-scroll-area {
-    height: 196px;
+    height: 236px; }
+  .emojionearea .emojionearea-picker .emojionearea-search-panel + .emojionearea-scroll-area {
+    height: 206px; }
+  .emojionearea .emojionearea-picker .emojionearea-scroll-area {
     overflow: auto;
     overflow-x: hidden;
     width: 100%;
@@ -443,9 +451,12 @@
     -moz-border-radius-topright: 5px;
     -webkit-border-top-right-radius: 5px;
     border-top-right-radius: 5px; }
-  .emojionearea .emojionearea-picker.emojionearea-filters-position-top .emojionearea-search {
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-top.emojionearea-search-position-top .emojionearea-scroll-area {
+    bottom: 0; }
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-top.emojionearea-search-position-bottom .emojionearea-scroll-area {
     top: 40px; }
-  .emojionearea .emojionearea-picker.emojionearea-filters-position-top .emojionearea-scroll-area {
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-top.emojionearea-search-position-bottom .emojionearea-search-panel {
+    top: initial;
     bottom: 0; }
   .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom .emojionearea-filters {
     bottom: 0;
@@ -455,20 +466,16 @@
     -moz-border-radius-bottomright: 5px;
     -webkit-border-bottom-right-radius: 5px;
     border-bottom-right-radius: 5px; }
-  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom .emojionearea-search {
-    bottom: 40px; }
-  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom .emojionearea-tones {
-    top: initial;
-    bottom: 53px; }
-  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom .emojionearea-scroll-area {
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-search-position-bottom .emojionearea-scroll-area {
     top: 0; }
-  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-showing-attribution .emojionearea-filters {
-    bottom: 30px;
-    border-radius: 0; }
-  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-showing-attribution .emojionearea-search {
-    bottom: 70px; }
-  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-showing-attribution .emojionearea-tones {
-    bottom: 83px; }
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-search-position-bottom .emojionearea-search-panel {
+    top: initial;
+    bottom: 40px; }
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-search-position-top .emojionearea-scroll-area {
+    top: initial;
+    bottom: 40px; }
+  .emojionearea .emojionearea-picker.emojionearea-filters-position-bottom.emojionearea-search-position-top .emojionearea-search-panel {
+    top: 0; }
   .emojionearea .emojionearea-picker.emojionearea-picker-position-top {
     margin-top: -286px;
     right: -14px; }
@@ -508,15 +515,11 @@
   opacity: 1; }
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-top {
   margin-top: -269px; }
-  .emojionearea .emojionearea-button.active + .emojionearea-picker-position-top.emojionearea-showing-attribution {
-    margin-top: -239px; }
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-left,
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-right {
   margin-right: -309px; }
 .emojionearea .emojionearea-button.active + .emojionearea-picker-position-bottom {
   margin-top: -7px; }
-  .emojionearea .emojionearea-button.active + .emojionearea-picker-position-bottom.emojionearea-showing-attribution {
-    margin-top: -23px; }
 .emojionearea.emojionearea-standalone {
   display: inline-block;
   width: auto;
