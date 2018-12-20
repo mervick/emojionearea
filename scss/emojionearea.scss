@@ -290,12 +290,48 @@
             }
         }
 
-        .#{$css-prefix}-tones {
+        .#{$css-prefix}-search-panel {
+            height: $search-panel-height;
             position: absolute;
-            top: $filters-height + 6px;
-            right: 10px;
-            height: 22px;
             z-index: $z-index + 5;
+            top: $filters-height;
+            left: 0;
+            right: 0;
+            $search-padding-y: (($search-panel-height - $search-tones-height) / 2);
+            padding: $search-padding-y 0 $search-padding-y 8px;
+
+            .#{$css-prefix}-tones {
+                float: right;
+                margin-right: 10px;
+                margin-top: -1px;
+            }
+        }
+
+        .#{$css-prefix}-tones-panel {
+            .#{$css-prefix}-tones {
+                position: absolute;
+                top: 4px;
+                left: 3px + ($btns-in-line * $btn-size - $tones-width);
+            }
+        }
+
+        .#{$css-prefix}-search {
+            float: left;
+            padding: 0;
+            height: $search-tones-height;
+            width: $search-width;
+            > input {
+                outline: none;
+                width: $search-width;
+                min-width: $search-width;
+                height: $search-tones-height;
+            }
+        }
+
+        .#{$css-prefix}-tones {
+            padding: 0;
+            width: $tones-width;
+            height: $search-tones-height;
 
             > .btn-tone {
                 display: inline-block;
@@ -342,8 +378,8 @@
             &.#{$css-prefix}-tones-bullet,
             &.#{$css-prefix}-tones-square {
                 > .btn-tone {
-                    width: 20px;
-                    height: 20px;
+                    width: $btn-tone-size;
+                    height: $btn-tone-size;
                     margin: 0;
                     background-color: transparent;
                     &:after {
@@ -358,8 +394,8 @@
                     &.active:after {
                         top: 0;
                         left: 0;
-                        width: 20px;
-                        height: 20px;
+                        width: $btn-tone-size;
+                        height: $btn-tone-size;
 
                     }
                 }
@@ -368,8 +404,8 @@
             &.#{$css-prefix}-tones-radio,
             &.#{$css-prefix}-tones-checkbox{
                 > .btn-tone {
-                    width: 16px;
-                    height: 16px;
+                    width: $btn-tone-size - 4px;
+                    height: $btn-tone-size - 4px;
                     margin: 0px 2px;
                     &.active {
                         &:after {
@@ -407,8 +443,16 @@
             }
         }
 
+
         .#{$css-prefix}-scroll-area {
-            height: $picker-height - $filters-height - $search-height;
+            height: $picker-height - $filters-height;
+        }
+
+        .#{$css-prefix}-search-panel + .#{$css-prefix}-scroll-area {
+            height: $picker-height - $filters-height - $search-panel-height;
+        }
+
+        .#{$css-prefix}-scroll-area {
             overflow: auto;
             overflow-x: hidden;
             width: 100%;
@@ -422,7 +466,7 @@
 
             .#{$css-prefix}-emojis-no-results {
                 display: none;
-                padding: 7px 0 5px 13px; 
+                padding: 7px 0 5px 13px;
             }
 
             .#{$css-prefix}-category-title {
@@ -505,11 +549,19 @@
                 @include border-top-left-radius($picker-border-radius);
                 @include border-top-right-radius($picker-border-radius);
             }
-            .#{$css-prefix}-search {
-                top: $filters-height;
+            &.#{$css-prefix}-search-position-top {
+                .#{$css-prefix}-scroll-area {
+                    bottom: 0;
+                }
             }
-            .#{$css-prefix}-scroll-area {
-                bottom: 0;
+            &.#{$css-prefix}-search-position-bottom {
+                .#{$css-prefix}-scroll-area {
+                    top: $filters-height;
+                }
+                .#{$css-prefix}-search-panel {
+                    top: initial;
+                    bottom: 0;
+                }
             }
         }
 
@@ -519,15 +571,25 @@
                 @include border-bottom-left-radius($picker-border-radius);
                 @include border-bottom-right-radius($picker-border-radius);
             }
-            .#{$css-prefix}-search {
-                bottom: $filters-height;
+
+            &.#{$css-prefix}-search-position-bottom {
+                .#{$css-prefix}-scroll-area {
+                    top: 0;
+                }
+                .#{$css-prefix}-search-panel {
+                    top: initial;
+                    bottom: $filters-height;
+                }
             }
-            .#{$css-prefix}-tones {
-                top: initial;
-                bottom: $filters-height + 13px;
-            }
-            .#{$css-prefix}-scroll-area {
-                top: 0;
+
+            &.#{$css-prefix}-search-position-top {
+                .#{$css-prefix}-scroll-area {
+                    top: initial;
+                    bottom: $filters-height;
+                }
+                .#{$css-prefix}-search-panel {
+                    top: 0;
+                }
             }
 
             &.#{$css-prefix}-showing-attribution {

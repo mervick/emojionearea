@@ -33,14 +33,14 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
 {
     return function(self, source, options) {
         //calcElapsedTime('init', function() {
-        options = getOptions(options);
+        self.options = options = getOptions(options);
         self.sprite = options.sprite && emojioneSupportMode < 3;
         self.inline = options.inline === null ? source.is("INPUT") : options.inline;
         self.shortnames = options.shortnames;
         self.saveEmojisAs = options.saveEmojisAs;
         self.standalone = options.standalone;
-        self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
-        self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>';
+        self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}" crossorigin/>');
+        self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}" crossorigin/>';
         self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}">' + self.emojiTemplateAlt + '</i>';
         self.recentEmojis = options.recentEmojis && supportsLocalStorage();
         self.events = options.events;
@@ -55,7 +55,20 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
+            editor, button, picker, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
+            tones = div('tones',
+                options.tones ?
+                    function() {
+                        this.addClass(selector('tones-' + options.tonesStyle, true));
+                        for (var i = 0; i <= 5; i++) {
+                            this.append($("<i/>", {
+                                "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
+                                "data-skin": i,
+                                role: "button"
+                            }));
+                        }
+                    } : null
+            ),
             app = self.app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
@@ -72,32 +85,26 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             picker = self.picker = div('picker',
                 div('wrapper',
                     filters = div('filters'),
-                    search = div('search',
-                        options.search ?
-                        function() {
-                            self.search = $("<input/>", {
-                                "placeholder": options.searchPlaceholder || "",
-                                "type": "text",
-                                "class": "search"
-                            });
-                            this.append(self.search);
-                        } : null
-                    ),
-                    tones = div('tones',
-                        function() {
-                            if (options.tones) {
-                                this.addClass(selector('tones-' + options.tonesStyle, true));
-                                for (var i = 0; i <= 5; i++) {
-                                    this.append($("<i/>", {
-                                        "class": "btn-tone btn-tone-" + i + (!i ? " active" : ""),
-                                        "data-skin": i,
-                                        role: "button"
-                                    }));
-                                }
-                            }
-                        }
+                    (options.search ?
+                        searchPanel = div('search-panel',
+                            div('search',
+                                options.search ?
+                                function() {
+                                    self.search = $("<input/>", {
+                                        "placeholder": options.searchPlaceholder || "",
+                                        "type": "text",
+                                        "class": "search"
+                                    });
+                                    this.append(self.search);
+                                } : null
+                            ),
+                            tones
+                        ) : null
                     ),
                     scrollArea = div('scroll-area',
+                        options.tones && !options.search ? div('tones-panel',
+                            tones
+                        ) : null,
                         emojisList = div('emojis-list'),
                         emojisNoResults = div('emojis-no-results').text(options.noResultsText)
                     ),
@@ -117,11 +124,16 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
              .addClass(selector('filters-position-' + options.filtersPosition, true))
+             .addClass(selector('search-position-' + options.searchPosition, true))
              .addClass('hidden')
         );
 
         if (options.showAttribution) {
             picker.addClass(selector('showing-attribution', true));
+        }
+
+        if (options.search) {
+            searchPanel.addClass(selector('with-search', true));
         }
 
         self.searchSel = null;
@@ -181,7 +193,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 items = shortnameTo(items,
                     self.sprite ?
                         '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}"><i class="emojione-{uni}"></i></i>' :
-                        '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}"><img class="emojioneemoji lazy-emoji" data-src="{img}"/></i>',
+                        '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}"><img class="emojioneemoji lazy-emoji" data-src="{img}" crossorigin/></i>',
                     true).split('|').join('');
 
                 category.html(items);
@@ -243,6 +255,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             keyup: "picker.keyup", keydown: "picker.keydown", keypress: "picker.keypress"});
         attach(self, editor, ["mousedown", "mouseup", "click", "keyup", "keydown", "keypress"]);
         attach(self, picker.find(".emojionearea-filter"), {click: "filter.click"});
+        attach(self, source, {change: "source.change"});
 
         if (options.search) {
             attach(self, self.search, {keyup: "search.keypress", focus: "search.focus", blur: "search.blur", input: "search.input"});
@@ -432,7 +445,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 }
             } else {
                 if (!app.is(".focused")) {
-                    editor.focus();
+                    editor.trigger("focus");
                     moveCaretToEnd(editor[0]);
                 }
                 event.preventDefault();
@@ -447,6 +460,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                 self.editor.html(self.content = '');
             }
             source[sourceValFunc](self.getText());
+        })
+
+        .on("@source.change", function() {
+            self.setText(source[sourceValFunc]());
+            trigger('change');
         })
 
         .on("@focus", function() {
@@ -464,9 +482,9 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             if (self.content !== content) {
                 self.content = content;
                 trigger(self, 'change', [self.editor]);
-                source.blur().trigger("change");
+                source.trigger("blur").trigger("change");
             } else {
-                source.blur();
+                source.trigger("blur");
             }
 
             if (options.search) {
@@ -552,9 +570,11 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                     filterBtns.show();
                     emojisList.show();
                     emojisNoResults.hide();
-                    if (!hide) {
-                        lazyLoading.call(self);
-                    }
+                    lazyLoading.call(self);
+                    // TODO: Maybe use this code instead?
+                    // if (!hide) {
+                    //     lazyLoading.call(self);
+                    // }
                 }
             })
 
