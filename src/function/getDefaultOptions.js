@@ -44,7 +44,8 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
             recentEmojis      : true,
             textcomplete: {
                 maxCount      : 15,
-                placement     : null // null - default | top | absleft | absright
+                placement     : null, // null - default | top | absleft | absright
+                appendTo      : 'body'
             },
             showAttribution   : false,
             noResultsText     : 'No results found'

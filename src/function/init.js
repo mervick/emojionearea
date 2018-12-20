@@ -596,7 +596,8 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
             var autocomplete = function() {
                 var textcompleteOptions = {
                     maxCount: options.textcomplete.maxCount,
-                    placement: options.textcomplete.placement
+                    placement: options.textcomplete.placement,
+                    appendTo: options.textcomplete.appendTo,
                 };
 
                 if (options.shortcuts) {
