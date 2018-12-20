@@ -3,11 +3,7 @@
  * https://github.com/mervick/emojionearea
  * Copyright Andrey Izman and other contributors
  * Released under the MIT license
-<<<<<<< HEAD
- * Date: 2018-06-06T14:19Z
-=======
- * Date: 2018-04-27T09:03Z
->>>>>>> upstream/master
+ * Date: 2018-12-20T11:58Z
  */
 window = ( typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {} );
 document = window.document || {};
@@ -88,18 +84,7 @@ document = window.document || {};
         } else {
             fname = unicode;
         }
-<<<<<<< HEAD
-        if (!shortname) {
-            var mappedUnicode = emojione.mapUnicodeToShort();
-            shortname = mappedUnicode[fname];
-            fname = emojione.emojioneList[shortname].uc_base;
-            unicode = emojione.emojioneList[shortname].uc_output;
-        }
-        return template
-            .replace('{name}', shortname || '')
-=======
         template = template.replace('{name}', shortname || '')
->>>>>>> upstream/master
             .replace('{friendlyName}', friendlyName)
             .replace('{img}', imagePath + (emojioneSupportMode < 2 ? fname.toUpperCase() : fname) + '.' + imageType)
             .replace('{uni}', unicode);
@@ -254,7 +239,6 @@ document = window.document || {};
                 maxCount      : 15,
                 placement     : null // null - default | top | absleft | absright
             },
-            showAttribution   : false,
             noResultsText     : 'No results found'
         };
 
@@ -689,6 +673,7 @@ document = window.document || {};
             } else {
                 return null;
             }
+            return null;
         };
 
         restoreSelection = function(el, sel) {
@@ -915,8 +900,8 @@ document = window.document || {};
         self.shortnames = options.shortnames;
         self.saveEmojisAs = options.saveEmojisAs;
         self.standalone = options.standalone;
-        self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}"/>');
-        self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}"/>';
+        self.emojiTemplate = '<img alt="{alt}" class="emojione' + (self.sprite ? '-{uni}" src="' + blankImg + '"/>' : 'emoji" src="{img}" crossorigin/>');
+        self.emojiTemplateAlt = self.sprite ? '<i class="emojione-{uni}"/>' : '<img class="emojioneemoji" src="{img}" crossorigin/>';
         self.emojiBtnTemplate = '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}">' + self.emojiTemplateAlt + '</i>';
         self.recentEmojis = options.recentEmojis && supportsLocalStorage();
         self.events = options.events;
@@ -931,11 +916,7 @@ document = window.document || {};
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-<<<<<<< HEAD
-            editor, button, picker, tones, filters, filtersBtns, search, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
-            app = self.app = div({
-=======
-            editor, button, picker, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea,
+            editor, button, picker, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea, emojisNoResults,
             tones = div('tones',
                 options.tones ?
                     function() {
@@ -949,8 +930,7 @@ document = window.document || {};
                         }
                     } : null
             ),
-            app = div({
->>>>>>> upstream/master
+            app = self.app = div({
                 "class" : css_class + ((self.standalone) ? " " + css_class + "-standalone " : " ") + (source.attr("class") || ""),
                 role: "application"
             },
@@ -983,28 +963,11 @@ document = window.document || {};
                         ) : null
                     ),
                     scrollArea = div('scroll-area',
-<<<<<<< HEAD
-                        emojisList = div('emojis-list'),
-                        emojisNoResults = div('emojis-no-results').text(options.noResultsText)
-                    ),
-                    attribution = div('attribution',
-                        options.showAttribution ?
-                        function() {
-                            if (options.showAttribution) {
-                                this.append('Emoji icons supplied by ');
-                                this.append($("<a/>", {
-                                    "href": "https://www.emojione.com/",
-                                    "target": "_blank",
-                                    "text": "EmojiOne"
-                                }));
-                            }
-                        } : null
-=======
                         options.tones && !options.search ? div('tones-panel',
                             tones
                         ) : null,
-                        emojisList = div('emojis-list')
->>>>>>> upstream/master
+                        emojisList = div('emojis-list'),
+                        emojisNoResults = div('emojis-no-results').text(options.noResultsText)
                     )
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
@@ -1013,13 +976,8 @@ document = window.document || {};
              .addClass('hidden')
         );
 
-<<<<<<< HEAD
-        if (options.showAttribution) {
-            picker.addClass(selector('showing-attribution', true));
-=======
         if (options.search) {
             searchPanel.addClass(selector('with-search', true));
->>>>>>> upstream/master
         }
 
         self.searchSel = null;
@@ -1079,7 +1037,7 @@ document = window.document || {};
                 items = shortnameTo(items,
                     self.sprite ?
                         '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}"><i class="emojione-{uni}"></i></i>' :
-                        '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}"><img class="emojioneemoji lazy-emoji" data-src="{img}"/></i>',
+                        '<i class="emojibtn" role="button" data-name="{name}" title="{friendlyName}"><img class="emojioneemoji lazy-emoji" data-src="{img}" crossorigin/></i>',
                     true).split('|').join('');
 
                 category.html(items);
@@ -1331,12 +1289,8 @@ document = window.document || {};
                 }
             } else {
                 if (!app.is(".focused")) {
-<<<<<<< HEAD
-                    editor.focus();
-                    moveCaretToEnd(editor[0]);
-=======
                     editor.trigger("focus");
->>>>>>> upstream/master
+                    moveCaretToEnd(editor[0]);
                 }
                 event.preventDefault();
             }
@@ -1458,15 +1412,13 @@ document = window.document || {};
                     categories.filter('[data-tone="' + tones.find("i.active").data("skin") + '"]:not([name="recent"])').show();
                     $('.emojibtn', categoryBlocks).show();
                     filterBtns.show();
-<<<<<<< HEAD
                     emojisList.show();
                     emojisNoResults.hide();
-                    if (!hide) {
-                        lazyLoading.call(self);
-                    }
-=======
                     lazyLoading.call(self);
->>>>>>> upstream/master
+                    // TODO: Maybe use this code instead?
+                    // if (!hide) {
+                    //     lazyLoading.call(self);
+                    // }
                 }
             })
 
@@ -1896,7 +1848,7 @@ document = window.document || {};
         if (typeof start !== 'number') {
           start = 0;
         }
-        
+
         if (start + search.length > this.length) {
           return false;
         } else {
@@ -1928,7 +1880,7 @@ document = window.document || {};
 
         var self = this, pseudoSelf = {
             shortnames: (options && typeof options.shortnames !== 'undefined' ? options.shortnames : true),
-            emojiTemplate: '<img alt="{alt}" class="emojione' + (options && options.sprite && emojioneSupportMode < 3 ? '-{uni}" src="' + blankImg : 'emoji" src="{img}') + '"/>'
+            emojiTemplate: '<img alt="{alt}" class="emojione' + (options && options.sprite && emojioneSupportMode < 3 ? '-{uni}" src="' + blankImg : 'emoji" src="{img}') + '" crossorigin />'
         };
 
         loadEmojione(options);

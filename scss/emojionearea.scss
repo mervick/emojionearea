@@ -217,40 +217,10 @@
             }
         }
 
-        &.#{$css-prefix}-showing-attribution {
-            &, .#{$css-prefix}-wrapper {
-                height: $picker-height + $attribution-height
-            }
-
-            .#{$css-prefix}-wrapper {
-                .#{$css-prefix}-attribution {
-                    position: absolute;
-                    height: $attribution-height;
-                    padding: 5px;
-                    text-align: center;
-                    width: 100%;
-                    border-top: 1px solid #d0d0d0;
-                    bottom: 0;
-                }
-            }
-        }
-
-        .#{$css-prefix}-filters, .#{$css-prefix}-search {
+        .#{$css-prefix}-filters {
             width: 100%;
             position: absolute;
             z-index: $z-index + 5;
-        }
-
-        .#{$css-prefix}-search {
-            padding: 5px 0 0 8px;
-            height: $search-height;
-            width: $search-width;
-            > input {
-                outline: none;
-                width: $search-width;
-                min-width: $search-width;
-                height: auto;
-            }
         }
 
         .#{$css-prefix}-filters {
@@ -324,7 +294,7 @@
                 outline: none;
                 width: $search-width;
                 min-width: $search-width;
-                height: $search-tones-height;
+                height: auto;
             }
         }
 
@@ -591,19 +561,6 @@
                     top: 0;
                 }
             }
-
-            &.#{$css-prefix}-showing-attribution {
-                .#{$css-prefix}-filters {
-                    bottom: $attribution-height;
-                    border-radius: 0;
-                }
-                .#{$css-prefix}-search {
-                    bottom: $filters-height + $attribution-height;
-                }
-                .#{$css-prefix}-tones {
-                    bottom: $filters-height + $attribution-height + 13px;
-                }
-            }
         }
 
         &.#{$css-prefix}-picker-position-top {
@@ -673,10 +630,6 @@
 
         + .#{$css-prefix}-picker-position-top {
             margin-top: - $picker-height + 7;
-
-            &.#{$css-prefix}-showing-attribution {
-                margin-top: - $picker-height + $attribution-height + 7;
-            }
         }
 
         + .#{$css-prefix}-picker-position-left,
@@ -686,10 +639,6 @@
 
         + .#{$css-prefix}-picker-position-bottom {
             margin-top: - 7px;
-
-            &.#{$css-prefix}-showing-attribution {
-                margin-top: - $attribution-height + 7;
-            }
         }
     }
 

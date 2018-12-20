@@ -55,7 +55,7 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
         }
 
         var sourceValFunc = source.is("TEXTAREA") || source.is("INPUT") ? "val" : "text",
-            editor, button, picker, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea, attribution, emojisNoResults,
+            editor, button, picker, filters, filtersBtns, searchPanel, emojisList, categories, categoryBlocks, scrollArea, emojisNoResults,
             tones = div('tones',
                 options.tones ?
                     function() {
@@ -107,19 +107,6 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
                         ) : null,
                         emojisList = div('emojis-list'),
                         emojisNoResults = div('emojis-no-results').text(options.noResultsText)
-                    ),
-                    attribution = div('attribution',
-                        options.showAttribution ?
-                        function() {
-                            if (options.showAttribution) {
-                                this.append('Emoji icons supplied by ');
-                                this.append($("<a/>", {
-                                    "href": "https://www.emojione.com/",
-                                    "target": "_blank",
-                                    "text": "EmojiOne"
-                                }));
-                            }
-                        } : null
                     )
                 )
             ).addClass(selector('picker-position-' + options.pickerPosition, true))
@@ -127,10 +114,6 @@ function($, emojione, blankImg, slice, css_class, emojioneSupportMode, invisible
              .addClass(selector('search-position-' + options.searchPosition, true))
              .addClass('hidden')
         );
-
-        if (options.showAttribution) {
-            picker.addClass(selector('showing-attribution', true));
-        }
 
         if (options.search) {
             searchPanel.addClass(selector('with-search', true));

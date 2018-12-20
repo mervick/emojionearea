@@ -47,7 +47,6 @@ function($, emojione, getEmojioneVersion, detectVersion, getSupportMode) {
                 maxCount      : 15,
                 placement     : null // null - default | top | absleft | absright
             },
-            showAttribution   : false,
             noResultsText     : 'No results found'
         };
 
