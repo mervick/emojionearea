@@ -631,7 +631,7 @@ Disable emojionearea input area
 
 - returns `EmojioneArea` instance
 
-#### `.focus()`
+#### `.setFocus()`
 
   Focus on emojionearea input area
 
