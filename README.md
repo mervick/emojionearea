@@ -10,7 +10,7 @@ The end result is a secure text/plain in which the image icons will be replaced 
 
 [See the Live Demo here](https://jsfiddle.net/1v03Lqnu/)
 
-[Version 2.x](https://github.com/mervick/emojionearea/tree/version2)
+[Version 2.1.x](https://github.com/mervick/emojionearea/tree/v2.1.x)
 
 ## Installation
 
