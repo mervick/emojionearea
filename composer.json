@@ -17,7 +17,7 @@
             "email": "info@merlinmason.co.uk"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "config": {
         "vendor-dir": "vendor",
         "preferred-install": "dist",
