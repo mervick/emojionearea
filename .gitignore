@@ -2,3 +2,5 @@ node_modules
 .vscode
 .DS_Store
 .eslintcache
+_outdated
+src/_outdated
