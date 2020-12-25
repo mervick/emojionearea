@@ -13,3 +13,9 @@ repos:
         args: ['--markdown-linebreak-ext=md,markdown']
     -   id: check-added-large-files
         args: ['--maxkb=500']
+-   repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.9
+    hooks:
+    -   id: remove-tabs
+        args: ['--whitespaces-count', '2']
+        description: Forces to replace tabs with by 2 spaces
