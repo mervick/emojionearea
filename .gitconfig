@@ -1,6 +1,6 @@
-[filter "spabs"]
-    clean = expand --initial -t 4
-    smudge = expand --initial -t 4
+[filter "spabs2"]
+    clean = expand --initial -t 2
+    smudge = expand --initial -t 2
     required
 [merge]
     renormalize = true

@@ -1,0 +1,5 @@
+*.ts    filter=spabs2
+*.tsx   filter=spabs2
+*.js    filter=spabs2
+*.jsx   filter=spabs2
+*.json  filter=spabs2
