@@ -2,10 +2,15 @@
 export type JQNodes = HTMLElement | HTMLElement[] | HTMLCollection | NodeList | string;
 export type JQOptions = {[key: string]: any};
 
-class JQ {
+export class JQ {
   // isJQ = true;
   list: HTMLElement[];
 
+  /**
+   * JQ constructor.
+   * @param {JQNodes} nodes
+   * @param {JQOptions} options
+   */
   constructor(nodes: JQNodes, options?: JQOptions) {
     let elements: HTMLElement[] = [];
 
@@ -54,6 +59,12 @@ class JQ {
     this.list = elements;
   }
 
+  /**
+   * Set attribute of each element in the list
+   * @param {string | {[p: string]: string}} attr
+   * @param {string} value
+   * @returns {JQ}
+   */
   attr(attr: string | {[key: string]: string}, value?: string): JQ {
     const $type = typeof attr;
     this.list.forEach((element: HTMLElement) => {
@@ -68,34 +79,55 @@ class JQ {
     return this;
   }
 
-  text(content: string): JQ {
-    if (this.list.length) { // only first element
-      this.list[0].innerText = content;
-    }
+  /**
+   * Set the text contents
+   * @param {string} contents
+   * @returns {JQ}
+   */
+  text(contents: string): JQ {
+    // only first element
+    this.list[0] && (this.list[0].innerText = contents);
     return this;
   }
 
-  html(content: string): JQ {
-    if (this.list.length) { // only first element
-      this.list[0].innerHTML = content;
-    }
+  /**
+   * Set the HTML contents
+   * @param {string} contents
+   * @returns {JQ}
+   */
+  html(contents: string): JQ {
+    // only first element
+    this.list[0] && (this.list[0].innerHTML = contents);
     return this;
   }
 
+  /**
+   * Adds the specified class to first element in the list
+   * @param {string} className
+   * @returns {JQ}
+   */
   addClass(className: string): JQ {
-    if (this.list.length) { // only first element
-      this.list[0].classList.add(className);
-    }
+    // only first element
+    this.list[0] && this.list[0].classList.add(className);
     return this;
   }
 
+  /**
+   * Remove a single class from first element in the list
+   * @param {string} className
+   * @returns {JQ}
+   */
   removeClass(className: string): JQ {
-    if (this.list.length) { // only first element
-      this.list[0].classList.remove(className);
-    }
+    // only first element
+    this.list[0] && this.list[0].classList.remove(className);
     return this;
   }
 
+  /**
+   * Returns the children of each element in the list
+   * @param {string} selector Only class selector supported
+   * @returns {JQ}
+   */
   children(selector: string): JQ {
     const list: HTMLElement[] = [];
 
@@ -119,7 +151,20 @@ class JQ {
     return jq(list);
   }
 
-  remove() {
+  /**
+   * Get the descendants of each element in the list filtered by selector
+   * @param {string} selector Only class selector supported
+   * @returns {JQ}
+   */
+  find(selector: string): JQ {
+
+  }
+
+  findFirst(selector: string): JQ {
+
+  }
+
+  remove(): void {
     this.list.forEach((element: HTMLElement) => {
       element.remove()
     });
