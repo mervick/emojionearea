@@ -1,4 +1,5 @@
-import {filters} from './defaultFilters';
+import {options as emojione} from './emojione';
+import {isfunction} from './utils';
 
 export interface ParserOptions {
   shortnames: boolean,
@@ -15,10 +16,15 @@ export interface SaverOptions {
   saver: ((html: string) => string) | null
 }
 
+export interface EventsOption {
+  [event: string]: any,
+}
+
 export interface ButtonOptions {
   openIcon: string | HTMLElement | 'default',
   closeIcon: string | HTMLElement | 'default',
-  title: string | null
+  title: string | null,
+  events?: EventsOption
 }
 
 export type PickerPositionOption = 'top' | 'bottom' | 'left' | 'right' | 'auto';
@@ -54,7 +60,8 @@ export interface PickerFiltersOptions {
 
 export interface PickerSearchOptions {
   placeholder: string,
-  position: PickerSearchPositionOption
+  position: PickerSearchPositionOption,
+  events?: EventsOption
 }
 
 export interface PickerOptions {
@@ -65,7 +72,8 @@ export interface PickerOptions {
   tones: false | PickerTones,
   search: false | PickerSearchOptions,
   filters: PickerFiltersOptions,
-  emojione: null | EmojioneOptions
+  emojione: null | EmojioneOptions,
+  events?: EventsOption
 }
 
 export interface EditorOptions {
@@ -82,23 +90,15 @@ export interface EditorOptions {
   parser: ParserOptions,
   saver: SaverOptions,
   hidePickerOnBlur: boolean,
-  picker: HTMLElement | 'auto'
+  picker: HTMLElement | 'auto',
+  events?: EventsOption
 }
 
 export interface EmojioneOptions {
-  version: string | 'latest' | 'v4' | 'v3' | 'v2' | 'v1',
   sprite: boolean, // sprite works with emojione 1.5.0, 2.1.7, 4.5.0
   type: 'png' | 'svg', // svg works with emojione <= 2.2.7
   size: 32 | 64 | 128,
-  path: string | 'auto',
-  spritePath: string | 'auto',
-  cdn: string,
-  paths: {
-    [key: string]: string | ((args: {[key: string]: string | number}) => string);
-  },
-  spritePaths: {
-    [key: string]: string | ((args: {[key: string]: string | number}) => string);
-  }
+  path: string
 }
 
 export interface AreaTemplateFuncElements {
@@ -122,6 +122,7 @@ export interface StandaloneOptions {
   template: string | AreaStandaloneTemplateFunc,
   placeholder: string,
   title: string | null,
+  events?: EventsOption
 }
 
 export interface AreaOptions {
@@ -130,12 +131,9 @@ export interface AreaOptions {
   editor: EditorOptions,
   button: ButtonOptions | false,
   picker: PickerOptions | false,
-  emojione: EmojioneOptions
+  emojione: EmojioneOptions,
+  events?: EventsOption
 }
-
-export type VersionSplit = [number, number, number];
-
-const isFunction = (fn: any): boolean => ({}.toString.call(fn) === '[object Function]');
 
 const defaultStandaloneOptions: StandaloneOptions = {
   template: '<standalone/><picker/>',
@@ -166,8 +164,8 @@ const defaultButtonOptions: ButtonOptions = {
 
 const defaultPickerFiltersOptions: PickerFiltersOptions = {
   position: 'top',
-  list: filters,
-  order: 'auto'
+  order: 'auto',
+  list: emojione.filters
 };
 
 const defaultPickerSearchOptions: PickerSearchOptions = {
@@ -195,32 +193,11 @@ const defaultEditorOptions: EditorOptions = {
   picker: 'auto'
 };
 
-export const emojioneVersions: {[version: string]: string} = {
-  latest: '4.0.0',
-  v4: '4.0.0',
-  v3: '3.1.2',
-  v2: '2.2.7',
-  v1: '1.5.0'
-  // popular: '2.2.7', '3.1.2', '2.1.4', '4.0.0', '1.5.0' '4.5.0'
-};
-
 const defaultEmojioneOptions: EmojioneOptions = {
-  version: 'v3',
   sprite: false,
   type: 'png',
   size: 32,
-  path: 'auto',
-  spritePath: 'auto',
-  cdn: 'https://cdn.jsdelivr.net',
-  paths: { // @TODO fix assets urls
-    '4.5.0': '{cdn}/npm/emojione-assets@{version}/{type}/{size}/0023.png',
-    '4.0.0': '{cdn}/npm/emojione-assets@{version}/{type}/{size}/0023.png',
-    '3.1.2': '{cdn}/emojione/assets/3.1/png/{size}/{icon}.{type}',
-    '2.2.7': '{cdn}/npm/emojione@{version}/emojione/assets/{type-size}/{emoji}.{type}', // 2.2.7 tested
-    '2.1.4': '{cdn}/npm/emojione@{version}/emojione/assets/{type-size}/{emoji}.{type}', // 2.2.7 tested
-    '1.5.0': '{cdn}/npm/emojione@{version}/assets/{type}/{emoji-upper}.{type}' // 1.5.0 tested
-  },
-  spritePaths: {}
+  path: 'auto'
 };
 
 const defaultPickerOptions: PickerOptions = {
@@ -244,7 +221,7 @@ const defaultOptions: AreaOptions = {
 };
 
 type KeyObject = {[key: string]: any | KeyObject};
-type MergeFunc = (value: any | ((ver: VersionSplit) => string), ver: VersionSplit) => any;
+type MergeFunc = (value: any | (() => string)) => any;
 type MergeRule = '<@OBJ>' | MergeFunc;
 type MergeRuleSub = ['<@OBJ>', MergeRules] | ['<@LAST>', MergeFunc];
 type MergeRulesMixed = MergeRule | MergeRuleSub;
@@ -266,10 +243,6 @@ const mergeRules: MergeRules | {emojione: MergeRuleSub, editor: MergeRuleSub, pi
   button: ['<@OBJ>', {
     events: '<@OBJ>'
   }],
-  emojione: ['<@OBJ>', {
-    paths: '<@OBJ>',
-    spritePaths: '<@OBJ>'
-  }],
   picker: ['<@OBJ>', {
     emojione: ['<@OBJ>', {
       paths: '<@OBJ>',
@@ -280,13 +253,7 @@ const mergeRules: MergeRules | {emojione: MergeRuleSub, editor: MergeRuleSub, pi
     filters: ['<@OBJ>', {
       list: ['<@OBJ>', {
         '*': ['<@OBJ>', {
-          // reverse order, first merge plugin options, then global options and then default option
-          'emoji': ['<@LAST>',
-            (emoji: string | ((emojioneVer: VersionSplit) => string), emojioneVer: VersionSplit) => {
-              return emoji && isFunction(emoji) ?
-                (emoji as (emojioneVer: VersionSplit) => string) (emojioneVer) : emoji;
-            }
-          ]
+          'emoji': (emoji: string | (() => string)) => emoji && isFunction(emoji) ? (emoji as () => string)() : emoji
         }]
       }]
     }]
@@ -303,10 +270,9 @@ const mergeRules: MergeRules | {emojione: MergeRuleSub, editor: MergeRuleSub, pi
  * @param {Object} b Global options
  * @param {Object} c Passed options
  * @param {MergeRules} rules
- * @param {VersionSplit=} emojioneVer
  * @returns {Object}
  */
-function mergeOptions(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRules, emojioneVer?: VersionSplit): KeyObject {
+function mergeOptions(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRules): KeyObject {
   const o: KeyObject = a;
   const complexKeys: string[] = Object.keys(rules);
 
@@ -320,13 +286,14 @@ function mergeOptions(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRule
 
           while(true) {
             if (rule === '<@OBJ>') {
-              o[key] = mergeOptions(a[key], b[key], c[key], {} as MergeRules, emojioneVer);
+              o[key] = mergeOptions(a[key], b[key], c[key], {} as MergeRules);
               break;
             }
 
             else if (Array.isArray(rule)) {
               if (rule[0] === '<@OBJ>') {
-                o[key] = mergeOptions(a[key], b[key], c[key], rule[1] as MergeRules, emojioneVer);
+                o[key] = mergeOptions(a[key], b[key], c[key], rule[1] as MergeRules);
+                break;
               }
               else if (rule[0] === '<@LAST>') {
                 rule = rule[1];
@@ -334,7 +301,7 @@ function mergeOptions(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRule
             }
 
             if (isFunction(rule)) {
-              const val = (rule as MergeFunc)(merge[key], (emojioneVer as any));
+              const val = (rule as MergeFunc)(merge[key]);
               if (val === '<@OBJ>') {
                 rule = val;
                 continue;
@@ -355,51 +322,45 @@ function mergeOptions(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRule
   return o;
 }
 
+function _merge(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRules, context?: string | null): KeyObject {
+  if (context) {
+    a = a[context];
+    b && (b = b[context]);
+    c && (c = c[context]);
+    rules && rules[context] && (rules = (rules[context] as MergeRuleSub)[1] as MergeRules);
+  }
+
+  return mergeOptions(
+    a as KeyObject,
+    (b || {}) as KeyObject,
+    (c || {}) as KeyObject,
+    rules as MergeRules
+  );
+}
+
 /**
  * Gets result of merging of the plugin default options, user's global defined options and passed options to the instance
  * @param {Partial<AreaOptions|EditorOptions|PickerOptions|ButtonOptions>} options
  * @param {"area"|"editor"|"picker"|"button"="area"} context
  */
 export function getOptions(options: Partial<AreaOptions|EditorOptions|PickerOptions|ButtonOptions>,
-                           context: 'area'|'editor'|'picker'|'button' = 'area') {
-  const globalConfig: KeyObject = (window as any).EmojioneArea.defaults;
+                           context: 'area'|'editor'|'picker'|'button' = 'area'): AreaOptions|EditorOptions|PickerOptions|ButtonOptions {
+  const globalConfig: KeyObject = <KeyObject>(window as any).EmojioneArea.defaults;
 
-  if (context !== 'button') {
-    const emojioneCfg: EmojioneOptions = <EmojioneOptions>mergeOptions(defaultOptions.emojione as KeyObject,
-      ((globalConfig as any).emojione || {}) as KeyObject, ((options as AreaOptions).emojione || {}) as KeyObject,
-      ((mergeRules as any).emojione as MergeRuleSub)[1] as MergeRules);
+  const config: AreaOptions|EditorOptions|PickerOptions|ButtonOptions = <AreaOptions|EditorOptions|PickerOptions|ButtonOptions>
+    _merge(defaultOptions as KeyObject, globalConfig as KeyObject, options as KeyObject, mergeRules, context !== 'area' ? context : null);
 
-    // get emojione version
+  const emojiConfig: EmojioneOptions = <EmojioneOptions>_merge(defaultOptions as KeyObject, globalConfig as KeyObject,
+    options as KeyObject, mergeRules, 'emojione');
 
-    let v: string = emojioneCfg.version;
-    if (emojioneVersions[v]) {
-      v = emojioneVersions[v];
-    }
+  // get emojione CDN path
+  const repl: any = {
+    ...emojiConfig,
+    'type-size': emojiConfig.size === 32 ? emojiConfig.type : `${emojiConfig.type}-${emojiConfig.size}`
+  };
 
-    // get emojione CDN path
+  emojiConfig.path.replace(/\{([a-z-]+)\}/g, (_, m) => repl[m]);
+  (config as AreaOptions).emojione = emojiConfig;
 
-    if (emojioneCfg.path === 'auto') {
-      if (emojioneCfg.paths[v]) {
-        const path = emojioneCfg.paths[v];
-        emojioneCfg.path = (isFunction(path) ? (path as ((k: any) => string))(emojioneCfg) : path) as string;
-      } else {
-        throw new Error('Unable to get CDN of emojione@v' + v);
-      }
-
-      const repl: any = {
-        ...emojioneCfg,
-        'type-size': emojioneCfg.size === 32 ? emojioneCfg.type : `${emojioneCfg.type}-${emojioneCfg.size}`
-      };
-
-      emojioneCfg.path.replace(/\{([a-z-]+)\}/g, (_, m) => repl[m]);
-    }
-
-    const ver: VersionSplit = <VersionSplit>v.split('.').map(a => parseInt(a));
-
-    if (context !== 'area') {
-      const cfg: EditorOptions|PickerOptions = <EditorOptions|PickerOptions>mergeOptions(defaultOptions.emojione as KeyObject,
-        ((globalConfig as any).emojione || {}) as KeyObject, ((options as AreaOptions).emojione || {}) as KeyObject,
-        ((mergeRules as any).emojione as MergeRuleSub)[1] as MergeRules, ver);
-    }
-  }
+  return config;
 }
