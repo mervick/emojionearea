@@ -1,9 +1,9 @@
 
-export type JQNodes = HTMLElement | HTMLElement[] | HTMLCollection | NodeList | string;
+export type JQNodes = isJQ | HTMLElement | HTMLElement[] | HTMLCollection | NodeList | string;
 export type JQOptions = {[key: string]: any};
 
 export class JQ {
-  // isJQ = true;
+  isJQ = true;
   list: HTMLElement[];
 
   /**
@@ -37,7 +37,10 @@ export class JQ {
       }
 
       else if ($type === 'object') {
-        if (Array.isArray(nodes)) {
+        if ((nodes as JQ).isJQ) {
+          elements = (nodes as JQ).list;
+        }
+        else if (Array.isArray(nodes)) {
           elements = <HTMLElement[]>nodes;
         } else {
           const str = Object.prototype.toString.call(nodes);
@@ -149,6 +152,17 @@ export class JQ {
     }
 
     return jq(list);
+  }
+
+  each(callback: (index: number, value: object) => void | false): JQ {
+    this.list.forEach(callback as any as (value: HTMLElement, index: number, array: HTMLElement[]) => void);
+    return this;
+  }
+
+  append(content: JQ | JQNodes): JQ {
+    // only first element
+    this.list[0] && (this.list[0].appendChild(jq(content as JQNodes).list[0]));
+    return this;
   }
 
   /**
