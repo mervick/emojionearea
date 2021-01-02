@@ -1,5 +1,6 @@
 import {options as emojione} from './emojione';
-import {isfunction} from './utils';
+import {isFunction} from './utils';
+import {HTMLAttributes} from "./types";
 
 export interface ParserOptions {
   shortnames: boolean,
@@ -79,9 +80,7 @@ export interface PickerOptions {
 export interface EditorOptions {
   inline: boolean | 'auto',
   dir: 'auto' | 'ltr' | 'rtl',
-  attributes: {
-    [key: string]: string | number | boolean;
-  },
+  attributes: HTMLAttributes,
   container: HTMLElement | null,
   autocomplete: {
     tones: boolean,
@@ -89,6 +88,7 @@ export interface EditorOptions {
   },
   parser: ParserOptions,
   saver: SaverOptions,
+  hideSource: boolean,
   hidePickerOnBlur: boolean,
   picker: HTMLElement | 'auto',
   events?: EventsOption
@@ -189,6 +189,7 @@ const defaultEditorOptions: EditorOptions = {
   },
   parser: defaultParserOptions,
   saver: defaultSaverOptions,
+  hideSource: true,
   hidePickerOnBlur: true,
   picker: 'auto'
 };
@@ -322,7 +323,37 @@ function mergeOptions(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRule
   return o;
 }
 
-function _merge(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRules, context?: string | null): KeyObject {
+interface Events {
+  // standalone: EventsOption;
+  editor: EventsOption;
+  button: EventsOption;
+  picker: EventsOption;
+};
+
+function splitEvents(events: EventsOption): Events {
+  const ev: Events = {
+    // standalone: {},
+    editor: {},
+    button: {},
+    picker: {}
+  };
+
+  Object.keys(events).forEach((key: string) => {
+    const parts = key.replace('_', '.').split('.');
+    let context = 'editor';
+    let attr =  key;
+    if (parts[1]) {
+      if (!ev[parts[0] as keyof Events]) return;
+      context = parts[0];
+      attr = parts[1];
+    }
+    ev[context as keyof Events][attr] = events[key];
+  });
+
+  return ev;
+}
+
+function mergeContext(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRules, context?: string | null): KeyObject {
   if (context) {
     a = a[context];
     b && (b = b[context]);
@@ -330,12 +361,25 @@ function _merge(a: KeyObject, b: KeyObject, c: KeyObject, rules: MergeRules, con
     rules && rules[context] && (rules = (rules[context] as MergeRuleSub)[1] as MergeRules);
   }
 
-  return mergeOptions(
+  const options: AreaOptions = <AreaOptions>mergeOptions(
     a as KeyObject,
     (b || {}) as KeyObject,
     (c || {}) as KeyObject,
     rules as MergeRules
   );
+
+  if (!context) {
+    const events = splitEvents(options.events || {});
+    Object.keys(events).forEach((cntx: string) => {
+      if (!options[cntx as keyof Events]) return;
+      options[cntx as keyof Events].events = {
+        ...options[cntx as keyof Events].events,
+        ...events[cntx as keyof Events]
+      };
+    });
+  }
+
+  return options;
 }
 
 /**
@@ -348,9 +392,9 @@ export function getOptions(options: Partial<AreaOptions|EditorOptions|PickerOpti
   const globalConfig: KeyObject = <KeyObject>(window as any).EmojioneArea.defaults;
 
   const config: AreaOptions|EditorOptions|PickerOptions|ButtonOptions = <AreaOptions|EditorOptions|PickerOptions|ButtonOptions>
-    _merge(defaultOptions as KeyObject, globalConfig as KeyObject, options as KeyObject, mergeRules, context !== 'area' ? context : null);
+    mergeContext(defaultOptions as KeyObject, globalConfig as KeyObject, options as KeyObject, mergeRules, context !== 'area' ? context : null);
 
-  const emojiConfig: EmojioneOptions = <EmojioneOptions>_merge(defaultOptions as KeyObject, globalConfig as KeyObject,
+  const emojiConfig: EmojioneOptions = <EmojioneOptions>mergeContext(defaultOptions as KeyObject, globalConfig as KeyObject,
     options as KeyObject, mergeRules, 'emojione');
 
   // get emojione CDN path

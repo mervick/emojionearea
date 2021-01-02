@@ -1,5 +1,5 @@
 
-export type JQNodes = isJQ | HTMLElement | HTMLElement[] | HTMLCollection | NodeList | string;
+export type JQNodes = JQ | HTMLElement | HTMLElement[] | HTMLCollection | NodeList | string;
 export type JQOptions = {[key: string]: any};
 
 export class JQ {
@@ -63,13 +63,20 @@ export class JQ {
   }
 
   /**
-   * Set attribute of each element in the list
+   * Set/get attribute of each element in the list
    * @param {string | {[p: string]: string}} attr
-   * @param {string} value
-   * @returns {JQ}
+   * @param {string=} value
+   * @returns {JQ|string|null}
    */
-  attr(attr: string | {[key: string]: string}, value?: string): JQ {
+  attr(attr: string | {[key: string]: string}, value?: string): JQ | string | null {
     const $type = typeof attr;
+
+    // get attribute of first element
+    if (typeof value === 'undefined') {
+      return this.list[0] ? this.list[0].getAttribute(attr as string) : null;
+    }
+
+    // set attributes of all elements
     this.list.forEach((element: HTMLElement) => {
       if ($type === 'object') {
         Object.keys(attr).forEach((key: string) => {
