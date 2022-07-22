@@ -1,3 +1,5 @@
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct.svg)](https://stand-with-ukraine.pp.ua/)
+
 # EmojioneArea
 
 EmojioneArea is a small jQuery plugin that allows you to transform any html element into simple WYSIWYG editor with
